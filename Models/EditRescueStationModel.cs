@@ -9,5 +9,7 @@ namespace Staffinfo.Divers.Models
         [DataMember(Name = "stationName")]
         [Required(ErrorMessage = "Нужно указать название спасательной станции")]
         public string StationName { get; set; }
+
+        public int StationId { get; set; }
     }
 }

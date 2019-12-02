@@ -61,10 +61,20 @@ namespace Staffinfo.Divers.Infrastructure.Mapping
                 .ForMember(r => r.UpdatedAt, p => p.MapFrom(src => src.UpdatedAt));
 
             CreateMap<EditRescueStationModel, RescueStationPoco>()
-                .ForMember(r => r.StationName, p => p.MapFrom(src => src.StationName));
+                .ForMember(r => r.StationName, p => p.MapFrom(src => src.StationName))
+                .ForMember(r => r.StationId, p => p.MapFrom(src => src.StationId));
 
             CreateMap<RescueStationPoco, EditRescueStationModel>()
-                .ForMember(r => r.StationName, p => p.MapFrom(src => src.StationName));
+                .ForMember(r => r.StationName, p => p.MapFrom(src => src.StationName))
+                .ForMember(r => r.StationId, p => p.MapFrom(src => src.StationId));
+
+            CreateMap<EditRescueStationModel, RescueStation>()
+                .ForMember(r => r.StationName, p => p.MapFrom(src => src.StationName))
+                .ForMember(r => r.StationId, p => p.MapFrom(src => src.StationId));
+
+            CreateMap<RescueStation, EditRescueStationModel>()
+                .ForMember(r => r.StationName, p => p.MapFrom(src => src.StationName))
+                .ForMember(r => r.StationId, p => p.MapFrom(src => src.StationId));
 
             #endregion
 

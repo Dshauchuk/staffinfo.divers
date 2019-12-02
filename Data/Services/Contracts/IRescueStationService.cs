@@ -9,7 +9,7 @@ namespace Staffinfo.Divers.Services.Contracts
     {
         Task<RescueStation> AddStationAsync(EditRescueStationModel model);
 
-        Task<RescueStation> EditStationAsync(int stationId, EditRescueStationModel model);
+        Task<RescueStation> EditStationAsync(EditRescueStationModel model);
 
         Task<RescueStation> GetAsync(int stationId);
 

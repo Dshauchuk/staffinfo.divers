@@ -1,0 +1,33 @@
+﻿@model EditRescueStationModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Edit</h1>
+<hr />
+<br />
+
+<form asp-action="Update" asp-controller="Stations" method="post">
+    <div class="form-group">
+        <label asp-for="StationName" class="input-name">Название Спасательной Станции</label>
+        <input asp-for="StationName" type="text" class="form-control required">
+        <span asp-validation-for="StationName"></span>
+
+        <input asp-for="StationId" type="hidden" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Сохранить</button>
+</form>
+
+@section  scripts {
+    <script type="text/javascript">
+        $(function () {
+            
+            console.log(getQueryParam("stationId"));
+
+
+
+
+        })
+    </script>
+}

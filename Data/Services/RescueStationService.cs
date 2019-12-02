@@ -44,12 +44,12 @@ namespace Staffinfo.Divers.Services
             await _rescueStationRepository.DeleteAsync(stationId);
         }
 
-        public async Task<RescueStation> EditStationAsync(int stationId, EditRescueStationModel model)
+        public async Task<RescueStation> EditStationAsync(EditRescueStationModel model)
         {
             if (model == null)
                 throw new ArgumentNullException(nameof(model));
 
-            var existing = await _rescueStationRepository.GetAsync(stationId);
+            var existing = await _rescueStationRepository.GetAsync(model.StationId);
             if (existing == null)
                 throw new NotFoundException("Станция не найдена.");
 

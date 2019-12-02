@@ -2,3 +2,25 @@
 // for details on configuring this project to bundle and minify static web assets.
 
 // Write your JavaScript code.
+
+function successAlert(text) {
+    $('#success-content').text(text);
+    $('#alert-success').toggleClass('in out');
+
+    setTimeout(function () {
+        $('#alert-success').toggleClass('in out');
+    }, 3000);
+}
+
+function errorAlert(text) {
+    $('#danger-content').text(text);
+    $('#alert-danger').toggleClass('in out');
+}
+
+function getQueryParam(name) {
+    var url_string = window.location.href;
+    var url = new URL(url_string);
+    var c = url.searchParams.get(name);
+
+    return c;
+} 

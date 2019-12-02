@@ -1,0 +1,12 @@
+﻿td button {
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.table-container {
+    /*position: absolute;
+    height: 70% !important;
+    width: 60%;*/
+    height: 600px;
+    overflow: auto;
+}

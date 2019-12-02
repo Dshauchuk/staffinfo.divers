@@ -60,9 +60,9 @@ namespace Staffinfo.Divers.Controllers
         [ProducesResponseType(statusCode: 500, type: typeof(ErrorResponse))]
         public async Task<IActionResult> UpdateAsync([FromRoute]int stationId, [FromBody, Required]EditRescueStationModel model)
         {
-            var updated = await _rescueStationService.EditStationAsync(stationId, model);
+            //var updated = await _rescueStationService.EditStationAsync(model.StationId, model);
 
-            return Ok(updated);
+            return Ok();
         }
 
         /// <summary>

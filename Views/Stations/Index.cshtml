@@ -5,6 +5,53 @@
 }
 
 <h1>Спасательные станции</h1>
+<hr />
 
+<br />
+    <div>
+        <a href="/Stations/New" class="btn btn-primary">Добавить</a>
+    </div>
+<br />
 
+<div>
 
+</div>
+
+<table class="table table-striped" id="stations-table" style="max-height:100px;">
+    <thead class="thead-dark">
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Станция</th>
+            <th scope="col"></th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+
+@section  scripts {
+    <script type="text/javascript">
+        $(function () {
+            $.ajax({
+                url: "/Stations/GetListJson",
+                type: "GET",
+                dataType: "json",
+            })
+                .done(function (data) {
+                    if (!data)
+                        return;
+
+                    let html = '';
+
+                    data.forEach(function (val, ind) {
+                        html += '<tr><td>' + (ind + 1) + '</td><td>' + val.stationName + '</td><td class="text-right">' + '<a class="btn btn-warning" href="/Stations/Edit?stationId=' + val.stationId + '">Изменить</a><button class="btn btn-danger">Удалить</button>' + '</td></tr>';
+                    })
+
+                    $('#stations-table tbody').html(html);
+                })
+                .fail(function (error) {
+                    errorAlert(error);
+                })
+        })
+    </script>
+}
