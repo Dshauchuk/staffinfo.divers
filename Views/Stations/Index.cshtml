@@ -37,17 +37,48 @@
                 type: "GET",
                 dataType: "json",
             })
-                .done(function (data) {
-                    if (!data)
-                        return;
+                .done(function (dataSet) {
+                    let ind = 0;
 
-                    let html = '';
+                    //$('#stations-table').DataTable({
+                    //    data: dataSet.map(function (d) { return [ind++, d.stationName]; }),
+                    //    columns: [
+                    //        { title: "#" },
+                    //        { title: "Станция" },
+                    //        { title: "" }
+                    //    ]
+                    //});
 
-                    data.forEach(function (val, ind) {
-                        html += '<tr><td>' + (ind + 1) + '</td><td>' + val.stationName + '</td><td class="text-right">' + '<a class="btn btn-warning" href="/Stations/Edit?stationId=' + val.stationId + '">Изменить</a><button class="btn btn-danger">Удалить</button>' + '</td></tr>';
-                    })
 
-                    $('#stations-table tbody').html(html);
+                    var table = $('#stations-table').DataTable({
+                        data: dataSet.map(function (d) { return { index: ++ind, name: d.stationName, id: d.stationId }; }),
+                        columns: [
+                            { data: "index" },
+                            { data: "name" },
+                            {
+                                data: "id", render: function (data, type, row, meta) {
+                                    return '<a class="btn btn-warning" href="/Stations/Edit?stationId=' + data + '">Изменить</a><a class="btn btn-danger" href="/Stations/Delete?stationId=' + data + '">Удалить</a>'//type === 'display' ? '<a href="/Stations/Delete?stationId=' + data + '" ><i class="fe fe-delete"></i></a>' : data;
+                                }
+                            },
+                        ],
+                        aoColumnDefs: [
+                            { "sClass": "btn-col", "aTargets": [2] }
+                        ],
+                        language: {
+                            url: "/localisation/dataTables.russian.lang.json"
+                        }
+                    });
+
+                    //if (!data)
+                    //    return;
+
+                    //let html = '';
+
+                    //data.forEach(function (val, ind) {
+                    //    html += '<tr><td>' + (ind + 1) + '</td><td>' + val.stationName + '</td><td class="text-right">' + '<a class="btn btn-warning" href="/Stations/Edit?stationId=' + val.stationId + '">Изменить</a><button class="btn btn-danger">Удалить</button>' + '</td></tr>';
+                    //})
+
+                    //$('#stations-table tbody').html(html);
                 })
                 .fail(function (error) {
                     errorAlert(error);

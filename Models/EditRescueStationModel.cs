@@ -8,6 +8,7 @@ namespace Staffinfo.Divers.Models
     {
         [DataMember(Name = "stationName")]
         [Required(ErrorMessage = "Нужно указать название спасательной станции")]
+        [StringLength(100, ErrorMessage = "Длина названия должна быть от 5 до 100 символов", MinimumLength = 5)]
         public string StationName { get; set; }
 
         public int StationId { get; set; }

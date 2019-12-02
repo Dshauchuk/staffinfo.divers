@@ -27,6 +27,7 @@ namespace staffinfo.divers.Controllers
         public IActionResult New()
         {
             ViewData["Title"] = "Новая Спасательная Станция";
+            ViewData["Action"] = "Add";
 
             return View("Edit", new EditRescueStationModel());
         }
@@ -36,13 +37,25 @@ namespace staffinfo.divers.Controllers
             var station = await _rescueStationService.GetAsync(stationId);
             var editModel = _mapper.Map<EditRescueStationModel>(station);
 
+            ViewData["Title"] = "Изменить Спасательную Станцию";
+            ViewData["Action"] = "Update";
+
             return View("Edit", editModel);
         }
 
         [HttpPost]
+        public async Task<IActionResult> Add(EditRescueStationModel model)
+        {
+            _ = await _rescueStationService.AddStationAsync(model);
+
+            return View("Index");
+        }
+
+
+        [HttpPost]
         public async Task<IActionResult> Update(EditRescueStationModel model)
         {
-            var updated = await _rescueStationService.EditStationAsync(model);
+            _ = await _rescueStationService.EditStationAsync(model);
 
             return View("Index");
         }

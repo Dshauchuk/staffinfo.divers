@@ -7,7 +7,7 @@
 <hr />
 <br />
 
-<form asp-action="Update" asp-controller="Stations" method="post">
+<form asp-action=@ViewData["Action"] asp-controller="Stations" method="post">
     <div class="form-group">
         <label asp-for="StationName" class="input-name">Название Спасательной Станции</label>
         <input asp-for="StationName" type="text" class="form-control required">
@@ -17,6 +17,7 @@
     </div>
 
     <button type="submit" class="btn btn-primary">Сохранить</button>
+    <a class="btn btn-secondary" href="/Stations">Отмена</a>
 </form>
 
 @section  scripts {
