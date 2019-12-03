@@ -48,7 +48,7 @@ namespace staffinfo.divers.Controllers
         {
             _ = await _rescueStationService.AddStationAsync(model);
 
-            return View("Index");
+            return RedirectToAction("Index", "Stations");
         }
 
 
@@ -60,12 +60,17 @@ namespace staffinfo.divers.Controllers
             return View("Index");
         }
 
+        [HttpDelete]
+        public async Task<IActionResult> Delete(int stationId)
+        {
+            await _rescueStationService.DeleteAsync(stationId);
+
+            return NoContent();
+        }
 
         [HttpGet]
         public async Task<JsonResult> GetListJson()
         {
-            await Task.Delay(3000);
-
             var stations = await _rescueStationService.GetAsync();
 
             return Json(stations);

@@ -59,6 +59,7 @@
         </div>
     </div>
 
+    @*alerts*@
     <div class="alert alert-success alert-dismissible out" role="alert" id="alert-success">
         <p id="success-content" style="display: inline;"></p>
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -70,6 +71,27 @@
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
             <span aria-hidden="true">&times;</span>
         </button>
+    </div>
+
+    @* confirm *@
+    <div class="modal fade" id="confirm-delete-modal" tabindex="-1" role="dialog" aria-labelledby="modalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirm-delete-text">Подтвердите удаление</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p id="confirmation-text">Text</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="confirm-delete-btn-no" data-dismiss="modal">Отмена</button>
+                    <button type="button" class="btn btn-danger" id="confirm-delete-btn-yes">Удалить</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="container">
