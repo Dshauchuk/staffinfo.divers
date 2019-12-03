@@ -3,7 +3,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Edit</h1>
+<h1>@ViewData["Title"]</h1>
 <hr />
 <br />
 
@@ -19,16 +19,3 @@
     <button type="submit" class="btn btn-primary">Сохранить</button>
     <a class="btn btn-secondary" href="/Stations">Отмена</a>
 </form>
-
-@section  scripts {
-    <script type="text/javascript">
-        $(function () {
-            
-            console.log(getQueryParam("stationId"));
-
-
-
-
-        })
-    </script>
-}

@@ -3,6 +3,20 @@
 
 // Write your JavaScript code.
 
+// loading screen
+var $loading = $('#processing-modal').modal('hide');
+
+$(function () {
+    
+})
+    .ajaxStart(function () {
+        $loading.modal();
+
+    })
+    .ajaxStop(function () {
+        $loading.modal('hide');
+    });
+
 function successAlert(text) {
     $('#success-content').text(text);
     $('#alert-success').toggleClass('in out');

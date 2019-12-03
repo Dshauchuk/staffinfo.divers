@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Mvc;
 using Staffinfo.Divers.Models;
+using Staffinfo.Divers.Services;
 using Staffinfo.Divers.Services.Contracts;
 using System.Threading.Tasks;
 
@@ -8,10 +10,12 @@ namespace staffinfo.divers.Controllers
     public class LoginController : Controller
     {
         private readonly IAccountService _accountService;
+        private readonly UserManager _userManager;
 
-        public LoginController(IAccountService accountService)
+        public LoginController(IAccountService accountService, UserManager userManager)
         {
             _accountService = accountService;
+            _userManager = userManager;
         }
 
         public IActionResult Index()
@@ -33,6 +37,14 @@ namespace staffinfo.divers.Controllers
             }
 
             return Redirect("/Dashboard");
+        }
+
+        public async Task<IActionResult> SignOut()
+        {
+            // set identity to local storage
+            _userManager.ClearUserData();
+
+            return RedirectToAction("Index", "Login");
         }
     }
 }

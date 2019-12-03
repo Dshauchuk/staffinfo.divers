@@ -64,6 +64,8 @@ namespace staffinfo.divers.Controllers
         [HttpGet]
         public async Task<JsonResult> GetListJson()
         {
+            await Task.Delay(3000);
+
             var stations = await _rescueStationService.GetAsync();
 
             return Json(stations);
