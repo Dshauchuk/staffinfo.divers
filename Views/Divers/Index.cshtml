@@ -1,0 +1,90 @@
+﻿
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Водолазы</h1>
+<hr />
+<br />
+
+<div class="row">
+    <div class="col-md-12">
+        <table class="table table-striped display nowrap" id="divers-table" style="width:100%">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col"></th>
+                    <th scope="col">Фамилия</th>
+                    <th scope="col">Имя</th>
+                    <th scope="col">Станция</th>
+                    <th scope="col">Квалификация</th>
+                    <th scope="col">Часов</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+        $(function () {
+            $.ajax({
+                url: "/Divers/GetListJson",
+                type: "GET",
+                dataType: "json",
+                cache: false
+            })
+                .done(function (dataSet) {
+                    console.log(dataSet);
+
+                    $('#divers-table').DataTable({
+                        destroy: true,
+                        scrollX: true,
+                        dom: "<'row'<'col-3 text-left'l>><'row'<'col-sm-12'tr>><'row'<'col-6 text-left'i><'col-6 text-right'p>>",
+                        data: dataSet,
+                        columns: [
+                            {
+                                data: "photoUrl", render: function (data, type, row, meta) {
+                                    var url;
+
+                                    if (data)
+                                        url = data;
+                                    else
+                                        url = '/images/avatar-default.png'
+
+                                    return '<img src="' + url + '" class="avatar" width="50" height="50" />'
+                                }
+                            },
+                            { data: "lastName" },
+                            { data: "firstName" },
+                            { data: "rescueStation.stationName" },
+                            { data: "qualification" },
+                            {
+                                data: "workingTime", render: function (data, type, row, meta) {
+
+                                    if (data && data.length > 0) {
+                                        return data.reduce((a, b) => a + b.workingMinutes, 0) / 60;
+                                    }
+                                    else
+                                        return 0;
+                                }
+                            }
+                        ],
+                        columnDefs: [
+                            { "className": "dt-center", "targets": "_all" }
+                        ],
+                        language: {
+                            url: "/localisation/dataTables.russian.lang.json"
+                        }
+                    });
+                })
+                .fail(function (error) {
+                    errorAlert(error);
+                });
+        })
+
+
+    </script>
+}

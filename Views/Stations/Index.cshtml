@@ -6,34 +6,32 @@
 
 <h1>Спасательные станции</h1>
 <hr />
-
 <br />
+
 <div>
     <a href="/Stations/New" class="btn btn-primary">Добавить</a>
 </div>
 <br />
 
-<div>
 
+<div class="row">
+    <div class="col-md-12">
+        <table class="table table-striped display nowrap" id="stations-table" style="width:100%">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Станция</th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
 </div>
-
-<table class="table table-striped" id="stations-table" style="max-height:100px;">
-    <thead class="thead-dark">
-        <tr>
-            <th scope="col">#</th>
-            <th scope="col">Станция</th>
-            <th scope="col"></th>
-        </tr>
-    </thead>
-    <tbody>
-    </tbody>
-</table>
 
 @section scripts {
     <script type="text/javascript">
-
-        var stationsTable;
-
         function loadStations() {
             $.ajax({
                 url: "/Stations/GetListJson",
@@ -44,8 +42,11 @@
                 .done(function (dataSet) {
                     let ind = 0;
 
-                    stationsTable = $('#stations-table').DataTable({
+                    $('#stations-table').DataTable({
                         destroy: true,
+                        dom: "<'row'<'col-sm-6'l><'col-6 text-right'f>>" +
+                            "<'row'<'col-sm-12'tr>>" +
+                            "<'row'<'col-sm-5'i><'col-7 text-right'p>>",
                         data: dataSet.map(function (d) { return { index: ++ind, name: d.stationName, id: d.stationId }; }),
                         columns: [
                             { data: "index" },
@@ -73,7 +74,7 @@
             loadStations();
         }).on("click", "#station-remove-btn", function () {
             var id = $(this).data('id');
-            var confirm = confirmDelete("Станция будет удалена. Продолжить?", function () {
+            confirmDelete("Станция будет удалена. Продолжить?", function () {
                 $.ajax({
                     url: "/Stations/Delete",
                     type: "Delete",

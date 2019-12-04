@@ -13,3 +13,24 @@
     margin-right: auto;
     width: 50%;
 }
+
+table.dataTable tbody td {
+    vertical-align: middle;
+}
+
+.dataTables_length > label {
+    white-space: nowrap;
+}
+
+.dataTables_filter > label {
+    white-space: nowrap;
+    display: inline-flex;
+}
+
+.dataTables_filter > label > input {
+    margin-left: 10px;
+}
+
+ul.pagination {
+    float: right;
+}
