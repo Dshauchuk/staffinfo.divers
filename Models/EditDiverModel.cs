@@ -16,7 +16,8 @@ namespace Staffinfo.Divers.Models
 
         public string PhotoUrl { get; set; }
 
-        public DateTime BirthDate { get; set; } = DateTime.Now;
+        [Required]
+        public DateTime? BirthDate { get; set; }
 
         public int? RescueStationId { get; set; }
 
@@ -30,7 +31,7 @@ namespace Staffinfo.Divers.Models
         public string PersonalBookNumber { get; set; }
 
         [Required]
-        public DateTime PersonalBookIssueDate { get; set; } = DateTime.Now;
+        public DateTime? PersonalBookIssueDate { get; set; }
 
         [Required]
         public string PersonalBookProtocolNumber { get; set; }

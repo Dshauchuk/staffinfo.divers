@@ -38,6 +38,7 @@ namespace Staffinfo.Divers.Services
             return diver;
         }
 
+
         public async Task DeleteAsync(int diverId)
         {
             var existing = await GetAsync(diverId);
@@ -46,6 +47,7 @@ namespace Staffinfo.Divers.Services
 
             await _diverRepository.DeleteAsync(diverId);
         }
+
 
         public async Task<Diver> EditDiverAsync(int diverId, EditDiverModel model)
         {
@@ -99,6 +101,30 @@ namespace Staffinfo.Divers.Services
             var divers = pocos.Select(p => _mapper.Map<Diver>(p));
 
             return divers;
+        }
+
+        public async Task AddDivingTime(DivingTime time)
+        {
+            var allDiverHours = await _divingTimeRepository.GetListAsync(time.DiverId);
+            var times = new List<DivingTime>();
+
+            if (allDiverHours != null && allDiverHours.Any())
+                times.AddRange(allDiverHours.Select(t => _mapper.Map<DivingTime>(t)));
+
+            times.Add(time);
+
+            await SetWorkingHours(time.DiverId, times);
+        }
+
+        public async Task DeleteDivingTime(int diverId, int year)
+        {
+            var allDiverHours = (await _divingTimeRepository.GetListAsync(diverId)).ToList();
+
+            if (allDiverHours != null && allDiverHours.Any())
+            {
+                allDiverHours.RemoveAll(t => t.Year == year);
+                await SetWorkingHours(diverId, allDiverHours.Select(t => _mapper.Map<DivingTime>(t)));
+            }
         }
 
         private async Task<List<DivingTime>> SetWorkingHours(int diverId, IEnumerable<DivingTime> time)

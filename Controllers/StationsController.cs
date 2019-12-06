@@ -50,14 +50,13 @@ namespace staffinfo.divers.Controllers
 
             return RedirectToAction("Index", "Stations");
         }
-
-
+        
         [HttpPost]
         public async Task<IActionResult> Update(EditRescueStationModel model)
         {
             _ = await _rescueStationService.EditStationAsync(model);
 
-            return View("Index");
+            return RedirectToAction("Index", "Stations");
         }
 
         [HttpDelete]

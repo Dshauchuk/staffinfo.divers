@@ -16,5 +16,9 @@ namespace Staffinfo.Divers.Services.Contracts
         Task<IEnumerable<Diver>> GetAsync(IFilterOptions options);
 
         Task DeleteAsync(int diverId);
+
+        Task AddDivingTime(DivingTime time);
+
+        Task DeleteDivingTime(int diverId, int year);
     }
 }

@@ -34,3 +34,26 @@ table.dataTable tbody td {
 ul.pagination {
     float: right;
 }
+
+label.bold-label {
+    font-weight: bold;
+}
+
+#nav-tab, #nav-tabContent {
+    margin-top: 10px;
+}
+
+#whours-table {
+    margin-top: 10px;
+}
+
+#filterPanel {
+    padding: 15px;
+    border: 1px solid gray;
+}
+
+/*.panel-heading {
+    color: #fff !important;
+    background-color: #343a40;
+    border-color: #454d55;
+}*/

@@ -1,0 +1,145 @@
+﻿@model EditDiverModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>@ViewData["Title"]</h1>
+<hr />
+<br />
+
+<form method="POST" asp-action="Add" asp-controller="Divers">
+    <div class="row">
+        <div class="col-md-12">
+            <h5 class="card-title">Личные Данные</h5>
+            <hr />
+        </div>
+
+        <div class="form-group col-md-4 col-sm-12">
+            <label asp-for="LastName" class="input-name">Фамилия</label>
+            <input asp-for="LastName" class="form-control" type="text" />
+            <span asp-validation-for="LastName"></span>
+        </div>
+
+        <div class="form-group col-md-4 col-sm-12">
+            <label asp-for="FirstName" class="input-name">Имя</label>
+            <input asp-for="FirstName" class="form-control" type="text" />
+            <span asp-validation-for="FirstName"></span>
+        </div>
+
+        <div class="form-group col-md-4 col-sm-12">
+            <label asp-for="MiddleName" class="input-name">Отчество</label>
+            <input asp-for="MiddleName" class="form-control" type="text" />
+            <span asp-validation-for="MiddleName"></span>
+        </div>
+
+        <div class="form-group col-md-4 col-sm-12">
+            <label asp-for="BirthDate" class="input-name">Дата Рождения</label>
+            <input asp-for="BirthDate" class="form-control" type="text" id="birthDate" />
+            <span asp-validation-for="BirthDate"></span>
+        </div>
+
+        <div class="form-group col-md-4 col-sm-12">
+            <label asp-for="Address" class="input-name">Адрес</label>
+            <input asp-for="Address" class="form-control" type="text" placeholder="г.Гомель, ул. - , д. - , кв. - " />
+            <span asp-validation-for="Address"></span>
+        </div>
+
+        <div class="col-md-12">
+            <h5 class="card-title">Водолазная Книжка</h5>
+            <hr />
+        </div>
+
+        <div class="form-group col-md-4 col-sm-12">
+            <label asp-for="PersonalBookProtocolNumber" class="input-name">№ Протокола</label>
+            <input asp-for="PersonalBookProtocolNumber" class="form-control" type="text" />
+            <span asp-validation-for="PersonalBookProtocolNumber"></span>
+        </div>
+
+        <div class="form-group col-md-4 col-sm-12">
+            <label asp-for="PersonalBookNumber" class="input-name">Личный Номер</label>
+            <input asp-for="PersonalBookNumber" class="form-control" type="text" />
+            <span asp-validation-for="PersonalBookNumber"></span>
+        </div>
+
+        <div class="form-group col-md-4 col-sm-12">
+            <label asp-for="PersonalBookIssueDate" class="input-name">Дата Выдачи</label>
+            <input asp-for="PersonalBookIssueDate" class="form-control" type="text" id="bookIssueDate" />
+            <span asp-validation-for="PersonalBookIssueDate"></span>
+        </div>
+
+        <div class="col-md-12">
+            <h5 class="card-title">Станция</h5>
+            <hr />
+        </div>
+
+        <div class="form-group col-md-4 col-sm-12">
+            <label asp-for="RescueStationId" class="input-name">Спасательная Станция</label>
+            <select asp-for="RescueStationId" class="form-control" id="rescueStationSelect">
+                <option value="">-Не Выбрано-</option>
+            </select>
+            <span asp-validation-for="RescueStationId"></span>
+        </div>
+
+        <div class="form-group col-md-4 col-sm-12">
+            <label asp-for="Qualification" class="input-name">Квалификация</label>
+            <select asp-for="Qualification" class="form-control">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+            </select>
+            <span asp-validation-for="Qualification"></span>
+        </div>
+
+        <div class="form-group col-md-4 col-sm-12">
+            <label asp-for="MedicalExaminationDate" class="input-name">Дата Мед. Обследования</label>
+            <input asp-for="MedicalExaminationDate" class="form-control" type="text" id="medicalExamDate" placeholder="Укажите дату" />
+            <span asp-validation-for="MedicalExaminationDate"></span>
+        </div>
+
+    </div>
+    <button type="submit" class="btn btn-primary">Сохранить</button>
+    <button class="btn btn-secondary" onclick="history.back();">Отмена</button>
+</form>
+
+@section scripts {
+    <script type="text/javascript">
+        var datePickerConfigs = {
+            locale: 'ru-ru',
+            format: 'dd/mm/yyyy',
+            uiLibrary: 'bootstrap4'
+        }
+
+        $(function () {
+
+            // load stations for the dropdown
+            $.ajax({
+                url: "/Stations/GetListJson",
+                type: "GET",
+                dataType: "json",
+                cache: false
+            })
+                .done(function (dataSet) {
+                    dataSet.forEach(function (i) {
+                        $('#rescueStationSelect')
+                            .append($("<option></option>")
+                                .attr("value", i.stationId)
+                                .text(i.stationName));
+                    });                    
+                })
+                .fail(function (error) {
+                    errorAlert(error);
+                });
+
+
+            // initialize datepickers
+            $('#birthDate').datepicker(datePickerConfigs);
+            $('#bookIssueDate').datepicker(datePickerConfigs);
+            $('#medicalExamDate').datepicker(datePickerConfigs);
+
+            // forbid user input
+            $("#birthDate, #bookIssueDate, #medicalExamDate").keydown(function (e) {
+                e.preventDefault();
+            });
+        })
+    </script>
+}

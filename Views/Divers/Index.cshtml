@@ -8,7 +8,72 @@
 <hr />
 <br />
 
-<div class="row">
+<div class="card">
+    <h5 class="card-header">Фильтр</h5>
+    <div class="card-body">
+        <div class="row">
+            <div class="form-group col-md-4 col-sm-12">
+                <label for="nameQuery" class="input-name">Имя</label>
+                <input name="nameQuery" id="nameQuery" class="form-control" type="text" />
+            </div>
+            <div class="form-group col-md-4 col-sm-12">
+                <label for="medicalExaminationStartDate" class="input-name">Мед. освидет.(от)</label>
+                <input name="medicalExaminationStartDate" class="form-control" type="text" id="medicalExaminationStartDate" />
+            </div>
+            <div class="form-group col-md-4 col-sm-12">
+                <label for="medicalExaminationEndDate" class="input-name">Мед. освидет.(до)</label>
+                <input name="medicalExaminationEndDate" class="form-control" type="text" id="medicalExaminationEndDate" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group col-md-4 col-sm-12">
+                <label for="rescueStationId" class="input-name">Станция</label>
+                <select name="rescueStationId" class="form-control" id="rescueStationId">
+                    <option value="">-Не Выбрано-</option>
+                </select>
+            </div>
+            <div class="form-group col-md-4 col-sm-12">
+                <label for="minQualification" class="input-name">Мин. квалификация</label>
+                <select name="minQualification" class="form-control" id="minQualification">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                </select>
+            </div>
+            <div class="form-group col-md-4 col-sm-12">
+                <label for="maxQualification" class="input-name">Макс. квалификация</label>
+                <select name="maxQualification" class="form-control" id="maxQualification">
+                    <option value="3">3</option>
+                    <option value="2">2</option>
+                    <option value="1">1</option>
+                </select>
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group col-md-4 col-sm-12">
+                <label for="minHours" class="input-name">Часы под водой(от)</label>
+                <input name="minHours" id="minHours" class="form-control" type="number" min="0" step="1" />
+            </div>
+            <div class="form-group col-md-4 col-sm-12">
+                <label for="maxHours" class="input-name">Часы под водой(до)</label>
+                <input name="maxHours" id="maxHours" class="form-control" type="number" min="0" step="1" />
+            </div>
+        </div>
+    </div>
+    <div class="card-footer">
+        <button class="btn btn-primary" style="float: right;" id="loadDiversBtn">Найти</button>
+    </div>
+</div>
+<br />
+<br />
+
+
+<div>
+    <a href="/Divers/New" class="btn btn-primary">Добавить</a>
+</div>
+<br />
+
+<div class="row" style="display: none;" id="divers-table-block">
     <div class="col-md-12">
         <table class="table table-striped display nowrap" id="divers-table" style="width:100%">
             <thead class="thead-dark">
@@ -18,7 +83,8 @@
                     <th scope="col">Имя</th>
                     <th scope="col">Станция</th>
                     <th scope="col">Квалификация</th>
-                    <th scope="col">Часов</th>
+                    <th scope="col">Часов под водой за период</th>
+                    <th scope="col"></th>
                 </tr>
             </thead>
             <tbody>
@@ -29,12 +95,14 @@
 
 @section scripts{
     <script type="text/javascript">
-        $(function () {
+
+        function loadDivers(options) {
             $.ajax({
                 url: "/Divers/GetListJson",
                 type: "GET",
                 dataType: "json",
-                cache: false
+                cache: false,
+                data: options
             })
                 .done(function (dataSet) {
                     console.log(dataSet);
@@ -59,16 +127,32 @@
                             },
                             { data: "lastName" },
                             { data: "firstName" },
-                            { data: "rescueStation.stationName" },
+                            {
+                                data: "rescueStation", render: function (data, type, row, meta) {
+                                    if (data)
+                                        return data.stationName;
+                                    else
+                                        return "-";
+                                }
+                            },
                             { data: "qualification" },
                             {
                                 data: "workingTime", render: function (data, type, row, meta) {
 
                                     if (data && data.length > 0) {
-                                        return data.reduce((a, b) => a + b.workingMinutes, 0) / 60;
+                                        var sum = data.reduce((a, b) => a + b.workingMinutes, 0);
+
+                                        return parseInt(sum / 60) + ' часов ' + (sum % 60) + ' минут';
                                     }
                                     else
                                         return 0;
+                                }
+                            },
+                            {
+                                data: "diverId",
+                                render: function (data, type, row, meta) {
+
+                                    return '<a class="btn btn-primary" href="/Divers/Details?diverId=' + data + '">Подробнее</a>';
                                 }
                             }
                         ],
@@ -83,6 +167,39 @@
                 .fail(function (error) {
                     errorAlert(error);
                 });
+        }
+
+        $(function () {
+            var datePickerConfigs = {
+                locale: 'ru-ru',
+                format: 'dd/mm/yyyy',
+                uiLibrary: 'bootstrap4'
+            }
+        
+            // initialize datepickers
+            $('#medicalExaminationStartDate').datepicker(datePickerConfigs);
+            $('#medicalExaminationEndDate').datepicker(datePickerConfigs);
+
+            // forbid user input
+            $("#medicalExaminationStartDate, #medicalExaminationEndDate").keydown(function (e) {
+                e.preventDefault();
+            });
+
+            $('#loadDiversBtn').click(function (e) {
+
+                var options = {
+                    rescueStationId: $('#rescueStationId').val(),
+                    medicalExaminationStartDate: $('#medicalExaminationStartDate').val(),
+                    medicalExaminationEndDate: $('#medicalExaminationEndDate').val(),
+                    minQualification: $('#minQualification').val(),
+                    maxQualification: $('#maxQualification').val(),
+                    nameQuery: $('#nameQuery').val()
+                };
+
+                $('#divers-table-block').show();
+
+                loadDivers(options);
+            })
         })
 
 

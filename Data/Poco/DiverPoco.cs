@@ -15,7 +15,7 @@ namespace Staffinfo.Divers.Data.Poco
 
         public string PhotoUrl { get; set; }
 
-        public DateTime BirthDate { get; set; }
+        public DateTime? BirthDate { get; set; }
 
         public int? RescueStationId { get; set; }
 
@@ -29,7 +29,7 @@ namespace Staffinfo.Divers.Data.Poco
 
         public string PersonalBookNumber { get; set; }
 
-        public DateTime PersonalBookIssueDate { get; set; }
+        public DateTime? PersonalBookIssueDate { get; set; }
 
         public string PersonalBookProtocolNumber { get; set; }
 
