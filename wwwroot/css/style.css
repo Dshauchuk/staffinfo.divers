@@ -52,8 +52,35 @@ label.bold-label {
     border: 1px solid gray;
 }
 
-/*.panel-heading {
-    color: #fff !important;
-    background-color: #343a40;
-    border-color: #454d55;
-}*/
+.main_input_file {
+    display: none;
+}
+
+.upload_form div {
+    display:  inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 100px;
+    height: 38px;
+    background: #1B6EC2;
+    border-radius: 4px;
+    color: white;
+    text-align: center;
+    line-height: 32px;
+    font-family: arial;
+    font-size: 14px;
+}
+
+    .upload_form div:hover {
+        background: #2980b9;
+        cursor: pointer;
+    }
+
+#f_name {
+    background: transparent;
+    border: 0;
+    display: inline-flex;
+    height: 30px;
+    padding: 0 8px;
+    width: 150px;
+}

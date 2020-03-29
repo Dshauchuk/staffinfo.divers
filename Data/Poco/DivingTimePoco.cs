@@ -2,6 +2,8 @@
 {
     public class DivingTimePoco
     {
+        public int DivingTimeId { get; set; }
+
         public int DiverId { get; set; }
 
         public DiverPoco Diver { get; set; }
