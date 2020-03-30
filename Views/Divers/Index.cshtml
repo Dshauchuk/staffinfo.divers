@@ -175,7 +175,26 @@
                 format: 'dd/mm/yyyy',
                 uiLibrary: 'bootstrap4'
             }
-        
+
+            // load stations for the dropdown
+            $.ajax({
+                url: "/Stations/GetListJson",
+                type: "GET",
+                dataType: "json",
+                cache: false
+            })
+                .done(function (dataSet) {
+                    dataSet.forEach(function (i) {
+                        $('#rescueStationId')
+                            .append($("<option></option>")
+                                .attr("value", i.stationId)
+                                .text(i.stationName));
+                    });                    
+                })
+                .fail(function (error) {
+                    errorAlert(error);
+                });
+
             // initialize datepickers
             $('#medicalExaminationStartDate').datepicker(datePickerConfigs);
             $('#medicalExaminationEndDate').datepicker(datePickerConfigs);

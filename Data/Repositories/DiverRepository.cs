@@ -157,54 +157,13 @@ namespace Staffinfo.Divers.Data.Repositories
                 p_name_query = options.NameQuery
             };
 
-            string sql = "select * from sf_get_divers(@p_station_id, @p_med_exam_start_date::date, @p_med_exam_end_date::date, @p_min_qualif, @p_max_qualif, @p_name_query) sf left join rescue_stations rs on rs.station_id = rescue_station_id left join diving_hours dh on sf.diver_id = dh.diver_id;";
+            string sql = "select * from divers";
 
             using (IDbConnection conn = Connection)
             {
-                //var diverPocos = (await conn.QueryAsync<dynamic>(sql, parameters))
-                //    .Select(row => new DiverPoco
-                //    {
-                //        DiverId = (int)row.diver_id,
-                //        LastName = row.last_name,
-                //        FirstName = row.first_name,
-                //        MiddleName = row.middle_name,
-                //        PhotoUrl = row.photo_url,
-                //        BirthDate = row.birth_date,
-                //        RescueStationId = (int?)row.rescue_station_id,
-                //        MedicalExaminationDate = row.medical_examination_date,
-                //        Address = row.address,
-                //        Qualification = row.qualification,
-                //        PersonalBookNumber = row.personal_book_number,
-                //        PersonalBookIssueDate = row.personal_book_issue_date,
-                //        PersonalBookProtocolNumber = row.personal_book_protocol_number,
-                //        CreatedAt = row.created_at,
-                //        UpdatedAt = row.updated_at,
-                //        RescueStation = row.rescue_station_id != null ? new RescueStationPoco { StationId = (int)row.station_id, StationName = row.station_name, CreatedAt = row.station_created_at, UpdatedAt = row.station_updated_at } : null
-                //    });
+                var diverpocos = await conn.QueryAsync<DiverPoco>(sql);
 
-                var lookup = new Dictionary<int, DiverPoco>();
-
-                _ = (await conn.QueryAsync<DiverPoco, RescueStationPoco, DivingTimePoco, DiverPoco>(sql, (diver, station, time) =>
-                  {
-                      DiverPoco diverItem;
-
-                      if (!lookup.TryGetValue(diver.DiverId, out diverItem))
-                          lookup.Add(diver.DiverId, diverItem = diver);
-                      if (diverItem.WorkingTime == null)
-                          diverItem.WorkingTime = new List<DivingTimePoco>();
-
-                      if (time != null)
-                          diverItem.WorkingTime.Add(time);
-
-                      if (diverItem.RescueStation == null && station != null)
-                          diverItem.RescueStation = station;
-
-                      return diverItem;
-                  },
-                splitOn: "station_id,diver_id",
-                param: parameters));
-
-                return lookup.Values;
+                return diverpocos;
             }
         }
 
