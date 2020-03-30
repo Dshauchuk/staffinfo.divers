@@ -13,8 +13,13 @@ namespace Staffinfo.Divers.Data.Repositories
 {
     public class DiverRepository : DapperRepository, IDiverRepository
     {
+        RescueStationRepository _rescueStationRepository;
+        DivingTimeRepository _divingTimeRepository;
+
         public DiverRepository(string connectionString) : base(connectionString)
         {
+            _rescueStationRepository = new RescueStationRepository(connectionString);
+            _divingTimeRepository = new DivingTimeRepository(connectionString);
         }
 
         public async Task<DiverPoco> AddAsync(DiverPoco poco)
@@ -154,16 +159,33 @@ namespace Staffinfo.Divers.Data.Repositories
                 p_med_exam_end_date = options.MedicalExaminationEndDate,
                 p_min_qualif = options.MinQualification,
                 p_max_qualif = options.MaxQualification,
-                p_name_query = options.NameQuery
+                p_name_query = options.NameQuery,
+                p_min_hours = options.MinHours,
+                p_max_hours = options.MaxHours
             };
 
             string sql = "select * from divers";
 
             using (IDbConnection conn = Connection)
             {
-                var diverpocos = await conn.QueryAsync<DiverPoco>(sql);
+                var diverPocos = await conn.QueryAsync<DiverPoco>(sql);
 
-                return diverpocos;
+                foreach(DiverPoco diver in diverPocos)
+                {
+                    diver.RescueStation = diver.RescueStationId == null ? null : await _rescueStationRepository.GetAsync((int)diver.RescueStationId);
+                    diver.WorkingTime = (await _divingTimeRepository.GetListAsync(diver.DiverId)).ToList();
+                }
+
+                diverPocos = diverPocos.Where(diver => ((parameters.p_station_id == null) ? true : (parameters.p_station_id == diver.RescueStation.StationId)) &&
+                                            parameters.p_min_qualif <= diver.Qualification &&
+                                            parameters.p_max_qualif >= diver.Qualification &&
+                                          ((parameters.p_med_exam_start_date == null) ? true : (parameters.p_med_exam_start_date <= diver.MedicalExaminationDate)) &&
+                                          ((parameters.p_med_exam_end_date == null) ? true : (parameters.p_med_exam_end_date >= diver.MedicalExaminationDate)) &&
+                                          ((parameters.p_name_query == null) ? true : (diver.FirstName.ToLower().Contains(parameters.p_name_query.ToLower()))) &&
+                                          ((parameters.p_min_hours == 0) ? true : (parameters.p_min_hours <= (diver.WorkingTime.Sum(c => c.WorkingMinutes) / 60.0))) &&
+                                          ((parameters.p_max_hours == 0) ? true : (parameters.p_max_hours >= (diver.WorkingTime.Sum(c => c.WorkingMinutes) / 60.0)))).ToList();
+
+                return diverPocos;
             }
         }
 

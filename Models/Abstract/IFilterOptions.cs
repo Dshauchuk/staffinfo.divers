@@ -36,5 +36,15 @@ namespace Staffinfo.Divers.Models.Abstract
         /// String that is contained in the diver's name
         /// </summary>
         string NameQuery { get; set; }
+
+        /// <summary>
+        /// Minimum number of diving hours
+        /// </summary>
+        int MinHours { get; set; }
+
+        /// <summary>
+        /// Maximum number of diving hours
+        /// </summary>
+        int MaxHours { get; set; }
     }
 }
