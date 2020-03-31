@@ -23,5 +23,11 @@ namespace Staffinfo.Divers.Models
 
         /// <inheritdoc/>
         public string NameQuery { get; set; }
+
+        /// <inheritdoc/>
+        public int MinHours { get; set; }
+
+        /// <inheritdoc/>
+        public int MaxHours { get; set; }
     }
 }

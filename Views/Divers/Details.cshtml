@@ -3,7 +3,6 @@
     ViewData["Title"] = $"{Model.LastName} {Model.FirstName} {Model.MiddleName}";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-
 <h1>@Model.LastName @Model.FirstName @Model.MiddleName</h1>
 <div style="display:inline;">
     <a href="/Divers" class="btn btn-primary" style="float: right; margin-top: -50px;">Вернуться к спику водолазов</a>
@@ -12,8 +11,8 @@
 
 <div class="row">
     <div class="col-md-2">
-        <img class="avatar" src="~/images/avatar-default.png" height="150" width="150" />
-        <button class="btn btn-primary" style="margin-left: 10px; margin-top: 5px;">Загрузить фото</button>
+        <img class="avatar" src="@Model.PhotoUrl"  height="150" width="150" />
+        <button class="btn btn-primary" style="margin-left: 5px; margin-top: 5px;" data-toggle="modal" data-target="#addPhotoModal">Загрузить фото</button>
     </div>
     <div class="col-md-10">
         <h6>Родился: <i>@Model.BirthDate.ToString("D", CultureInfo.CreateSpecificCulture("ru-RU"))</i></h6>
@@ -31,7 +30,7 @@
 <div class="tab-content" id="nav-tabContent">
     <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
         <div class="col-md-6">
-            <label class="bold-label">№ Протокола: </label> @Model.PersonalBookProtocolNumber
+            <label class="bold-label">№ Протокола: </label> @Model.PersonalBookProtocolNumber 
         </div>
 
         <div class="col-md-6">
@@ -109,6 +108,35 @@
     </div>
 </div>
 
+<div class="modal fade" id="addPhotoModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Добавить фото водолаза</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form asp-action="UploadPhoto" asp-controller="Divers" method="post" enctype="multipart/form-data">
+                    <input type="hidden" value="@Model.DiverId" name="diverId" />
+                    <div class="upload_form">
+                        <label>
+                            <input name="uploadedFile" type="file" class="main_input_file" />
+                            <div>Обзор...</div>
+                            <input class="f_name" type="text" id="f_name" value="Файл не выбран." disabled />
+                        </label>
+                    </div>
+                    <div class="modal-footer align-content-center">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+                        <input class="btn btn-primary" type="submit" value="Загрузить" />
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <div class="row" style="float:right;">
     <a href="/Divers" class="btn btn-warning" style="margin:5px;">Редактировать</a>
@@ -176,5 +204,16 @@
                     })
 
             })
+        $(document).ready(function() {
+
+		$(".main_input_file").change(function() {
+			var f_name = [];
+
+			for (var i = 0; i < $(this).get(0).files.length; ++i) {
+				f_name.push(" " + $(this).get(0).files[i].name);
+			}
+			$("#f_name").val(f_name.join(", "));
+		});
+	});
     </script>
 }

@@ -15,6 +15,8 @@ using System;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using DbUp;
+using System.Reflection;
 
 namespace Staffinfo.Divers
 {
@@ -31,6 +33,17 @@ namespace Staffinfo.Divers
         public void ConfigureServices(IServiceCollection services)
         {
             string userDbConnectionString = Configuration.GetConnectionString("DefaultConnection");
+
+            EnsureDatabase.For.PostgresqlDatabase(userDbConnectionString);
+
+            var upgrader =
+                DeployChanges.To
+                .PostgresqlDatabase(userDbConnectionString)
+                .WithScriptsEmbeddedInAssembly(Assembly.GetExecutingAssembly())
+                .LogToConsole()
+                .Build();
+
+            var result = upgrader.PerformUpgrade();
 
             Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
 
