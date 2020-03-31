@@ -176,7 +176,7 @@ namespace Staffinfo.Divers.Data.Repositories
                     diver.WorkingTime = (await _divingTimeRepository.GetListAsync(diver.DiverId)).ToList();
                 }
 
-                diverPocos = diverPocos.Where(diver => ((parameters.p_station_id == null) ? true : (parameters.p_station_id == diver.RescueStation.StationId)) &&
+                diverPocos = diverPocos.Where(diver => ((parameters.p_station_id == null) ? true : (parameters.p_station_id == diver.RescueStationId)) &&
                                             parameters.p_min_qualif <= diver.Qualification &&
                                             parameters.p_max_qualif >= diver.Qualification &&
                                           ((parameters.p_med_exam_start_date == null) ? true : (parameters.p_med_exam_start_date <= diver.MedicalExaminationDate)) &&
