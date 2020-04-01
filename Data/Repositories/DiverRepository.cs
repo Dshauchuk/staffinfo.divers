@@ -40,7 +40,7 @@ namespace Staffinfo.Divers.Data.Repositories
                 p_book_protocol_number = poco.PersonalBookProtocolNumber
             };
 
-            var sqlBuilder = new StringBuilder("with ins as (INSERT into divers(");
+            var sqlBuilder = new StringBuilder("with ins as (INSERT into _staffinfo.divers(");
             sqlBuilder.Append("last_name, first_name, middle_name,");
             sqlBuilder.Append("photo_url, birth_date, rescue_station_id,");
             sqlBuilder.Append("medical_examination_date, address, qualification,");
@@ -49,7 +49,7 @@ namespace Staffinfo.Divers.Data.Repositories
             sqlBuilder.Append("@p_photo_url, @p_birth_date, @p_station_id,");
             sqlBuilder.Append("@p_medical_exam_date, @p_address, @p_qualification,");
             sqlBuilder.Append("@p_book_number, @p_book_issue_date, @p_book_protocol_number) returning *) ");
-            sqlBuilder.Append("select * from ins left join rescue_stations rs on ins.rescue_station_id = rs.station_id");
+            sqlBuilder.Append("select * from ins left join _staffinfo.rescue_stations rs on ins.rescue_station_id = rs.station_id");
 
             using (IDbConnection conn = Connection)
             {
@@ -75,7 +75,7 @@ namespace Staffinfo.Divers.Data.Repositories
                 p_diver_id = diverId
             };
 
-            string sql = "delete from divers where diver_id = @p_diver_id";
+            string sql = "delete from _staffinfo.divers where diver_id = @p_diver_id";
 
             using (IDbConnection conn = Connection)
             {
@@ -90,7 +90,7 @@ namespace Staffinfo.Divers.Data.Repositories
                 p_diver_id = diverId
             };
 
-            string sql = "select d.*, rs.*, dh.diver_id, dh.year, dh.working_minutes from divers d left join rescue_stations rs on station_id = rescue_station_id left join diving_hours dh on d.diver_id = dh.diver_id where d.diver_id = @p_diver_id";
+            string sql = "select d.*, rs.*, dh.diver_id, dh.year, dh.working_minutes from _staffinfo.divers d left join _staffinfo.rescue_stations rs on station_id = rescue_station_id left join _staffinfo.diving_hours dh on d.diver_id = dh.diver_id where d.diver_id = @p_diver_id";
 
             using (IDbConnection conn = Connection)
             {
@@ -123,7 +123,7 @@ namespace Staffinfo.Divers.Data.Repositories
 
         public async Task<IEnumerable<DiverPoco>> GetListAsync()
         {
-            string sql = "select * from divers left join rescue_stations on station_id = rescue_station_id left join diving_hours dh on sf.diver_id = dh.diver_id";
+            string sql = "select * from _staffinfo.divers left join _staffinfo.rescue_stations on station_id = rescue_station_id left join _staffinfo.diving_hours dh on sf.diver_id = dh.diver_id";
 
             using (IDbConnection conn = Connection)
             {
@@ -164,7 +164,7 @@ namespace Staffinfo.Divers.Data.Repositories
                 p_max_hours = options.MaxHours
             };
 
-            string sql = "select * from divers";
+            string sql = "select * from _staffinfo.divers";
 
             using (IDbConnection conn = Connection)
             {
@@ -209,13 +209,13 @@ namespace Staffinfo.Divers.Data.Repositories
                 p_updated_at = DateTimeOffset.UtcNow
             };
 
-            var sqlBuilder = new StringBuilder("UPDATE divers set ");
+            var sqlBuilder = new StringBuilder("UPDATE _staffinfo.divers set ");
             sqlBuilder.Append("last_name = @p_last_name, first_name = @p_first_name, middle_name = @p_middle_name,");
             sqlBuilder.Append("photo_url = @p_photo_url, birth_date = @p_birth_date, rescue_station_id = @p_station_id,");
             sqlBuilder.Append("medical_examination_date = @p_medical_exam_date, address = @p_address, qualification = @p_qualification,");
             sqlBuilder.Append("personal_book_number = @p_book_number, personal_book_issue_date = @p_book_issue_date, personal_book_protocol_number = @p_book_protocol_number, updated_at = @p_updated_at ");
             sqlBuilder.Append("where diver_id = @p_diver_id; ");
-            sqlBuilder.Append("select * from divers left join rescue_stations on station_id = rescue_station_id where diver_id = @p_diver_id;");
+            sqlBuilder.Append("select * from _staffinfo.divers left join _staffinfo.rescue_stations on station_id = rescue_station_id where diver_id = @p_diver_id;");
 
             using (IDbConnection conn = Connection)
             {
