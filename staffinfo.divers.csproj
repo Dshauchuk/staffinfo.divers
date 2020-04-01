@@ -9,6 +9,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Scripts\0001_create_tables.sql" />
+    <None Remove="Scripts\0002_create_admin_user.sql" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Scripts\0001_create_tables.sql" />
+    <EmbeddedResource Include="Scripts\0002_create_admin_user.sql" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Include="wwwroot\images\diving-icon.png" />
   </ItemGroup>
 
