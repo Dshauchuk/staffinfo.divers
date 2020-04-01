@@ -85,9 +85,9 @@ namespace staffinfo.divers.Controllers
         [HttpPost]
         public async Task<IActionResult> Add(EditDiverModel model)
         {
-            _ = await _diverService.AddDiverAsync(model);
+            var diver = await _diverService.AddDiverAsync(model);
 
-            return RedirectToAction("Index", "Divers");
+            return View("Details", diver);
         }
 
         [HttpGet]
