@@ -1,5 +1,6 @@
-﻿
-CREATE SEQUENCE public.divers_id_seq
+﻿CREATE SCHEMA _staffinfo;
+
+CREATE SEQUENCE _staffinfo.divers_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -7,12 +8,12 @@ CREATE SEQUENCE public.divers_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.divers_id_seq OWNER TO lkugpsombylxoq;
+ALTER TABLE _staffinfo.divers_id_seq OWNER TO lkugpsombylxoq;
 
 SET default_tablespace = '';
 
-CREATE TABLE divers (
-    diver_id bigint DEFAULT nextval('public.divers_id_seq'::regclass) NOT NULL,
+CREATE TABLE _staffinfo.divers (
+    diver_id bigint DEFAULT nextval('_staffinfo.divers_id_seq'::regclass) NOT NULL,
     last_name character varying(150) NOT NULL,
     first_name character varying(150) NOT NULL,
     middle_name character varying(150),
@@ -29,23 +30,23 @@ CREATE TABLE divers (
     updated_at timestamp with time zone
 );
 
-ALTER TABLE public.divers OWNER TO lkugpsombylxoq;
+ALTER TABLE _staffinfo.divers OWNER TO lkugpsombylxoq;
 
-CREATE FUNCTION public.sf_add_diver(p_last_name character varying, p_first_name character varying, p_middle_name character varying, p_photo_url character varying, p_birth_date date, p_station_id bigint, p_medical_examination_date date, p_address character varying, p_qualification integer, p_personal_book_number character varying, p_personal_book_issue_date date, p_personal_book_protocol_number character varying) RETURNS SETOF public.divers
+CREATE FUNCTION _staffinfo.sf_add_diver(p_last_name character varying, p_first_name character varying, p_middle_name character varying, p_photo_url character varying, p_birth_date date, p_station_id bigint, p_medical_examination_date date, p_address character varying, p_qualification integer, p_personal_book_number character varying, p_personal_book_issue_date date, p_personal_book_protocol_number character varying) RETURNS SETOF _staffinfo.divers
     LANGUAGE plpgsql
     AS $$
 begin
 	return query
-		insert into public.divers(last_name, first_name, middle_name, photo_url, birth_date, rescue_station_id, medical_examination_date, address, qualification, personal_book_number, personal_book_issue_date, personal_book_protocol_number)
+		insert into _staffinfo.divers(last_name, first_name, middle_name, photo_url, birth_date, rescue_station_id, medical_examination_date, address, qualification, personal_book_number, personal_book_issue_date, personal_book_protocol_number)
 		values(p_last_name, p_first_name, p_middle_name, p_photo_url, p_birth_date, p_station_id, p_medical_examination_date, p_address, p_qualification, p_personal_book_number, p_personal_book_issue_date, p_personal_book_protocol_number)
 		returning *;			   
 end;
 $$;
 
 
-ALTER FUNCTION public.sf_add_diver(p_last_name character varying, p_first_name character varying, p_middle_name character varying, p_photo_url character varying, p_birth_date date, p_station_id bigint, p_medical_examination_date date, p_address character varying, p_qualification integer, p_personal_book_number character varying, p_personal_book_issue_date date, p_personal_book_protocol_number character varying) OWNER TO lkugpsombylxoq;
+ALTER FUNCTION _staffinfo.sf_add_diver(p_last_name character varying, p_first_name character varying, p_middle_name character varying, p_photo_url character varying, p_birth_date date, p_station_id bigint, p_medical_examination_date date, p_address character varying, p_qualification integer, p_personal_book_number character varying, p_personal_book_issue_date date, p_personal_book_protocol_number character varying) OWNER TO lkugpsombylxoq;
 
-CREATE SEQUENCE public.users_id_seq
+CREATE SEQUENCE _staffinfo.users_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -53,10 +54,10 @@ CREATE SEQUENCE public.users_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.users_id_seq OWNER TO lkugpsombylxoq;
+ALTER TABLE _staffinfo.users_id_seq OWNER TO lkugpsombylxoq;
 
-CREATE TABLE public.users (
-    user_id bigint DEFAULT nextval('public.users_id_seq'::regclass) NOT NULL,
+CREATE TABLE _staffinfo.users (
+    user_id bigint DEFAULT nextval('_staffinfo.users_id_seq'::regclass) NOT NULL,
     last_name character varying(150),
     first_name character varying(150),
     middle_name character varying(150),
@@ -70,26 +71,26 @@ CREATE TABLE public.users (
 );
 
 
-ALTER TABLE public.users OWNER TO lkugpsombylxoq;
+ALTER TABLE _staffinfo.users OWNER TO lkugpsombylxoq;
 
-CREATE FUNCTION public.sf_add_user(p_last_name character varying, p_first_name character varying, p_middle_name character varying, p_login character varying, p_pwd_hash character varying, p_need_to_change_pwd boolean, role character varying) RETURNS SETOF public.users
+CREATE FUNCTION _staffinfo.sf_add_user(p_last_name character varying, p_first_name character varying, p_middle_name character varying, p_login character varying, p_pwd_hash character varying, p_need_to_change_pwd boolean, role character varying) RETURNS SETOF _staffinfo.users
     LANGUAGE plpgsql
     AS $$
 begin
 	return query
-		insert into public.users(last_name, first_name, middle_name, login, pwd_hash, need_to_change_pwd, role, registration_timestamp)
+		insert into _staffinfo.users(last_name, first_name, middle_name, login, pwd_hash, need_to_change_pwd, role, registration_timestamp)
 		values(p_last_name, p_first_name, p_middle_name, p_login, p_pwd_hash, p_need_to_change, p_role, CURRENT_TIMESTAMP)
 		returning *;			   
 end;
 $$;
 
-ALTER FUNCTION public.sf_add_user(p_last_name character varying, p_first_name character varying, p_middle_name character varying, p_login character varying, p_pwd_hash character varying, p_need_to_change_pwd boolean, role character varying) OWNER TO lkugpsombylxoq;
+ALTER FUNCTION _staffinfo.sf_add_user(p_last_name character varying, p_first_name character varying, p_middle_name character varying, p_login character varying, p_pwd_hash character varying, p_need_to_change_pwd boolean, role character varying) OWNER TO lkugpsombylxoq;
 
-CREATE FUNCTION public.sf_update_diver(p_diver_id bigint, p_last_name character varying, p_first_name character varying, p_middle_name character varying, p_photo_url character varying, p_birth_date date, p_station_id bigint, p_medical_examination_date date, p_address character varying, p_qualification integer, p_personal_book_number character varying, p_personal_book_issue_date date, p_personal_book_protocol_number character varying) RETURNS SETOF public.divers
+CREATE FUNCTION _staffinfo.sf_update_diver(p_diver_id bigint, p_last_name character varying, p_first_name character varying, p_middle_name character varying, p_photo_url character varying, p_birth_date date, p_station_id bigint, p_medical_examination_date date, p_address character varying, p_qualification integer, p_personal_book_number character varying, p_personal_book_issue_date date, p_personal_book_protocol_number character varying) RETURNS SETOF _staffinfo.divers
     LANGUAGE plpgsql
     AS $$
 begin
-	update public.divers
+	update _staffinfo.divers
 	set last_name = p_last_name,
 		first_name = p_first_name,
 		middle_name = p_middle_name,
@@ -106,15 +107,15 @@ begin
 	
 	return query
 	select *
-	from public.divers
+	from _staffinfo.divers
 	where diver_id = p_diver_id;
 end;
 $$;
 
-ALTER FUNCTION public.sf_update_diver(p_diver_id bigint, p_last_name character varying, p_first_name character varying, p_middle_name character varying, p_photo_url character varying, p_birth_date date, p_station_id bigint, p_medical_examination_date date, p_address character varying, p_qualification integer, p_personal_book_number character varying, p_personal_book_issue_date date, p_personal_book_protocol_number character varying) OWNER TO lkugpsombylxoq;
+ALTER FUNCTION _staffinfo.sf_update_diver(p_diver_id bigint, p_last_name character varying, p_first_name character varying, p_middle_name character varying, p_photo_url character varying, p_birth_date date, p_station_id bigint, p_medical_examination_date date, p_address character varying, p_qualification integer, p_personal_book_number character varying, p_personal_book_issue_date date, p_personal_book_protocol_number character varying) OWNER TO lkugpsombylxoq;
 
 
-CREATE FUNCTION public.sf_get_divers(p_station_id integer, p_med_exam_start_date date, p_med_exam_end_date date, p_min_qualif integer, p_max_qualif integer, p_name_query text) 
+CREATE FUNCTION _staffinfo.sf_get_divers(p_station_id integer, p_med_exam_start_date date, p_med_exam_end_date date, p_min_qualif integer, p_max_qualif integer, p_name_query text) 
 RETURNS TABLE(diver_id bigint, last_name character varying, first_name character varying, middle_name character varying, photo_url character varying, birth_date date, rescue_station_id bigint, 
     medical_examination_date date, address character varying, qualification integer, personal_book_number character varying, personal_book_issue_date date, personal_book_protocol_number character varying, 
 	created_at timestamp with time zone, updated_at timestamp with time zone)
@@ -162,10 +163,9 @@ begin
 end;
 $$;
 
-ALTER FUNCTION public.sf_get_divers(p_station_id integer, p_med_exam_start_date date, p_med_exam_end_date date, p_min_qualif integer, p_max_qualif integer, p_name_query text) OWNER TO lkugpsombylxoq;
+ALTER FUNCTION _staffinfo.sf_get_divers(p_station_id integer, p_med_exam_start_date date, p_med_exam_end_date date, p_min_qualif integer, p_max_qualif integer, p_name_query text) OWNER TO lkugpsombylxoq;
 
-
-CREATE FUNCTION public.sf_update_user(p_user_id bigint, p_last_name character varying, p_first_name character varying, p_middle_name character varying, p_login character varying, p_pwd_hash character varying, p_need_to_change_pwd boolean, role character varying) RETURNS SETOF public.users
+CREATE FUNCTION _staffinfo.sf_update_user(p_user_id bigint, p_last_name character varying, p_first_name character varying, p_middle_name character varying, p_login character varying, p_pwd_hash character varying, p_need_to_change_pwd boolean, role character varying) RETURNS SETOF _staffinfo.users
     LANGUAGE plpgsql
     AS $$
 begin
@@ -188,18 +188,18 @@ end;
 $$;
 
 
-ALTER FUNCTION public.sf_update_user(p_user_id bigint, p_last_name character varying, p_first_name character varying, p_middle_name character varying, p_login character varying, p_pwd_hash character varying, p_need_to_change_pwd boolean, role character varying) OWNER TO lkugpsombylxoq;
+ALTER FUNCTION _staffinfo.sf_update_user(p_user_id bigint, p_last_name character varying, p_first_name character varying, p_middle_name character varying, p_login character varying, p_pwd_hash character varying, p_need_to_change_pwd boolean, role character varying) OWNER TO lkugpsombylxoq;
 
-CREATE TABLE public.diving_hours (
+CREATE TABLE _staffinfo.diving_hours (
     diver_id bigint NOT NULL,
     year integer NOT NULL,
     working_minutes bigint DEFAULT 0 NOT NULL
 );
 
 
-ALTER TABLE public.diving_hours OWNER TO lkugpsombylxoq;
+ALTER TABLE _staffinfo.diving_hours OWNER TO lkugpsombylxoq;
 
-CREATE SEQUENCE public.rescue_stations_id_seq
+CREATE SEQUENCE _staffinfo.rescue_stations_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -207,49 +207,48 @@ CREATE SEQUENCE public.rescue_stations_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.rescue_stations_id_seq OWNER TO lkugpsombylxoq;
+ALTER TABLE _staffinfo.rescue_stations_id_seq OWNER TO lkugpsombylxoq;
 
-CREATE TABLE public.rescue_stations (
-    station_id bigint DEFAULT nextval('public.rescue_stations_id_seq'::regclass) NOT NULL,
+CREATE TABLE _staffinfo.rescue_stations (
+    station_id bigint DEFAULT nextval('_staffinfo.rescue_stations_id_seq'::regclass) NOT NULL,
     station_name character varying(300) NOT NULL,
     created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at timestamp with time zone
 );
 
 
-ALTER TABLE public.rescue_stations OWNER TO lkugpsombylxoq;
+ALTER TABLE _staffinfo.rescue_stations OWNER TO lkugpsombylxoq;
 
-SELECT pg_catalog.setval('public.divers_id_seq', 61, true);
+SELECT pg_catalog.setval('_staffinfo.divers_id_seq', 61, true);
 
-SELECT pg_catalog.setval('public.rescue_stations_id_seq', 126, true);
+SELECT pg_catalog.setval('_staffinfo.rescue_stations_id_seq', 126, true);
 
-SELECT pg_catalog.setval('public.users_id_seq', 8, true);
+SELECT pg_catalog.setval('_staffinfo.users_id_seq', 8, true);
 
-ALTER TABLE ONLY public.divers
+ALTER TABLE ONLY _staffinfo.divers
     ADD CONSTRAINT divers_pkey PRIMARY KEY (diver_id);
     
-ALTER TABLE ONLY public.diving_hours
+ALTER TABLE ONLY _staffinfo.diving_hours
     ADD CONSTRAINT diving_hours_pkey PRIMARY KEY (diver_id, year);
     
-ALTER TABLE ONLY public.rescue_stations
+ALTER TABLE ONLY _staffinfo.rescue_stations
     ADD CONSTRAINT rescue_stations_pkey PRIMARY KEY (station_id);
 
-ALTER TABLE ONLY public.users
+ALTER TABLE ONLY _staffinfo.users
     ADD CONSTRAINT un_for_login UNIQUE (login);
 
-ALTER TABLE ONLY public.users
+ALTER TABLE ONLY _staffinfo.users
     ADD CONSTRAINT users_pkey PRIMARY KEY (user_id);
 
-ALTER TABLE ONLY public.diving_hours
-    ADD CONSTRAINT fk_divers FOREIGN KEY (diver_id) REFERENCES public.divers(diver_id) ON DELETE CASCADE;
+ALTER TABLE ONLY _staffinfo.diving_hours
+    ADD CONSTRAINT fk_divers FOREIGN KEY (diver_id) REFERENCES _staffinfo.divers(diver_id) ON DELETE CASCADE;
 
-ALTER TABLE ONLY public.divers
-    ADD CONSTRAINT fk_station FOREIGN KEY (rescue_station_id) REFERENCES public.rescue_stations(station_id) ON DELETE SET NULL;
-
-REVOKE ALL ON SCHEMA public FROM postgres;
-REVOKE ALL ON SCHEMA public FROM PUBLIC;
-GRANT ALL ON SCHEMA public TO lkugpsombylxoq;
-GRANT ALL ON SCHEMA public TO PUBLIC;
+ALTER TABLE ONLY _staffinfo.divers
+    ADD CONSTRAINT fk_station FOREIGN KEY (rescue_station_id) REFERENCES _staffinfo.rescue_stations(station_id) ON DELETE SET NULL;
+	
+REVOKE ALL ON SCHEMA _staffinfo FROM postgres;
+REVOKE ALL ON SCHEMA _staffinfo FROM PUBLIC;
+GRANT ALL ON SCHEMA _staffinfo TO lkugpsombylxoq;
+GRANT ALL ON SCHEMA _staffinfo TO PUBLIC;
 
 GRANT ALL ON LANGUAGE plpgsql TO lkugpsombylxoq;
-
