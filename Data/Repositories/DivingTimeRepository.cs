@@ -24,7 +24,7 @@ namespace Staffinfo.Divers.Data.Repositories
                 p_working_minutes = poco.WorkingMinutes
             };
 
-            var sql = "with ins as (INSERT into diving_hours(diver_id, year, working_minutes) VALUES(@p_diver_id, @p_year, @p_working_minutes) returning *) select * from ins left join divers d on ins.diver_id = d.diver_id";
+            var sql = "with ins as (INSERT into _staffinfo.diving_hours(diver_id, year, working_minutes) VALUES(@p_diver_id, @p_year, @p_working_minutes) returning *) select * from ins left join _staffinfo.divers d on ins.diver_id = d.diver_id";
 
             using (IDbConnection conn = Connection)
             {
@@ -53,13 +53,13 @@ namespace Staffinfo.Divers.Data.Repositories
             });
 
             //var sql = "with ins as (INSERT into diving_hours(diver_id, year, working_minutes) VALUES(@p_diver_id, @p_year, @p_working_minutes) returning *) select * from ins left join divers d on ins.diver_id = d.diver_id";
-            var sql = "INSERT into diving_hours(diver_id, year, working_minutes) VALUES(@p_diver_id, @p_year, @p_working_minutes)";
+            var sql = "INSERT into _staffinfo.diving_hours(diver_id, year, working_minutes) VALUES(@p_diver_id, @p_year, @p_working_minutes)";
 
             using (IDbConnection conn = Connection)
             {
                 await conn.ExecuteAsync(sql, parameters);
 
-                sql = "select * from diving_hours dh left join divers d on dh.diver_id = d.diver_id where dh.diver_id = any(@p_diver_ids) and year = any(@p_years)";
+                sql = "select * from _staffinfo.diving_hours dh left join _staffinfo.divers d on dh.diver_id = d.diver_id where dh.diver_id = any(@p_diver_ids) and year = any(@p_years)";
 
                 var addedTimePocos =
                     (await conn.QueryAsync<DivingTimePoco, DiverPoco, DivingTimePoco>(sql, (time, diver) =>
@@ -83,7 +83,7 @@ namespace Staffinfo.Divers.Data.Repositories
                 p_year = year,
             };
 
-            var sql = "delete from diving_hours where diver_id = @p_diver_id and year = @p_year";
+            var sql = "delete from _staffinfo.diving_hours where diver_id = @p_diver_id and year = @p_year";
 
 
             using (IDbConnection conn = Connection)
@@ -100,7 +100,7 @@ namespace Staffinfo.Divers.Data.Repositories
                 p_years = years.ToList(),
             };
 
-            var sql = "delete from diving_hours where diver_id = @p_diver_id and year = any(@p_years)";
+            var sql = "delete from _staffinfo.diving_hours where diver_id = @p_diver_id and year = any(@p_years)";
 
 
             using (IDbConnection conn = Connection)
@@ -117,7 +117,7 @@ namespace Staffinfo.Divers.Data.Repositories
                 p_year = year,
             };
 
-            string sql = "select * from diving_hours dh left join divers d on dh.diver_id = d.diver_id where dh.diver_id = @p_diver_id and year = @p_year";
+            string sql = "select * from _staffinfo.diving_hours dh left join _staffinfo.divers d on dh.diver_id = d.diver_id where dh.diver_id = @p_diver_id and year = @p_year";
 
             using (IDbConnection conn = Connection)
             {
@@ -143,7 +143,7 @@ namespace Staffinfo.Divers.Data.Repositories
                 p_diver_id = diverId
             };
 
-            string sql = "select * from diving_hours dh left join divers d on dh.diver_id = d.diver_id where dh.diver_id = @p_diver_id";
+            string sql = "select * from _staffinfo.diving_hours dh left join _staffinfo.divers d on dh.diver_id = d.diver_id where dh.diver_id = @p_diver_id";
 
             using (IDbConnection conn = Connection)
             {
@@ -169,7 +169,7 @@ namespace Staffinfo.Divers.Data.Repositories
                 p_working_minutes = poco.WorkingMinutes
             };
 
-            string sql = "UPDATE diving_hours set working_minutes = @p_working_minutes where diver_id = @p_diver_id and year = @p_year returning *;";
+            string sql = "UPDATE _staffinfo.diving_hours set working_minutes = @p_working_minutes where diver_id = @p_diver_id and year = @p_year returning *;";
 
 
             using (IDbConnection conn = Connection)

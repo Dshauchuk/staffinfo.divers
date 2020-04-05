@@ -31,7 +31,7 @@ namespace Staffinfo.Divers.Data.Repositories
                 p_registration_timestamp = poco.RegistrationTimestamp
             };
 
-            var sqlBuilder = new StringBuilder("INSERT into users(");
+            var sqlBuilder = new StringBuilder("INSERT into _staffinfo.users(");
             sqlBuilder.Append("last_name, first_name, middle_name,");
             sqlBuilder.Append("login, pwd_hash, need_to_change_pwd,");
             sqlBuilder.Append("refresh_token, token_refresh_timestamp, role, registration_timestamp) ");
@@ -54,7 +54,7 @@ namespace Staffinfo.Divers.Data.Repositories
                 p_user_id = userId
             };
 
-            string sql = "delete from users where user_id = @p_user_id";
+            string sql = "delete from _staffinfo.users where user_id = @p_user_id";
 
             using (IDbConnection conn = Connection)
             {
@@ -69,7 +69,7 @@ namespace Staffinfo.Divers.Data.Repositories
                 p_user_id = userId
             };
 
-            string sql = "select * from users where user_id = @p_user_id";
+            string sql = "select * from _staffinfo.users where user_id = @p_user_id";
 
             using (IDbConnection conn = Connection)
             {
@@ -81,7 +81,7 @@ namespace Staffinfo.Divers.Data.Repositories
 
         public async Task<IEnumerable<UserPoco>> GetListAsync()
         {
-            string sql = "select * from users";
+            string sql = "select * from _staffinfo.users";
 
             using (IDbConnection conn = Connection)
             {
@@ -108,11 +108,11 @@ namespace Staffinfo.Divers.Data.Repositories
                 p_registration_timestamp = poco.RegistrationTimestamp
             };
 
-            var sqlBuilder = new StringBuilder("update users set last_name = @p_last_name, ");
+            var sqlBuilder = new StringBuilder("update _staffinfo.users set last_name = @p_last_name, ");
             sqlBuilder.Append("first_name = @p_first_name, middle_name = @p_middle_name, login = @p_login, need_to_change_pwd = @p_need_to_change_pwd::boolean, ");
             sqlBuilder.Append("pwd_hash = @p_pwd_hash, refresh_token = @p_refresh_token, token_refresh_timestamp = @p_token_refresh_timestamp, role = @p_role, registration_timestamp = @p_registration_timestamp ");
             sqlBuilder.Append("where user_id = @p_user_id; ");
-            sqlBuilder.Append("select * from users where user_id = @p_user_id;");
+            sqlBuilder.Append("select * from _staffinfo.users where user_id = @p_user_id;");
 
             using (IDbConnection conn = Connection)
             {
