@@ -147,6 +147,34 @@ namespace Staffinfo.Divers.Infrastructure.Mapping
                 .ForMember(r => r.UpdatedAt, p => p.MapFrom(src => src.UpdatedAt))
                 .ForMember(r => r.WorkingTime, p => p.MapFrom(src => src.WorkingTime));
 
+            CreateMap<EditDiverModel, Diver>()
+                .ForMember(r => r.LastName, p => p.MapFrom(src => src.LastName))
+                .ForMember(r => r.FirstName, p => p.MapFrom(src => src.FirstName))
+                .ForMember(r => r.MiddleName, p => p.MapFrom(src => src.MiddleName))
+                .ForMember(r => r.PhotoUrl, p => p.MapFrom(src => src.PhotoUrl))
+                .ForMember(r => r.BirthDate, p => p.MapFrom(src => src.BirthDate))
+                .ForMember(r => r.MedicalExaminationDate, p => p.MapFrom(src => src.MedicalExaminationDate))
+                .ForMember(r => r.Address, p => p.MapFrom(src => src.Address))
+                .ForMember(r => r.Qualification, p => p.MapFrom(src => src.Qualification))
+                .ForMember(r => r.PersonalBookNumber, p => p.MapFrom(src => src.PersonalBookNumber))
+                .ForMember(r => r.PersonalBookIssueDate, p => p.MapFrom(src => src.PersonalBookIssueDate))
+                .ForMember(r => r.PersonalBookProtocolNumber, p => p.MapFrom(src => src.PersonalBookProtocolNumber))
+                .ForMember(r => r.WorkingTime, p => p.MapFrom(src => src.WorkingTime));
+
+            CreateMap<Diver, EditDiverModel>()
+                .ForMember(r => r.LastName, p => p.MapFrom(src => src.LastName))
+                .ForMember(r => r.FirstName, p => p.MapFrom(src => src.FirstName))
+                .ForMember(r => r.MiddleName, p => p.MapFrom(src => src.MiddleName))
+                .ForMember(r => r.PhotoUrl, p => p.MapFrom(src => src.PhotoUrl))
+                .ForMember(r => r.BirthDate, p => p.MapFrom(src => src.BirthDate))
+                .ForMember(r => r.MedicalExaminationDate, p => p.MapFrom(src => src.MedicalExaminationDate))
+                .ForMember(r => r.Address, p => p.MapFrom(src => src.Address))
+                .ForMember(r => r.Qualification, p => p.MapFrom(src => src.Qualification))
+                .ForMember(r => r.PersonalBookNumber, p => p.MapFrom(src => src.PersonalBookNumber))
+                .ForMember(r => r.PersonalBookIssueDate, p => p.MapFrom(src => src.PersonalBookIssueDate))
+                .ForMember(r => r.PersonalBookProtocolNumber, p => p.MapFrom(src => src.PersonalBookProtocolNumber))
+                .ForMember(r => r.WorkingTime, p => p.MapFrom(src => src.WorkingTime));
+
             #endregion
 
             #region DivingTime mapping

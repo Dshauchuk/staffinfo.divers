@@ -7,7 +7,7 @@
 <hr />
 <br />
 
-<form method="POST" asp-action="Add" asp-controller="Divers">
+<form method="POST" asp-action=@ViewData["Action"] asp-controller="Divers">
     <div class="row">
         <div class="col-md-12">
             <h5 class="card-title">Личные Данные</h5>
@@ -16,31 +16,31 @@
 
         <div class="form-group col-md-4 col-sm-12">
             <label asp-for="LastName" class="input-name">Фамилия</label>
-            <input asp-for="LastName" class="form-control" type="text" data-val-required="Это поле обязательно." data-val-length="Фамилия должна иметь длину от 2 до 50 символов." data-val-length-min="2" data-val-length-max="50"/>
+            <input asp-for="LastName" class="form-control" type="text" data-val-required="Это поле обязательно." data-val-length="Фамилия должна иметь длину от 2 до 50 символов." data-val-length-min="2" data-val-length-max="50" />
             <span asp-validation-for="LastName"></span>
         </div>
 
         <div class="form-group col-md-4 col-sm-12">
             <label asp-for="FirstName" class="input-name">Имя</label>
-            <input asp-for="FirstName" class="form-control" type="text" data-val-required="Это поле обязательно." data-val-length="Имя должно иметь длину от 2 до 50 символов." data-val-length-min="2" data-val-length-max="50"/>
+            <input asp-for="FirstName" class="form-control" type="text" data-val-required="Это поле обязательно." data-val-length="Имя должно иметь длину от 2 до 50 символов." data-val-length-min="2" data-val-length-max="50" />
             <span asp-validation-for="FirstName"></span>
         </div>
 
         <div class="form-group col-md-4 col-sm-12">
             <label asp-for="MiddleName" class="input-name">Отчество</label>
-            <input asp-for="MiddleName" class="form-control" type="text" data-val-length="Отчество должно иметь длину от 2 до 50 символов." data-val-length-min="2" data-val-length-max="50"/>
+            <input asp-for="MiddleName" class="form-control" type="text" data-val-length="Отчество должно иметь длину от 2 до 50 символов." data-val-length-min="2" data-val-length-max="50" />
             <span asp-validation-for="MiddleName"></span>
         </div>
 
         <div class="form-group col-md-4 col-sm-12">
             <label asp-for="BirthDate" class="input-name">Дата Рождения</label>
-            <input asp-for="BirthDate" class="form-control" type="text" id="birthDate" data-val-required="Это поле обязательно."/>
+            <input asp-for="BirthDate" class="form-control" type="text" id="birthDate" data-val-required="Это поле обязательно." />
             <span asp-validation-for="BirthDate"></span>
         </div>
 
         <div class="form-group col-md-4 col-sm-12">
             <label asp-for="Address" class="input-name">Адрес</label>
-            <input asp-for="Address" class="form-control" type="text" placeholder="г.Гомель, ул. - , д. - , кв. - " data-val-length="Адресс должен иметь длину не более 200 символов." data-val-length-max="200"/>
+            <input asp-for="Address" class="form-control" type="text" placeholder="г.Гомель, ул. - , д. - , кв. - " data-val-length="Адресс должен иметь длину не более 200 символов." data-val-length-max="200" />
             <span asp-validation-for="Address"></span>
         </div>
 
@@ -51,19 +51,19 @@
 
         <div class="form-group col-md-4 col-sm-12">
             <label asp-for="PersonalBookProtocolNumber" class="input-name">№ Протокола</label>
-            <input asp-for="PersonalBookProtocolNumber" class="form-control" type="text" data-val-required="Это поле обязательно." data-val-length="Номер протокола должен иметь длину не более 10 символов." data-val-length-max="10"/>
+            <input asp-for="PersonalBookProtocolNumber" class="form-control" type="text" data-val-required="Это поле обязательно." data-val-length="Номер протокола должен иметь длину не более 10 символов." data-val-length-max="10" />
             <span asp-validation-for="PersonalBookProtocolNumber"></span>
         </div>
 
         <div class="form-group col-md-4 col-sm-12">
             <label asp-for="PersonalBookNumber" class="input-name">Личный Номер</label>
-            <input asp-for="PersonalBookNumber" class="form-control" type="text" data-val-required="Это поле обязательно." data-val-length="Личный номер должен иметь длину не более 10 символов." data-val-length-max="10"/>
+            <input asp-for="PersonalBookNumber" class="form-control" type="text" data-val-required="Это поле обязательно." data-val-length="Личный номер должен иметь длину не более 10 символов." data-val-length-max="10" />
             <span asp-validation-for="PersonalBookNumber"></span>
         </div>
 
         <div class="form-group col-md-4 col-sm-12">
             <label asp-for="PersonalBookIssueDate" class="input-name">Дата Выдачи</label>
-            <input asp-for="PersonalBookIssueDate" class="form-control" type="text" id="bookIssueDate" data-val-required="Это поле обязательно."/>
+            <input asp-for="PersonalBookIssueDate" class="form-control" type="text" id="bookIssueDate" data-val-required="Это поле обязательно." />
             <span asp-validation-for="PersonalBookIssueDate"></span>
         </div>
 
@@ -74,7 +74,7 @@
 
         <div class="form-group col-md-4 col-sm-12">
             <label asp-for="RescueStationId" class="input-name">Спасательная Станция</label>
-            <select asp-for="RescueStationId" class="form-control" id="rescueStationSelect">
+            <select asp-for="RescueStationId" class="form-control" id="rescueStationSelect"  >
                 <option value="">-Не Выбрано-</option>
             </select>
             <span asp-validation-for="RescueStationId"></span>
@@ -95,10 +95,11 @@
             <input asp-for="MedicalExaminationDate" class="form-control" type="text" id="medicalExamDate" placeholder="Укажите дату" />
             <span asp-validation-for="MedicalExaminationDate"></span>
         </div>
+        <input asp-for="DiverId" type="hidden" />
 
     </div>
     <button type="submit" class="btn btn-primary">Сохранить</button>
-    <button class="btn btn-secondary" onclick="history.back();">Отмена</button>
+    <button class="btn btn-secondary" onclick="window.history.back();return false;">Отмена</button>
 </form>
 
 @section scripts {
@@ -124,12 +125,15 @@
                                 .attr("value", i.stationId)
                                 .text(i.stationName));
                     });
+                    if (@Model.DiverId != 0) {
+                        $('select option[value=@Model.RescueStationId]').prop('selected', true);
+                    }
                 })
                 .fail(function (error) {
                     errorAlert(error);
                 });
 
-
+            
             // initialize datepickers
             $('#birthDate').datepicker(datePickerConfigs);
             $('#bookIssueDate').datepicker(datePickerConfigs);
