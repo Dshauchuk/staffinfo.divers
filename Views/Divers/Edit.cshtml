@@ -28,7 +28,7 @@
 
         <div class="form-group col-md-4 col-sm-12">
             <label asp-for="MiddleName" class="input-name">Отчество</label>
-            <input asp-for="MiddleName" class="form-control" type="text" data-val-length="Отчество должно иметь длину от 2 до 50 символов." data-val-length-min="2" data-val-length-max="50" />
+            <input asp-for="MiddleName" class="form-control" type="text"  data-val-length="Отчество должно иметь длину от 2 до 50 символов." data-val-length-min="2" data-val-length-max="50" data-val="false"/>
             <span asp-validation-for="MiddleName"></span>
         </div>
 
@@ -40,7 +40,7 @@
 
         <div class="form-group col-md-4 col-sm-12">
             <label asp-for="Address" class="input-name">Адрес</label>
-            <input asp-for="Address" class="form-control" type="text" placeholder="г.Гомель, ул. - , д. - , кв. - " data-val-length="Адресс должен иметь длину не более 200 символов." data-val-length-max="200" />
+            <input asp-for="Address" class="form-control" type="text" placeholder="г.Гомель, ул. - , д. - , кв. - " data-val-length="Адрес должен иметь длину не более 200 символов." data-val-length-max="200" data-val="false"/>
             <span asp-validation-for="Address"></span>
         </div>
 
@@ -74,7 +74,7 @@
 
         <div class="form-group col-md-4 col-sm-12">
             <label asp-for="RescueStationId" class="input-name">Спасательная Станция</label>
-            <select asp-for="RescueStationId" class="form-control" id="rescueStationSelect"  >
+            <select asp-for="RescueStationId" class="form-control" id="rescueStationSelect" data-val="true" data-val-required="Это поле обязательно.">
                 <option value="">-Не Выбрано-</option>
             </select>
             <span asp-validation-for="RescueStationId"></span>

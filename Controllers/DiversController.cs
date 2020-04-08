@@ -36,10 +36,7 @@ namespace staffinfo.divers.Controllers
         {
             var diver = await _diverService.GetAsync(diverId);
             var editModel = _mapper.Map<EditDiverModel>(diver);
-            if(diver.RescueStation != null)
-            {
-                editModel.RescueStationId = (await _rescueStationService.GetAsync((int)diver.RescueStation.StationId)).StationId;
-            }
+            editModel.RescueStationId = (int)diver.RescueStation.StationId;
 
             ViewData["Title"] = "Изменить Информацию о Водолазе";
             ViewData["Action"] = "Update";
