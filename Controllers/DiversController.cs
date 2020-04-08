@@ -100,12 +100,12 @@ namespace staffinfo.divers.Controllers
             return NoContent();
         }
 
-        [HttpDelete]
+        [HttpPost]
         public async Task<IActionResult> DeleteDiver(int diverId)
         {
             await _diverService.DeleteAsync(diverId);
 
-            return NoContent();
+            return RedirectToAction("Index", "Divers");
         }
 
         [HttpPost]
