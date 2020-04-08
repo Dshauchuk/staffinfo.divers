@@ -125,9 +125,7 @@
                                 .attr("value", i.stationId)
                                 .text(i.stationName));
                     });
-                    if (@Model.DiverId != 0) {
-                        $('select option[value=@Model.RescueStationId]').prop('selected', true);
-                    }
+                    $('select option[value=@(Model.RescueStationId.HasValue ? Model.RescueStationId : 0)]').prop('selected', true);
                 })
                 .fail(function (error) {
                     errorAlert(error);
