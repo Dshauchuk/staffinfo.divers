@@ -11,7 +11,7 @@
 
 <div class="row">
     <div class="col-md-2">
-        <img class="avatar" src="@Model.PhotoUrl"  height="150" width="150" />
+        <img class="avatar" src=@(Model.PhotoUrl != null ? Model.PhotoUrl : "/images/avatar-default.png")  height="150" width="150" />
         <button class="btn btn-primary" style="margin-left: 5px; margin-top: 5px;" data-toggle="modal" data-target="#addPhotoModal">Загрузить фото</button>
     </div>
     <div class="col-md-10">
@@ -139,8 +139,8 @@
 
 
 <div class="row" style="float:right;">
-    <a href="/Divers" class="btn btn-warning" style="margin:5px;">Редактировать</a>
-    <a href="/Divers" class="btn btn-danger" style="margin:5px;">Удалить</a>
+    <a href="/Divers/Edit?diverId=@Model.DiverId" class="btn btn-warning" style="margin:5px;">Редактировать</a>
+    <a href="/Divers" class="btn btn-danger" style="margin:5px;" id="delete-diver-btn">Удалить</a>
 </div>
 
 
@@ -202,8 +202,32 @@
                         console.error(err);
                         errorAlert("Не удалось удалить запись");
                     })
-
             })
+        
+            .on('click', '#delete-diver-btn', function () {
+                    var diverId = model.diverId;
+
+                    console.log(diverId);
+                    console.log(year);
+
+                    $.ajax({
+                        url: '/Divers/DeleteDiver',
+                        method: 'DELETE',
+                        data: {
+                            diverId: diverId
+                        }
+                    })
+                        .done(function () {
+                            successAlert("Запись успешно удалена");
+                            tr.remove();
+                        })
+                        .fail(function (err) {
+                            console.error(err);
+                            errorAlert("Не удалось удалить запись");
+                        })
+
+                })
+       
         $(document).ready(function() {
 
 		$(".main_input_file").change(function() {

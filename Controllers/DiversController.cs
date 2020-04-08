@@ -1,12 +1,12 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Staffinfo.Divers.Data.Poco;
+using Staffinfo.Divers.Data.Repositories.Contracts;
 using Staffinfo.Divers.Infrastructure.Attributes;
 using Staffinfo.Divers.Models;
 using Staffinfo.Divers.Services.Contracts;
 using System;
-using System.IO;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace staffinfo.divers.Controllers
@@ -15,25 +15,33 @@ namespace staffinfo.divers.Controllers
     public class DiversController : Controller
     {
         private readonly IDiverService _diverService;
+        private readonly IRescueStationService _rescueStationService;
+        private readonly IDivingTimeRepository _divingTimeRepository;
+        private readonly IMapper _mapper;
 
-        public DiversController(IDiverService diverService)
+        public DiversController(IDivingTimeRepository divingTimeRepository, IRescueStationService rescueStationService, IDiverService diverService, IMapper mapper)
         {
+            _divingTimeRepository = divingTimeRepository;
+            _rescueStationService = rescueStationService;
             _diverService = diverService;
+            _mapper = mapper;
         }
 
         public IActionResult Index()
         {
             return View();
         }
-        public async Task<IActionResult> Edit(int stationId)
+
+        public async Task<IActionResult> Edit(int diverId)
         {
-            //var diver = await _diverService.GetAsync(stationId);
-            //var editModel = _mapper.Map<EditRescueStationModel>(station);
+            var diver = await _diverService.GetAsync(diverId);
+            var editModel = _mapper.Map<EditDiverModel>(diver);
+            editModel.RescueStationId = (int)diver.RescueStation.StationId;
 
             ViewData["Title"] = "Изменить Информацию о Водолазе";
             ViewData["Action"] = "Update";
 
-            return View("Edit", new EditDiverModel());
+            return View("Edit", editModel);
         }
 
         public async Task<IActionResult> Details(int diverId)
@@ -50,7 +58,17 @@ namespace staffinfo.divers.Controllers
 
             return View("Edit", new EditDiverModel());
         }
-           
+
+        [HttpPost]
+        public async Task<IActionResult> Update(int diverId, EditDiverModel model)
+        {
+            var divingTimes = await _divingTimeRepository.GetListAsync(diverId);
+            model.WorkingTime = _mapper.Map<List<DivingTime>>(divingTimes);
+            var diver = await _diverService.EditDiverAsync(diverId, model);
+            
+            return View("Details", diver);
+        }
+
         [HttpPost]
         public async Task<IActionResult> AddDivingTime(DivingTime time)
         {
@@ -80,7 +98,15 @@ namespace staffinfo.divers.Controllers
             await _diverService.DeleteDivingTime(diverId, year);
 
             return NoContent();
-        } 
+        }
+
+        [HttpDelete]
+        public async Task<IActionResult> DeleteDiver(int diverId)
+        {
+            await _diverService.DeleteAsync(diverId);
+
+            return NoContent();
+        }
 
         [HttpPost]
         public async Task<IActionResult> Add(EditDiverModel model)

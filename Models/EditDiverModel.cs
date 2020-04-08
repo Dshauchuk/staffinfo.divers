@@ -6,6 +6,8 @@ namespace Staffinfo.Divers.Models
 {
     public class EditDiverModel
     {
+        public int DiverId { get; set; }
+
         [Required]
         public string LastName { get; set; }
 
