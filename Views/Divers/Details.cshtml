@@ -11,7 +11,7 @@
 
 <div class="row">
     <div class="col-md-2">
-        <img class="avatar" src=@(Model.PhotoUrl != null ? Model.PhotoUrl : "/images/avatar-default.png")  height="150" width="150" />
+        <img class="avatar" src=@(Model.PhotoUrl != null ? Model.PhotoUrl : "/images/avatar-default.png") height="150" width="150" />
         <button class="btn btn-primary" style="margin-left: 5px; margin-top: 5px;" data-toggle="modal" data-target="#addPhotoModal">Загрузить фото</button>
     </div>
     <div class="col-md-10">
@@ -30,7 +30,7 @@
 <div class="tab-content" id="nav-tabContent">
     <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
         <div class="col-md-6">
-            <label class="bold-label">№ Протокола: </label> @Model.PersonalBookProtocolNumber 
+            <label class="bold-label">№ Протокола: </label> @Model.PersonalBookProtocolNumber
         </div>
 
         <div class="col-md-6">
@@ -108,11 +108,11 @@
     </div>
 </div>
 
-<div class="modal fade" id="addPhotoModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+<div class="modal fade" id="addPhotoModal" tabindex="-1" role="dialog" aria-labelledby="uploadPhotoTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLongTitle">Добавить фото водолаза</h5>
+                <h5 class="modal-title" id="uploadPhotoTitle">Добавить фото водолаза</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -137,10 +137,37 @@
     </div>
 </div>
 
+<div class="modal fade" id="confirmDeleteDiver" tabindex="-1" role="dialog" aria-labelledby="deleteConfirmTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteConfirmTitle">Подтверждение удаления водолаза</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form asp-action="DeleteDiver" asp-controller="Divers" method="post">
+                    <label asp-for="FirstName" class="input-name">Для подтверждения удаления укажите имя и фамилию водолаза: <b><i>@Model.LastName @Model.FirstName</i></b></label>
+                    <input asp-for="FirstName" value="" id="confirmName" class="form-control" type="text" placeholder="Фамилия Имя" data-val-required="Это поле обязательно." data-val-regex="Фамилия и имя не совпадают." data-val-regex-pattern="@Model.LastName @Model.FirstName" />
+                    <span asp-validation-for="FirstName"></span>
+
+                    <input type="hidden" value="@Model.DiverId" name="diverId" />
+
+                    <div class="modal-footer align-content-center">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal" >Отмена</button>
+                        <button id="confirm" type="submit" class="btn btn-danger" disabled>Удалить</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <div class="row" style="float:right;">
     <a href="/Divers/Edit?diverId=@Model.DiverId" class="btn btn-warning" style="margin:5px;">Редактировать</a>
-    <a href="/Divers" class="btn btn-danger" style="margin:5px;" id="delete-diver-btn">Удалить</a>
+    <button class="btn btn-danger" style="margin:5px;" data-toggle="modal" data-target="#confirmDeleteDiver">Удалить</button>
 </div>
 
 
@@ -150,6 +177,14 @@
 
         $(function () {
             console.log(model);
+
+            $('#confirmName').keyup(function() {
+                if ($(this).val() == (model.lastName + ' ' + model.firstName)) {
+                    $('#confirm').prop('disabled', false);
+                } else {
+                    $('#confirm').prop('disabled', true);
+                }
+            });
 
             $('#save-time-btn').click(function (e) {
                 console.log($("#year").val())
@@ -203,12 +238,11 @@
                         errorAlert("Не удалось удалить запись");
                     })
             })
-        
+
             .on('click', '#delete-diver-btn', function () {
                     var diverId = model.diverId;
 
                     console.log(diverId);
-                    console.log(year);
 
                     $.ajax({
                         url: '/Divers/DeleteDiver',
@@ -227,7 +261,7 @@
                         })
 
                 })
-       
+
         $(document).ready(function() {
 
 		$(".main_input_file").change(function() {
