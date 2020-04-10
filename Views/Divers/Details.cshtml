@@ -141,22 +141,22 @@
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLongTitle">Подтверждение удаления дайвера</h5>
+                <h5 class="modal-title" id="exampleModalLongTitle">Подтверждение удаления водолаза</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
                 <form asp-action="DeleteDiver" asp-controller="Divers" method="post">
-                    <label asp-for="FirstName" class="input-name">Введите фамилию и имя дайвера</label>
-                    <input asp-for="FirstName" value="" class="form-control" type="text" placeholder="Иванов Иван" data-val-required="Это поле обязательно." data-val-regex="Фамилия и имя не совпадают." data-val-regex-pattern="@Model.LastName @Model.FirstName" />
+                    <label asp-for="FirstName" class="input-name">Для подтверждения удаления укажите имя и фамилию водолаза: <b><i>@Model.LastName @Model.FirstName</i></b></label>
+                    <input asp-for="FirstName" value="" id="confirmName" class="form-control" type="text" placeholder="Фамилия Имя" data-val-required="Это поле обязательно." data-val-regex="Фамилия и имя не совпадают." data-val-regex-pattern="@Model.LastName @Model.FirstName" />
                     <span asp-validation-for="FirstName"></span>
 
                     <input type="hidden" value="@Model.DiverId" name="diverId" />
 
                     <div class="modal-footer align-content-center">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
-                        <button type="submit" class="btn btn-danger">Удалить</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal" >Отмена</button>
+                        <button id="confirm" type="submit" class="btn btn-danger" disabled>Удалить</button>
                     </div>
                 </form>
             </div>
@@ -177,6 +177,14 @@
 
         $(function () {
             console.log(model);
+
+            $('#confirmName').keyup(function() {
+                if ($(this).val() == (model.lastName + ' ' + model.firstName)) {
+                    $('#confirm').prop('disabled', false);
+                } else {
+                    $('#confirm').prop('disabled', true);
+                }
+            });
 
             $('#save-time-btn').click(function (e) {
                 console.log($("#year").val())
