@@ -1,7 +1,9 @@
 using AutoMapper;
+using DbUp;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -9,14 +11,14 @@ using Microsoft.IdentityModel.Tokens;
 using Staffinfo.Divers.Data.Repositories;
 using Staffinfo.Divers.Data.Repositories.Contracts;
 using Staffinfo.Divers.Infrastructure.Middleware;
+using Staffinfo.Divers.Models;
 using Staffinfo.Divers.Services;
 using Staffinfo.Divers.Services.Contracts;
 using System;
 using System.Net;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using DbUp;
-using System.Reflection;
 
 namespace Staffinfo.Divers
 {
@@ -46,6 +48,8 @@ namespace Staffinfo.Divers
             var result = upgrader.PerformUpgrade();
 
             Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
+
+            Settings.SecurityKey = Configuration["SecurityKey"];
 
             services.AddTransient<IRescueStationRepository, RescueStationRepository>(provider => new RescueStationRepository(userDbConnectionString));
             services.AddTransient<IDiverRepository, DiverRepository>(provider => new DiverRepository(userDbConnectionString));

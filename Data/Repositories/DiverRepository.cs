@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using Staffinfo.Divers.Data.Poco;
 using Staffinfo.Divers.Data.Repositories.Contracts;
+using Staffinfo.Divers.Models;
 using Staffinfo.Divers.Models.Abstract;
 using System;
 using System.Collections.Generic;
@@ -37,7 +38,8 @@ namespace Staffinfo.Divers.Data.Repositories
                 p_qualification = poco.Qualification,
                 p_book_number = poco.PersonalBookNumber,
                 p_book_issue_date = poco.PersonalBookIssueDate,
-                p_book_protocol_number = poco.PersonalBookProtocolNumber
+                p_book_protocol_number = poco.PersonalBookProtocolNumber,
+                p_key = Settings.SecurityKey
             };
 
             var sqlBuilder = new StringBuilder("with ins as (INSERT into _staffinfo.divers(");
@@ -45,11 +47,17 @@ namespace Staffinfo.Divers.Data.Repositories
             sqlBuilder.Append("photo_url, birth_date, rescue_station_id,");
             sqlBuilder.Append("medical_examination_date, address, qualification,");
             sqlBuilder.Append("personal_book_number, personal_book_issue_date, personal_book_protocol_number)");
-            sqlBuilder.Append("VALUES(@p_last_name, @p_first_name, @p_middle_name,");
+            sqlBuilder.Append("VALUES(encrypt(@p_last_name::bytea, @p_key::bytea, 'aes'), encrypt(@p_first_name::bytea, @p_key::bytea, 'aes'), encrypt(@p_middle_name::bytea, @p_key::bytea, 'aes'),");
             sqlBuilder.Append("@p_photo_url, @p_birth_date, @p_station_id,");
             sqlBuilder.Append("@p_medical_exam_date, @p_address, @p_qualification,");
-            sqlBuilder.Append("@p_book_number, @p_book_issue_date, @p_book_protocol_number) returning *) ");
-            sqlBuilder.Append("select * from ins left join _staffinfo.rescue_stations rs on ins.rescue_station_id = rs.station_id");
+            sqlBuilder.Append("encrypt(@p_book_number::bytea, @p_key::bytea, 'aes'), @p_book_issue_date, encrypt(@p_book_protocol_number::bytea, @p_key::bytea, 'aes')) returning *) ");
+            sqlBuilder.Append("select diver_id, convert_from(decrypt(last_name::bytea, @p_key::bytea, 'aes'), 'SQL_ASCII') last_name, ");
+            sqlBuilder.Append("convert_from(decrypt(first_name::bytea, @p_key::bytea, 'aes'), 'SQL_ASCII') first_name, ");
+            sqlBuilder.Append("convert_from(decrypt(middle_name::bytea, @p_key::bytea, 'aes'), 'SQL_ASCII') middle_name, ");
+            sqlBuilder.Append("photo_url, birth_date, rescue_station_id, medical_examination_date, address, qualification, convert_from(decrypt(personal_book_number::bytea, @p_key::bytea, 'aes'), 'SQL_ASCII') personal_book_number, ");
+            sqlBuilder.Append("personal_book_issue_date, convert_from(decrypt(personal_book_protocol_number::bytea, @p_key::bytea, 'aes'), 'SQL_ASCII') personal_book_protocol_number, ins.created_at, ins.updated_at, station_id, station_name, ");
+            sqlBuilder.Append("rs.created_at, rs.updated_at from ins left join _staffinfo.rescue_stations rs on rs.station_id = ins.rescue_station_id");
+
 
             using (IDbConnection conn = Connection)
             {
@@ -87,10 +95,18 @@ namespace Staffinfo.Divers.Data.Repositories
         {
             var parameters = new
             {
-                p_diver_id = diverId
+                p_diver_id = diverId,
+                p_key = Settings.SecurityKey
             };
 
-            string sql = "select d.*, rs.*, dh.diver_id, dh.year, dh.working_minutes from _staffinfo.divers d left join _staffinfo.rescue_stations rs on station_id = rescue_station_id left join _staffinfo.diving_hours dh on d.diver_id = dh.diver_id where d.diver_id = @p_diver_id";
+            string sql = "select d.diver_id, convert_from(decrypt(d.last_name::bytea, @p_key::bytea, 'aes'), 'SQL_ASCII') last_name, " +
+                "convert_from(decrypt(d.first_name::bytea, @p_key::bytea, 'aes'), 'SQL_ASCII') first_name, " +
+                "convert_from(decrypt(d.middle_name::bytea, @p_key::bytea, 'aes'), 'SQL_ASCII') middle_name, " +
+                "d.photo_url, d.birth_date, d.rescue_station_id, d.medical_examination_date, d.address, " +
+                "d.qualification, convert_from(decrypt(d.personal_book_number::bytea, @p_key::bytea, 'aes'), 'SQL_ASCII') personal_book_number, " +
+                "d.personal_book_issue_date, convert_from(decrypt(d.personal_book_protocol_number::bytea, @p_key::bytea, 'aes'), 'SQL_ASCII') personal_book_protocol_number, " +
+                "d.created_at, d.updated_at, rs.*, dh.diver_id, dh.year, dh.working_minutes from _staffinfo.divers d" +
+                " left join _staffinfo.rescue_stations rs on station_id = rescue_station_id left join _staffinfo.diving_hours dh on d.diver_id = dh.diver_id where d.diver_id = @p_diver_id";
 
             using (IDbConnection conn = Connection)
             {
@@ -123,7 +139,18 @@ namespace Staffinfo.Divers.Data.Repositories
 
         public async Task<IEnumerable<DiverPoco>> GetListAsync()
         {
-            string sql = "select * from _staffinfo.divers left join _staffinfo.rescue_stations on station_id = rescue_station_id left join _staffinfo.diving_hours dh on sf.diver_id = dh.diver_id";
+            var parameters = new
+            {
+                p_key = Settings.SecurityKey
+            };
+
+            string sql = "select d.diver_id, convert_from(decrypt(d.last_name::bytea, @p_key::bytea, 'aes'), 'SQL_ASCII') last_name, " +
+                "convert_from(decrypt(d.first_name::bytea, @p_key::bytea, 'aes'), 'SQL_ASCII') first_name, " +
+                "convert_from(decrypt(d.middle_name::bytea, @p_key::bytea, 'aes'), 'SQL_ASCII') middle_name, " +
+                "d.photo_url, d.birth_date, d.rescue_station_id, d.medical_examination_date, d.address, " +
+                "d.qualification, convert_from(decrypt(d.personal_book_number::bytea, @p_key::bytea, 'aes'), 'SQL_ASCII') personal_book_number, " +
+                "d.personal_book_issue_date, convert_from(decrypt(d.personal_book_protocol_number::bytea, @p_key::bytea, 'aes'), 'SQL_ASCII') personal_book_protocol_number, " +
+                "d.created_at, d.updated_at from _staffinfo.divers d left join _staffinfo.rescue_stations on station_id = rescue_station_id left join _staffinfo.diving_hours dh on sf.diver_id = dh.diver_id";
 
             using (IDbConnection conn = Connection)
             {
@@ -144,7 +171,8 @@ namespace Staffinfo.Divers.Data.Repositories
 
                     return diverItem;
                 },
-                splitOn: "station_id,diver_id"));
+                splitOn: "station_id,diver_id",
+                param: parameters));
 
                 return diverPoco;
             }
@@ -161,14 +189,21 @@ namespace Staffinfo.Divers.Data.Repositories
                 p_max_qualif = options.MaxQualification,
                 p_name_query = options.NameQuery,
                 p_min_hours = options.MinHours,
-                p_max_hours = options.MaxHours
+                p_max_hours = options.MaxHours,
+                p_key = Settings.SecurityKey
             };
 
-            string sql = "select * from _staffinfo.divers";
+            string sql = "select d.diver_id, convert_from(decrypt(d.last_name::bytea, @p_key::bytea, 'aes'), 'SQL_ASCII') last_name, " +
+                "convert_from(decrypt(d.first_name::bytea, @p_key::bytea, 'aes'), 'SQL_ASCII') first_name, " +
+                "convert_from(decrypt(d.middle_name::bytea, @p_key::bytea, 'aes'), 'SQL_ASCII') middle_name, " +
+                "d.photo_url, d.birth_date, d.rescue_station_id, d.medical_examination_date, d.address, " +
+                "d.qualification, convert_from(decrypt(d.personal_book_number::bytea, @p_key::bytea, 'aes'), 'SQL_ASCII') personal_book_number, " +
+                "d.personal_book_issue_date, convert_from(decrypt(d.personal_book_protocol_number::bytea, @p_key::bytea, 'aes'), 'SQL_ASCII') personal_book_protocol_number, " +
+                "d.created_at, d.updated_at from _staffinfo.divers d";
 
             using (IDbConnection conn = Connection)
             {
-                var diverPocos = await conn.QueryAsync<DiverPoco>(sql);
+                var diverPocos = await conn.QueryAsync<DiverPoco>(sql, parameters);
 
                 foreach(DiverPoco diver in diverPocos)
                 {
@@ -206,16 +241,22 @@ namespace Staffinfo.Divers.Data.Repositories
                 p_book_number = poco.PersonalBookNumber,
                 p_book_issue_date = poco.PersonalBookIssueDate,
                 p_book_protocol_number = poco.PersonalBookProtocolNumber,
-                p_updated_at = DateTimeOffset.UtcNow
+                p_updated_at = DateTimeOffset.UtcNow,
+                p_key = Settings.SecurityKey
             };
 
             var sqlBuilder = new StringBuilder("UPDATE _staffinfo.divers set ");
-            sqlBuilder.Append("last_name = @p_last_name, first_name = @p_first_name, middle_name = @p_middle_name,");
+            sqlBuilder.Append("last_name = encrypt(@p_last_name::bytea, @p_key::bytea, 'aes'), first_name = encrypt(@p_first_name::bytea, @p_key::bytea, 'aes'), middle_name = encrypt(@p_middle_name::bytea, @p_key::bytea, 'aes'),");
             sqlBuilder.Append("photo_url = @p_photo_url, birth_date = @p_birth_date, rescue_station_id = @p_station_id,");
             sqlBuilder.Append("medical_examination_date = @p_medical_exam_date, address = @p_address, qualification = @p_qualification,");
-            sqlBuilder.Append("personal_book_number = @p_book_number, personal_book_issue_date = @p_book_issue_date, personal_book_protocol_number = @p_book_protocol_number, updated_at = @p_updated_at ");
+            sqlBuilder.Append("personal_book_number = encrypt(@p_book_number::bytea, @p_key::bytea, 'aes'), personal_book_issue_date = @p_book_issue_date, personal_book_protocol_number = encrypt(@p_book_protocol_number::bytea, @p_key::bytea, 'aes'), updated_at = @p_updated_at ");
             sqlBuilder.Append("where diver_id = @p_diver_id; ");
-            sqlBuilder.Append("select * from _staffinfo.divers left join _staffinfo.rescue_stations on station_id = rescue_station_id where diver_id = @p_diver_id;");
+            sqlBuilder.Append("select diver_id, convert_from(decrypt(last_name::bytea, @p_key::bytea, 'aes'), 'SQL_ASCII') last_name, ");
+            sqlBuilder.Append("convert_from(decrypt(first_name::bytea, @p_key::bytea, 'aes'), 'SQL_ASCII') first_name, ");
+            sqlBuilder.Append("convert_from(decrypt(middle_name::bytea, @p_key::bytea, 'aes'), 'SQL_ASCII') middle_name, ");
+            sqlBuilder.Append("photo_url, birth_date, rescue_station_id, medical_examination_date, address, qualification, convert_from(decrypt(personal_book_number::bytea, @p_key::bytea, 'aes'), 'SQL_ASCII') personal_book_number, ");
+            sqlBuilder.Append("personal_book_issue_date, convert_from(decrypt(personal_book_protocol_number::bytea, @p_key::bytea, 'aes'), 'SQL_ASCII') personal_book_protocol_number, divers.created_at, divers.updated_at, station_id, station_name, ");
+            sqlBuilder.Append("rescue_stations.created_at, rescue_stations.updated_at from _staffinfo.divers left join _staffinfo.rescue_stations on station_id = rescue_station_id where diver_id = @p_diver_id;");
 
             using (IDbConnection conn = Connection)
             {
