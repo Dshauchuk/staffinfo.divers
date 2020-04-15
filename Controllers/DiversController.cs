@@ -47,7 +47,7 @@ namespace staffinfo.divers.Controllers
         public async Task<IActionResult> Details(int diverId)
         {
             var diver = await _diverService.GetAsync(diverId);
-
+            
             return View("Details", diver);
         }
 
@@ -74,7 +74,7 @@ namespace staffinfo.divers.Controllers
         {
             await _diverService.AddDivingTime(time);
 
-            return View("Details", await _diverService.GetAsync(time.DiverId));
+            return NoContent();
         }
 
         [HttpPost]
@@ -93,7 +93,7 @@ namespace staffinfo.divers.Controllers
         }
 
         [HttpDelete]
-        public async Task<IActionResult> DeleteDivingTime(int diverId, int year)
+        public async Task<IActionResult> DeleteDivingTime(int diverId, int year, int minutes)
         {
             await _diverService.DeleteDivingTime(diverId, year);
 
