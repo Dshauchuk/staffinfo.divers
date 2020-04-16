@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using Microsoft.Extensions.Options;
 using Staffinfo.Divers.Data.Poco;
 using Staffinfo.Divers.Data.Repositories.Contracts;
 using Staffinfo.Divers.Models;
@@ -11,9 +12,11 @@ namespace Staffinfo.Divers.Data.Repositories
 {
     public class UserRepository : DapperRepository, IUserRepository
     {
-        public UserRepository(string connectionString): base(connectionString)
-        {
+        private Settings _settings;
 
+        public UserRepository(string connectionString, IOptions<Settings> settings) : base(connectionString)
+        {
+            _settings = settings.Value;
         }
 
         public async Task<UserPoco> AddAsync(UserPoco poco)
@@ -30,7 +33,7 @@ namespace Staffinfo.Divers.Data.Repositories
                 p_token_refresh_timestamp = poco.TokenRefreshTimestamp,
                 p_role = poco.Role,
                 p_registration_timestamp = poco.RegistrationTimestamp,
-                p_key = Settings.SecurityKey
+                p_key = _settings.SecurityKey
             };
 
             var sqlBuilder = new StringBuilder("INSERT into _staffinfo.users(");
@@ -69,7 +72,7 @@ namespace Staffinfo.Divers.Data.Repositories
             var parameters = new
             {
                 p_user_id = userId,
-                p_key = Settings.SecurityKey
+                p_key = _settings.SecurityKey
             };
 
             string sql = "select user_id, convert_from(decrypt(last_name::bytea, @p_key::bytea, 'aes'), 'SQL_ASCII') last_name, " +
@@ -89,7 +92,7 @@ namespace Staffinfo.Divers.Data.Repositories
         {
             var parameters = new
             {
-                p_key = Settings.SecurityKey
+                p_key = _settings.SecurityKey
             };
 
             string sql = "select user_id, convert_from(decrypt(last_name::bytea, @p_key::bytea, 'aes'), 'SQL_ASCII') last_name, " +
@@ -120,7 +123,7 @@ namespace Staffinfo.Divers.Data.Repositories
                 p_token_refresh_timestamp = poco.TokenRefreshTimestamp,
                 p_role = poco.Role,
                 p_registration_timestamp = poco.RegistrationTimestamp,
-                p_key = Settings.SecurityKey
+                p_key = _settings.SecurityKey
             };
 
             var sqlBuilder = new StringBuilder("update _staffinfo.users set last_name = encrypt(@p_last_name::bytea, @p_key::bytea, 'aes'), ");

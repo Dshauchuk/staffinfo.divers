@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Staffinfo.Divers.Data.Repositories;
 using Staffinfo.Divers.Data.Repositories.Contracts;
@@ -49,11 +50,12 @@ namespace Staffinfo.Divers
 
             Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
 
-            Settings.SecurityKey = Configuration["SecurityKey"];
+            services.Configure<Settings>(options => Configuration.GetSection("Settings").Bind(options));
+            var options = services.BuildServiceProvider().GetService<IOptions<Settings>>();
 
             services.AddTransient<IRescueStationRepository, RescueStationRepository>(provider => new RescueStationRepository(userDbConnectionString));
-            services.AddTransient<IDiverRepository, DiverRepository>(provider => new DiverRepository(userDbConnectionString));
-            services.AddTransient<IUserRepository, UserRepository>(provider => new UserRepository(userDbConnectionString));
+            services.AddTransient<IDiverRepository, DiverRepository>(provider => new DiverRepository(userDbConnectionString, options));
+            services.AddTransient<IUserRepository, UserRepository>(provider => new UserRepository(userDbConnectionString, options));
             services.AddTransient<IDivingTimeRepository, DivingTimeRepository>(provider => new DivingTimeRepository(userDbConnectionString));
             services.AddTransient<IAccountService, AccountService>();
             services.AddTransient<IUserService, UserService>();

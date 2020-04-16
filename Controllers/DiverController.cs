@@ -1,7 +1,6 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Staffinfo.Divers.Services.Contracts;
+﻿using Microsoft.AspNetCore.Mvc;
 using Staffinfo.Divers.Models;
+using Staffinfo.Divers.Services.Contracts;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;

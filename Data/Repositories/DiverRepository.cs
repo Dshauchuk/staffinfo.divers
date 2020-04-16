@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using Microsoft.Extensions.Options;
 using Staffinfo.Divers.Data.Poco;
 using Staffinfo.Divers.Data.Repositories.Contracts;
 using Staffinfo.Divers.Models;
@@ -16,9 +17,12 @@ namespace Staffinfo.Divers.Data.Repositories
     {
         RescueStationRepository _rescueStationRepository;
         DivingTimeRepository _divingTimeRepository;
+        private Settings _settings;
 
-        public DiverRepository(string connectionString) : base(connectionString)
+
+        public DiverRepository(string connectionString, IOptions<Settings> settings) : base(connectionString)
         {
+            _settings = settings.Value;
             _rescueStationRepository = new RescueStationRepository(connectionString);
             _divingTimeRepository = new DivingTimeRepository(connectionString);
         }
@@ -39,7 +43,7 @@ namespace Staffinfo.Divers.Data.Repositories
                 p_book_number = poco.PersonalBookNumber,
                 p_book_issue_date = poco.PersonalBookIssueDate,
                 p_book_protocol_number = poco.PersonalBookProtocolNumber,
-                p_key = Settings.SecurityKey
+                p_key = _settings.SecurityKey
             };
 
             var sqlBuilder = new StringBuilder("with ins as (INSERT into _staffinfo.divers(");
@@ -96,7 +100,7 @@ namespace Staffinfo.Divers.Data.Repositories
             var parameters = new
             {
                 p_diver_id = diverId,
-                p_key = Settings.SecurityKey
+                p_key = _settings.SecurityKey
             };
 
             string sql = "select d.diver_id, convert_from(decrypt(d.last_name::bytea, @p_key::bytea, 'aes'), 'SQL_ASCII') last_name, " +
@@ -141,7 +145,7 @@ namespace Staffinfo.Divers.Data.Repositories
         {
             var parameters = new
             {
-                p_key = Settings.SecurityKey
+                p_key = _settings.SecurityKey
             };
 
             string sql = "select d.diver_id, convert_from(decrypt(d.last_name::bytea, @p_key::bytea, 'aes'), 'SQL_ASCII') last_name, " +
@@ -190,7 +194,7 @@ namespace Staffinfo.Divers.Data.Repositories
                 p_name_query = options.NameQuery,
                 p_min_hours = options.MinHours,
                 p_max_hours = options.MaxHours,
-                p_key = Settings.SecurityKey
+                p_key = _settings.SecurityKey
             };
 
             string sql = "select d.diver_id, convert_from(decrypt(d.last_name::bytea, @p_key::bytea, 'aes'), 'SQL_ASCII') last_name, " +
@@ -242,7 +246,7 @@ namespace Staffinfo.Divers.Data.Repositories
                 p_book_issue_date = poco.PersonalBookIssueDate,
                 p_book_protocol_number = poco.PersonalBookProtocolNumber,
                 p_updated_at = DateTimeOffset.UtcNow,
-                p_key = Settings.SecurityKey
+                p_key = _settings.SecurityKey
             };
 
             var sqlBuilder = new StringBuilder("UPDATE _staffinfo.divers set ");

@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Staffinfo.Divers.Models
+﻿namespace Staffinfo.Divers.Models
 {
-    public static class Settings
+    public class Settings
     {
-        public static string SecurityKey { get; set; }
+        public string SecurityKey { get; set; }
     }
 }
