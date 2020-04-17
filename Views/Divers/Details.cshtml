@@ -195,9 +195,6 @@
                 var year = $(this).data('year');
                 var tr = $(this).closest("tr");
 
-                console.log(diverId);
-                console.log(year);
-
                 $.ajax({
                     url: '/Divers/DeleteDivingTime',
                     method: 'DELETE',
@@ -224,9 +221,6 @@
                      return;
                 }
                 $('#addTimeModal').modal('hide');
-
-                console.log(diverId);
-                console.log(year);
 
                 $.ajax({
                     url: '/Divers/AddDivingTime',

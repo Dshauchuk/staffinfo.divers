@@ -74,7 +74,7 @@ namespace staffinfo.divers.Controllers
         {
             await _diverService.AddDivingTime(time);
 
-            return NoContent();
+            return CreatedAtAction("Divers", time);
         }
 
         [HttpPost]
