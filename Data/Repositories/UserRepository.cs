@@ -1,6 +1,8 @@
 ﻿using Dapper;
+using Microsoft.Extensions.Options;
 using Staffinfo.Divers.Data.Poco;
 using Staffinfo.Divers.Data.Repositories.Contracts;
+using Staffinfo.Divers.Models;
 using System.Collections.Generic;
 using System.Data;
 using System.Text;
@@ -10,9 +12,11 @@ namespace Staffinfo.Divers.Data.Repositories
 {
     public class UserRepository : DapperRepository, IUserRepository
     {
-        public UserRepository(string connectionString): base(connectionString)
-        {
+        private Settings _settings;
 
+        public UserRepository(string connectionString, IOptions<Settings> settings) : base(connectionString)
+        {
+            _settings = settings.Value;
         }
 
         public async Task<UserPoco> AddAsync(UserPoco poco)
@@ -28,14 +32,15 @@ namespace Staffinfo.Divers.Data.Repositories
                 p_refresh_token = poco.RefreshToken,
                 p_token_refresh_timestamp = poco.TokenRefreshTimestamp,
                 p_role = poco.Role,
-                p_registration_timestamp = poco.RegistrationTimestamp
+                p_registration_timestamp = poco.RegistrationTimestamp,
+                p_key = _settings.SecurityKey
             };
 
             var sqlBuilder = new StringBuilder("INSERT into _staffinfo.users(");
             sqlBuilder.Append("last_name, first_name, middle_name,");
             sqlBuilder.Append("login, pwd_hash, need_to_change_pwd,");
             sqlBuilder.Append("refresh_token, token_refresh_timestamp, role, registration_timestamp) ");
-            sqlBuilder.Append("VALUES(@p_last_name, @p_first_name, @p_middle_name,");
+            sqlBuilder.Append("VALUES(encrypt(@p_last_name::bytea, @p_key::bytea, 'aes'), encrypt(@p_first_name::bytea, @p_key::bytea, 'aes'), encrypt(@p_middle_name::bytea, @p_key::bytea, 'aes'),");
             sqlBuilder.Append("@p_login, @pwd_hash, @p_need_to_change_pwd,");
             sqlBuilder.Append("@p_refresh_token, @p_token_refresh_timestamp, @p_role, @p_registration_timestamp) returning *; ");
 
@@ -66,10 +71,14 @@ namespace Staffinfo.Divers.Data.Repositories
         {
             var parameters = new
             {
-                p_user_id = userId
+                p_user_id = userId,
+                p_key = _settings.SecurityKey
             };
 
-            string sql = "select * from _staffinfo.users where user_id = @p_user_id";
+            string sql = "select user_id, convert_from(decrypt(last_name::bytea, @p_key::bytea, 'aes'), 'SQL_ASCII') last_name, " +
+                "convert_from(decrypt(first_name::bytea, @p_key::bytea, 'aes'), 'SQL_ASCII') first_name, " +
+                "convert_from(decrypt(middle_name::bytea, @p_key::bytea, 'aes'), 'SQL_ASCII') middle_name, login, pwd_hash, need_to_change_pwd, " +
+                "refresh_token, token_refresh_timestamp, role, registration_timestamp from _staffinfo.users where user_id = @p_user_id";
 
             using (IDbConnection conn = Connection)
             {
@@ -81,11 +90,19 @@ namespace Staffinfo.Divers.Data.Repositories
 
         public async Task<IEnumerable<UserPoco>> GetListAsync()
         {
-            string sql = "select * from _staffinfo.users";
+            var parameters = new
+            {
+                p_key = _settings.SecurityKey
+            };
+
+            string sql = "select user_id, convert_from(decrypt(last_name::bytea, @p_key::bytea, 'aes'), 'SQL_ASCII') last_name, " +
+                "convert_from(decrypt(first_name::bytea, @p_key::bytea, 'aes'), 'SQL_ASCII') first_name, " +
+                "convert_from(decrypt(middle_name::bytea, @p_key::bytea, 'aes'), 'SQL_ASCII') middle_name, login, pwd_hash, need_to_change_pwd, " +
+                "refresh_token, token_refresh_timestamp, role, registration_timestamp from _staffinfo.users";
 
             using (IDbConnection conn = Connection)
             {
-                var userPocos = await conn.QueryAsync<UserPoco>(sql);
+                var userPocos = await conn.QueryAsync<UserPoco>(sql, parameters);
 
                 return userPocos;
             }
@@ -105,14 +122,18 @@ namespace Staffinfo.Divers.Data.Repositories
                 p_refresh_token = poco.RefreshToken,
                 p_token_refresh_timestamp = poco.TokenRefreshTimestamp,
                 p_role = poco.Role,
-                p_registration_timestamp = poco.RegistrationTimestamp
+                p_registration_timestamp = poco.RegistrationTimestamp,
+                p_key = _settings.SecurityKey
             };
 
-            var sqlBuilder = new StringBuilder("update _staffinfo.users set last_name = @p_last_name, ");
-            sqlBuilder.Append("first_name = @p_first_name, middle_name = @p_middle_name, login = @p_login, need_to_change_pwd = @p_need_to_change_pwd::boolean, ");
+            var sqlBuilder = new StringBuilder("update _staffinfo.users set last_name = encrypt(@p_last_name::bytea, @p_key::bytea, 'aes'), ");
+            sqlBuilder.Append("first_name = encrypt(@p_first_name::bytea, @p_key::bytea, 'aes'), middle_name = encrypt(@p_middle_name::bytea, @p_key::bytea, 'aes'), login = @p_login, need_to_change_pwd = @p_need_to_change_pwd::boolean, ");
             sqlBuilder.Append("pwd_hash = @p_pwd_hash, refresh_token = @p_refresh_token, token_refresh_timestamp = @p_token_refresh_timestamp, role = @p_role, registration_timestamp = @p_registration_timestamp ");
             sqlBuilder.Append("where user_id = @p_user_id; ");
-            sqlBuilder.Append("select * from _staffinfo.users where user_id = @p_user_id;");
+            sqlBuilder.Append("select user_id, convert_from(decrypt(last_name::bytea, @p_key::bytea, 'aes'), 'SQL_ASCII') last_name, ");
+            sqlBuilder.Append("convert_from(decrypt(first_name::bytea, @p_key::bytea, 'aes'), 'SQL_ASCII') first_name, ");
+            sqlBuilder.Append("convert_from(decrypt(middle_name::bytea, @p_key::bytea, 'aes'), 'SQL_ASCII') middle_name, login, pwd_hash, need_to_change_pwd, ");
+            sqlBuilder.Append("refresh_token, token_refresh_timestamp, role, registration_timestamp from _staffinfo.users where user_id = @p_user_id;");
 
             using (IDbConnection conn = Connection)
             {

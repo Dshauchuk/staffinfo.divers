@@ -1,5 +1,8 @@
 ﻿CREATE SCHEMA _staffinfo;
 
+CREATE EXTENSION pgcrypto;
+
+
 CREATE SEQUENCE _staffinfo.divers_id_seq
     START WITH 1
     INCREMENT BY 1
@@ -23,9 +26,9 @@ CREATE TABLE _staffinfo.divers (
     medical_examination_date date,
     address character varying(500),
     qualification integer,
-    personal_book_number character varying(10) NOT NULL,
+    personal_book_number character varying(100) NOT NULL,
     personal_book_issue_date date NOT NULL,
-    personal_book_protocol_number character varying(10) NOT NULL,
+    personal_book_protocol_number character varying(100) NOT NULL,
     created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at timestamp with time zone
 );

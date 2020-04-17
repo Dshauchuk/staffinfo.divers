@@ -1,22 +1,25 @@
 using AutoMapper;
+using DbUp;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Staffinfo.Divers.Data.Repositories;
 using Staffinfo.Divers.Data.Repositories.Contracts;
 using Staffinfo.Divers.Infrastructure.Middleware;
+using Staffinfo.Divers.Models;
 using Staffinfo.Divers.Services;
 using Staffinfo.Divers.Services.Contracts;
 using System;
 using System.Net;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using DbUp;
-using System.Reflection;
 
 namespace Staffinfo.Divers
 {
@@ -47,9 +50,12 @@ namespace Staffinfo.Divers
 
             Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
 
+            services.Configure<Settings>(options => Configuration.GetSection("Settings").Bind(options));
+            var options = services.BuildServiceProvider().GetService<IOptions<Settings>>();
+
             services.AddTransient<IRescueStationRepository, RescueStationRepository>(provider => new RescueStationRepository(userDbConnectionString));
-            services.AddTransient<IDiverRepository, DiverRepository>(provider => new DiverRepository(userDbConnectionString));
-            services.AddTransient<IUserRepository, UserRepository>(provider => new UserRepository(userDbConnectionString));
+            services.AddTransient<IDiverRepository, DiverRepository>(provider => new DiverRepository(userDbConnectionString, options));
+            services.AddTransient<IUserRepository, UserRepository>(provider => new UserRepository(userDbConnectionString, options));
             services.AddTransient<IDivingTimeRepository, DivingTimeRepository>(provider => new DivingTimeRepository(userDbConnectionString));
             services.AddTransient<IAccountService, AccountService>();
             services.AddTransient<IUserService, UserService>();
