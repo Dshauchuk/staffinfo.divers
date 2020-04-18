@@ -14,11 +14,16 @@
         <img class="avatar" src=@(Model.PhotoUrl != null ? Model.PhotoUrl : "/images/avatar-default.png") height="150" width="150" />
         <button class="btn btn-primary" style="margin-left: 5px; margin-top: 5px;" data-toggle="modal" data-target="#addPhotoModal">Загрузить фото</button>
     </div>
-    <div class="col-md-10">
+    <div class="col-md-7">
         <h6>Родился: <i>@Model.BirthDate.ToString("D", CultureInfo.CreateSpecificCulture("ru-RU"))</i></h6>
         <h6>Адрес: <i>@Model.Address</i></h6>
     </div>
+    <div class="col-md-3" style="text-align: right">
+        <a href="/Divers/Edit?diverId=@Model.DiverId" class="btn btn-warning" style="margin:5px;">Редактировать</a>
+        <button class="btn btn-danger" style="margin:5px;" data-toggle="modal" data-target="#confirmDeleteDiver">Удалить</button>
+    </div>
 </div>
+
 
 <nav>
     <div class="nav nav-tabs" id="nav-tab" role="tablist">
@@ -90,19 +95,23 @@
                 </button>
             </div>
             <div class="modal-body">
-                <div class="form-group">
-                    <label for="year" class="input-name">Год</label>
-                    <input name="year" id="year" class="form-control" type="number" min="2000" step="1" />
-                </div>
-
-                <div class="form-group">
-                    <label for="minutes" class="input-name">Минуты</label>
-                    <input name="minutes" id="minutes" class="form-control" type="number" min="0" step="1" />
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
-                <button type="button" class="btn btn-primary" id="save-time-btn" data-dismiss="modal">Сохранить</button>
+                <form asp-action="AddDivingTime" asp-controller="Divers" method="post">
+                    <div class="form-group">
+                        <label asp-for="FirstName" class="input-name">Год</label>
+                        <input asp-for="FirstName" id="year" value="2000" name="Year" type="number" class="form-control" data-val="true" data-val-range="Минимальный год: 1980" data-val-range-min="1980" data-val-range-max="10000" data-val-required="Это поле обязательно." />
+                        <span asp-validation-for="FirstName" data-valmsg-for="Year"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="LastName" class="input-name">Общее рабочее время за этот год(минуты)</label>
+                        <input asp-for="LastName" id="minutes" value="" name="WorkingMinutes" class="form-control" type="number" data-val="true" data-val-range="Количество минут должно быть больше нуля" data-val-range-min="1" data-val-required="Это поле обязательно." />
+                        <span asp-validation-for="LastName" data-valmsg-for="WorkingMinutes"></span>
+                    </div>
+                    <input type="hidden" value="@Model.DiverId" name="diverId" />
+                    <div class="modal-footer align-content-center">
+                        <button type="submit" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+                        <button type="button" class="btn btn-danger" id="add-time-btn">Сохранить</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -155,7 +164,7 @@
                     <input type="hidden" value="@Model.DiverId" name="diverId" />
 
                     <div class="modal-footer align-content-center">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal" >Отмена</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
                         <button id="confirm" type="submit" class="btn btn-danger" disabled>Удалить</button>
                     </div>
                 </form>
@@ -163,13 +172,6 @@
         </div>
     </div>
 </div>
-
-
-<div class="row" style="float:right;">
-    <a href="/Divers/Edit?diverId=@Model.DiverId" class="btn btn-warning" style="margin:5px;">Редактировать</a>
-    <button class="btn btn-danger" style="margin:5px;" data-toggle="modal" data-target="#confirmDeleteDiver">Удалить</button>
-</div>
-
 
 @section scripts {
     <script type="text/javascript">
@@ -186,40 +188,12 @@
                 }
             });
 
-            $('#save-time-btn').click(function (e) {
-                console.log($("#year").val())
-                console.log($("#minutes").val())
 
-                var year = parseInt($("#year").val());
-                var minutes = parseInt($("#minutes").val());
-
-                $.ajax({
-                    url: "/Divers/AddDivingTime",
-                    type: "POST",
-                    data: {
-                        diverId: model.diverId,
-                        year: year,
-                        workingMinutes: minutes
-                    }
-                })
-                    .done(function () {
-                        successAlert("Запись успешно добавлена");
-                        $('#whours-table tbody').append('<tr><td class="dt-center">'+ year+ '</td><td class="dt-center">' + parseInt((minutes / 60))  + ' часов ' + (minutes % 60) + ' минут</td><td class="dt-center"><button id="delete-time-btn" class="btn btn-danger" data-year="' + year + '">Удалить</button></td class="dt-center"></tr>')
-
-                    })
-                    .fail(function (err) {
-                        console.error(err);
-                        errorAlert("Не удалось сохранить запись");
-                    })
-            });
         })
             .on('click', '#delete-time-btn', function () {
                 var diverId = model.diverId;
                 var year = $(this).data('year');
                 var tr = $(this).closest("tr");
-
-                console.log(diverId);
-                console.log(year);
 
                 $.ajax({
                     url: '/Divers/DeleteDivingTime',
@@ -238,29 +212,34 @@
                         errorAlert("Не удалось удалить запись");
                     })
             })
+            .on('click', '#add-time-btn', function () {
+                var diverId = model.diverId;
+                var year = $('#year').val();
+                var minutes = $('#minutes').val();
 
-            .on('click', '#delete-diver-btn', function () {
-                    var diverId = model.diverId;
+                if (year < 1980 || minutes < 1){
+                     return;
+                }
+                $('#addTimeModal').modal('hide');
 
-                    console.log(diverId);
-
-                    $.ajax({
-                        url: '/Divers/DeleteDiver',
-                        method: 'DELETE',
-                        data: {
-                            diverId: diverId
-                        }
-                    })
-                        .done(function () {
-                            successAlert("Запись успешно удалена");
-                            tr.remove();
-                        })
-                        .fail(function (err) {
-                            console.error(err);
-                            errorAlert("Не удалось удалить запись");
-                        })
-
+                $.ajax({
+                    url: '/Divers/AddDivingTime',
+                    method: 'POST',
+                    data: {
+                        diverId: diverId,
+                        year: year,
+                        WorkingMinutes: minutes
+                    }
                 })
+                    .done(function () {
+                        $('#whours-table tr:last').after('<tr><td class="dt-center">' + year + '</td><td class="dt-center">' + parseInt(minutes / 60) + ' часов ' + minutes % 60 + ' минут</td><td class="dt-center"><button class="btn btn-danger" id="delete-time-btn" data-year="' + year + '">Удалить</button></td></tr>');
+                        successAlert("Запись успешно добавлена");
+                    })
+                    .fail(function (err) {
+                        console.error(err);
+                        errorAlert("Не удалось добавить запись");
+                    })
+            })
 
         $(document).ready(function() {
 
