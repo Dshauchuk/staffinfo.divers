@@ -119,6 +119,8 @@ namespace Staffinfo.Divers.Services
         public async Task AddPhoto(string photoBase64, int diverId)
         {
             DiverPoco diver = await _diverRepository.GetAsync(diverId);
+            if (diver == null)
+                throw new NotFoundException("Водолаз не найден.");
             diver.PhotoUrl = photoBase64;
 
             await _diverRepository.UpdateAsync(diver);
