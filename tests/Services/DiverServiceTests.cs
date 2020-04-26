@@ -16,7 +16,7 @@ using Moq;
 using Staffinfo.Divers.Shared.Exceptions;
 using Staffinfo.Divers.Models.Abstract;
 
-namespace staffinfo.divers.tests
+namespace staffinfo.divers.tests.Service
 {
     public class DiverServiceTests
     {
@@ -26,18 +26,6 @@ namespace staffinfo.divers.tests
         {
             _mapper = new Mapper(new MapperConfiguration(mc => mc.AddProfile(new MappingProfile())).CreateMapper().ConfigurationProvider);
         }
-        /* public async Task<Diver> AddDiverAsync(EditDiverModel model)
-         {
-             if (model == null)
-                 throw new ArgumentNullException(nameof(model));
-
-             var poco = _mapper.Map<DiverPoco>(model);
-
-             var added = await _diverRepository.AddAsync(poco);
-             var diver = _mapper.Map<Diver>(added);
-
-             return diver;
-         }*/
 
         [Fact]
         public async Task AddDiverAsync_InputModelIsNull_ShouldThrowArgumentNullException()
@@ -52,7 +40,7 @@ namespace staffinfo.divers.tests
         }
 
         [Fact]
-        public async Task AddDiverAsync_CorrectAdd_ShouldDiver()
+        public async Task AddDiverAsync_GivenValidInput_ShouldReturnCreatedDiver()
         {
             // Arrange
             var model = new EditDiverModel()
@@ -118,75 +106,8 @@ namespace staffinfo.divers.tests
             Assert.Equal(result.Qualification, model.Qualification);
         }
 
-        //[Fact]
-        //public async Task AddDiverAsync_InputInvalidData_ShouldThrowArgumentNullException()
-        //{
-        //    // Arrange
-        //    var model = new EditDiverModel()
-        //    {
-        //        Address = "г.Ветка, ул.Батракова 32",
-        //        BirthDate = DateTime.Now,
-        //        DiverId = 1,
-        //        FirstName = "Иван",
-        //        LastName = "Иванов",
-        //        MedicalExaminationDate = DateTime.Now,
-        //        MiddleName = "Иванов",
-        //        PersonalBookIssueDate = DateTime.Now,
-        //        PersonalBookNumber = "132412",
-        //        PersonalBookProtocolNumber = "132334334444",
-        //        PhotoUrl = "",
-        //        Qualification = 1,
-        //        RescueStationId = 127,
-        //        WorkingTime = new List<DivingTime>()
-        //    };
-
-        //    var modelPoco = new DiverPoco()
-        //    {
-        //        Address = "г.Ветка, ул.Батракова 32",
-        //        BirthDate = DateTime.Now,
-        //        DiverId = 1,
-        //        FirstName = "Иван",
-        //        LastName = "Иванов",
-        //        MedicalExaminationDate = DateTime.Now,
-        //        MiddleName = "Иванов",
-        //        PersonalBookIssueDate = DateTime.Now,
-        //        PersonalBookNumber = "132412",
-        //        PersonalBookProtocolNumber = "13233434",
-        //        PhotoUrl = "",
-        //        Qualification = 1,
-        //        RescueStationId = 127,
-        //        CreatedAt = DateTime.Now,
-        //        UpdatedAt = DateTime.Now
-        //    };
-
-        //    var diverRepositoryMock = new Mock<IDiverRepository>();
-        //    diverRepositoryMock.Setup(repo => repo.AddAsync(It.IsAny<DiverPoco>()))
-        //        .Returns(Task.FromResult(modelPoco));
-        //    var divingTimeRepositoryMock = new Mock<IDivingTimeRepository>();
-        //    var diverService = new DiverService(diverRepositoryMock.Object, divingTimeRepositoryMock.Object, _mapper);
-
-        //    // Act
-        //    var result = await diverService.AddDiverAsync(model);
-
-        //    // Assert
-        //    Assert.NotNull(result);
-        //    Assert.IsType<Diver>(result);
-        //    Assert.Equal(result.Address, model.Address);
-        //    Assert.Equal(result.BirthDate.Date, model.BirthDate.Value.Date);
-        //    Assert.Equal(result.DiverId, model.DiverId);
-        //    Assert.Equal(result.FirstName, model.FirstName);
-        //    Assert.Equal(result.LastName, model.LastName);
-        //    Assert.Equal(result.MiddleName, model.MiddleName);
-        //    Assert.Equal(result.MedicalExaminationDate.Value.Date, model.MedicalExaminationDate.Value.Date);
-        //    Assert.Equal(result.PersonalBookIssueDate.Date, model.PersonalBookIssueDate.Value.Date);
-        //    Assert.Equal(result.PersonalBookNumber, model.PersonalBookNumber);
-        //    Assert.Equal(result.PersonalBookProtocolNumber, model.PersonalBookProtocolNumber);
-        //    Assert.Equal(result.PhotoUrl, model.PhotoUrl);
-        //    Assert.Equal(result.Qualification, model.Qualification);
-        //}
-
         [Fact]
-        public async Task DeleteAsync_CorrectDelete_Success()
+        public async Task DeleteAsync_GivenValidInput_ShouldSuccessfullyDeleteDiver()
         {
             // Arrange
             var modelPoco = new DiverPoco()
@@ -226,8 +147,6 @@ namespace staffinfo.divers.tests
         public async Task DeleteAsync_InputModelIsNull_ShouldThrowArgumentNullException()
         {
             // Arrange
-            var badDiverId = 11111;
-
             var diverRepositoryMock = new Mock<IDiverRepository>();
             diverRepositoryMock.Setup(repo => repo.GetAsync(It.IsAny<int>()))
                 .Returns(Task.FromResult(null as DiverPoco));
@@ -236,7 +155,7 @@ namespace staffinfo.divers.tests
             var diverService = new DiverService(diverRepositoryMock.Object, divingTimeRepositoryMock.Object, _mapper);
 
             // Act & Assert
-            await Assert.ThrowsAsync<NotFoundException>(() => diverService.DeleteAsync(badDiverId));
+            await Assert.ThrowsAsync<NotFoundException>(() => diverService.DeleteAsync(11111));
         }
 
         [Fact]
@@ -252,7 +171,7 @@ namespace staffinfo.divers.tests
         }
 
         [Fact]
-        public async Task EditDiverAsync_InvalidParameter_ShouldThrowNotFoundException()
+        public async Task EditDiverAsync_GivenInvalidInput_ShouldThrowNotFoundException()
         {
             // Arrange
             var diverRepositoryMock = new Mock<IDiverRepository>();
@@ -266,7 +185,7 @@ namespace staffinfo.divers.tests
         }
 
         [Fact]
-        public async Task EditDiverAsync_CorrectEdit_ShouldDiver()
+        public async Task EditDiverAsync_GivenValidInput_ShouldReturnUpdatedDiver()
         {
             // Arrange
             var model = new EditDiverModel()
@@ -349,7 +268,7 @@ namespace staffinfo.divers.tests
         }
 
         [Fact]
-        public async Task GetAsync_CorrectGet_ShouldReturnDiver()
+        public async Task GetAsync_GivenValidInput_ShouldReturnDiver()
         {
             // Arrange
             var modelPoco = new DiverPoco()
@@ -398,7 +317,7 @@ namespace staffinfo.divers.tests
         }
 
         [Fact]
-        public async Task GetAsync_InvalidParameter_ShouldThrowNotFoundException()
+        public async Task GetAsync_GivenInvalidInput_ShouldThrowNotFoundException()
         {
             // Arrange
             var diverRepositoryMock = new Mock<IDiverRepository>();
@@ -412,7 +331,7 @@ namespace staffinfo.divers.tests
         }
 
         [Fact]
-        public async Task GetAsync_CorrectGet_ShouldReturnListDiver()
+        public async Task GetAsync_GivenValidInput_ShouldReturnListDiver()
         {
             // Arrange
             var modelPoco1 = new DiverPoco()
@@ -488,35 +407,12 @@ namespace staffinfo.divers.tests
             Assert.NotNull(resultWithoutOptions);
             Assert.IsAssignableFrom<IEnumerable<Diver>>(result);
             Assert.IsAssignableFrom<IEnumerable<Diver>>(resultWithoutOptions);
-            //Assert.Equal(result, modelFilterPocos);
         }
 
         [Fact]
-        public async Task AddDivingTime_CorrectAdd_ShouldReturnDivingTime()
+        public async Task AddDivingTime_GivenValidInput_ShouldSuccessfullyCreateDivingTime()
         {
             // Arrange
-            var model = new EditDiverModel()
-            {
-                Address = "г.Ветка, ул.Батракова 32",
-                BirthDate = DateTime.Now,
-                DiverId = 1,
-                FirstName = "Иван",
-                LastName = "Иванов",
-                MedicalExaminationDate = DateTime.Now,
-                MiddleName = "Иванов",
-                PersonalBookIssueDate = DateTime.Now,
-                PersonalBookNumber = "132412",
-                PersonalBookProtocolNumber = "13233434",
-                PhotoUrl = "",
-                Qualification = 1,
-                RescueStationId = 127,
-                WorkingTime = new List<DivingTime>()
-                {
-                    new DivingTime() { DiverId = 1, WorkingMinutes = 122, Year = 2000},
-                    new DivingTime() { DiverId = 1, WorkingMinutes = 46, Year = 2001}
-                }
-            };
-
             var modelPoco = new DiverPoco()
             {
                 Address = "г.Ветка, ул.Батракова 32",
@@ -570,11 +466,11 @@ namespace staffinfo.divers.tests
             await diverService.AddDivingTime(divingTime);
 
             // Assert
-            divingTimeRepositoryMock.Verify(repo => repo.AddAsync(It.IsAny<DivingTimePoco>()), Times.Once);
+            divingTimeRepositoryMock.Verify(repo => repo.AddAsync(It.IsAny<IEnumerable<DivingTimePoco>>()), Times.Once);
         }
 
         [Fact]
-        public async Task AddPhoto_InputModelIsNull_ShouldThrowArgumentNullException()
+        public async Task AddPhoto_GivenInvalidInput_ShouldThrowNotFoundException()
         {
             // Arrange
             var diverRepositoryMock = new Mock<IDiverRepository>();
@@ -585,6 +481,82 @@ namespace staffinfo.divers.tests
 
             // Act & Assert
             await Assert.ThrowsAsync<NotFoundException>(() => diverService.AddPhoto("", 1111));
+        }
+
+        [Fact]
+        public async Task AddPhoto_GivenValidInput_ShouldSuccessfullyUpdateDiver()
+        {
+            // Arrange
+            var modelPoco = new DiverPoco()
+            {
+                Address = "г.Ветка, ул.Батракова 32",
+                BirthDate = DateTime.Now,
+                DiverId = 1,
+                FirstName = "Иван",
+                LastName = "Иванов",
+                MedicalExaminationDate = DateTime.Now,
+                MiddleName = "Иванов",
+                PersonalBookIssueDate = DateTime.Now,
+                PersonalBookNumber = "132412",
+                PersonalBookProtocolNumber = "13233434",
+                PhotoUrl = "",
+                Qualification = 1,
+                RescueStationId = 127,
+                CreatedAt = DateTime.Now,
+                UpdatedAt = DateTime.Now
+            };
+
+            var diverRepositoryMock = new Mock<IDiverRepository>();
+            diverRepositoryMock.Setup(repo => repo.GetAsync(It.IsAny<int>()))
+                .Returns(Task.FromResult(modelPoco));
+            var divingTimeRepositoryMock = new Mock<IDivingTimeRepository>();
+            var diverService = new DiverService(diverRepositoryMock.Object, divingTimeRepositoryMock.Object, _mapper);
+
+            // Act
+            await diverService.AddPhoto("asdadaasss", 1);
+
+            // Assert
+            diverRepositoryMock.Verify(repo => repo.UpdateAsync(It.IsAny<DiverPoco>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task DeleteDivingTime_GivenValidInput_ShouldSuccessfullyDeleteDivingTime()
+        {
+            // Arrange
+            var workingTime = new List<DivingTimePoco>()
+            {
+                new DivingTimePoco() { DiverId = 1, WorkingMinutes = 122, Year = 2000},
+                new DivingTimePoco() { DiverId = 1, WorkingMinutes = 46, Year = 2001}
+            };
+
+            var divingTime = new DivingTime()
+            {
+                DiverId = 1,
+                WorkingMinutes = 22,
+                Year = 2002
+            };
+
+            var workingTimeAfterAdd = new List<DivingTimePoco>()
+            {
+                new DivingTimePoco() { DiverId = 1, WorkingMinutes = 122, Year = 2000},
+                new DivingTimePoco() { DiverId = 1, WorkingMinutes = 46, Year = 2001},
+                new DivingTimePoco() { DiverId = 1, WorkingMinutes = 22, Year = 2002}
+            };
+
+            var diverRepositoryMock = new Mock<IDiverRepository>();
+            var divingTimeRepositoryMock = new Mock<IDivingTimeRepository>();
+            divingTimeRepositoryMock.Setup(repo => repo.GetListAsync(It.IsAny<int>()))
+                .Returns(Task.FromResult(workingTime as IEnumerable<DivingTimePoco>));
+            divingTimeRepositoryMock.Setup(repo => repo.AddAsync(It.IsAny<IEnumerable<DivingTimePoco>>()))
+                .Returns(Task.FromResult(workingTimeAfterAdd as IEnumerable<DivingTimePoco>));
+            var diverServiceMock = new Mock<DiverService>(diverRepositoryMock.Object, divingTimeRepositoryMock.Object, _mapper);
+            var diverService = new DiverService(diverRepositoryMock.Object, divingTimeRepositoryMock.Object, _mapper);
+
+            // Act
+            await diverService.DeleteDivingTime(divingTime.DiverId, divingTime.Year);
+
+            // Assert
+            divingTimeRepositoryMock.Verify(repo => repo.AddAsync(It.IsAny<IEnumerable<DivingTimePoco>>()), Times.Once);
         }
     }
 }

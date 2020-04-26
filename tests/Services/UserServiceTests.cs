@@ -10,7 +10,7 @@ using System;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace staffinfo.divers.tests
+namespace staffinfo.divers.tests.Service
 {
     public class UserServiceTests
     {
@@ -22,7 +22,7 @@ namespace staffinfo.divers.tests
         }
 
         [Fact]
-        public async Task DeleteAsync_CorrectDelete_Success()
+        public async Task DeleteAsync_GivenValidInput_ShouldSuccessfullyDeleteUser()
         {
             // Arrange
             var modelPoco = new UserPoco()
@@ -53,21 +53,34 @@ namespace staffinfo.divers.tests
             userRepositoryMock.Verify(repo => repo.DeleteAsync(It.IsAny<int>()), Times.Once);
         }
 
-        /*[Fact]
-        public async Task DeleteAsync_InputModelIsNull_ShouldThrowArgumentNullException()
+        [Fact]
+        public async Task DeleteAsync_GivenInvalidInput_ShouldThrowNotFoundException()
         {
             // Arrange
-            var badId = 11111;
-            
+            var modelPoco = new UserPoco()
+            {
+                FirstName = "Иван",
+                LastName = "Иванов",
+                MiddleName = "Иванов",
+                Login = "Ivan",
+                NeedToChangePwd = false,
+                PwdHash = "sfsdfsa",
+                RefreshToken = "sdfdsfds",
+                RegistrationTimestamp = DateTime.Now,
+                Role = "admin",
+                TokenRefreshTimestamp = DateTime.Now,
+                UserId = 1
+            };
+
             var userRepositoryMock = new Mock<IUserRepository>();
-            userRepositoryMock.Setup(repo => repo.DeleteAsync(It.IsAny<int>())).Returns(new NotFoundException());
+            userRepositoryMock.Setup(repo => repo.GetAsync(It.IsAny<int>()))
+                .Returns(Task.FromResult(null as UserPoco));
             var userService = new UserService(userRepositoryMock.Object, _mapper);
+            
+            // Assert
+            await Assert.ThrowsAsync<NotFoundException>(() => userService.DeleteUserAsync(modelPoco.UserId));
+        }
 
-            // Act & Assert
-            await Assert.ThrowsAsync<NotFoundException>(() => userService.DeleteUserAsync(badId));
-        }*/
-
-        
         [Fact]
         public async Task ModifyUserAsync_InputModelIsNull_ShouldThrowArgumentNullException()
         {
@@ -80,7 +93,7 @@ namespace staffinfo.divers.tests
         }
 
         [Fact]
-        public async Task ModifyUserAsync_InvalidParameter_ShouldThrowNotFoundException()
+        public async Task ModifyUserAsync_GivenInvalidInput_ShouldThrowNotFoundException()
         {
             // Arrange
              var model = new EditUserModel()
@@ -120,47 +133,8 @@ namespace staffinfo.divers.tests
             await Assert.ThrowsAsync<ArgumentException>(() => userService.ModifyUserAsync(111111, model));
         }
 
-        /*[Fact]
-        public async Task ModifyUserAsync_UpdateIsNull_ShouldThrowArgumentException()
-        {
-            // Arrange
-            var model = new EditUserModel()
-            {
-                FirstName = "Иван",
-                LastName = "Иванов",
-                MiddleName = "Иванов",
-                NeedToChangePwd = false,
-                Role = "admin"
-            };
-
-            var modelPoco = new UserPoco()
-            {
-                FirstName = "Иван",
-                LastName = "Иванов",
-                MiddleName = "Иванов",
-                Login = "Ivan",
-                NeedToChangePwd = false,
-                PwdHash = "sfsdfsa",
-                RefreshToken = "sdfdsfds",
-                RegistrationTimestamp = DateTime.Now,
-                Role = "admin",
-                TokenRefreshTimestamp = DateTime.Now,
-                UserId = 1
-            };
-
-            var userRepositoryMock = new Mock<IUserRepository>();
-            userRepositoryMock.Setup(repo => repo.GetAsync(It.IsAny<int>()))
-                .Returns(Task.FromResult(modelPoco));
-            userRepositoryMock.Setup(repo => repo.UpdateAsync(It.IsAny<UserPoco>()))
-                .Returns(Task.FromResult(null as UserPoco));
-            var userService = new UserService(userRepositoryMock.Object, _mapper);
-
-            // Act & Assert
-            await Assert.ThrowsAsync<ArgumentException>(() => userService.ModifyUserAsync(111111, model));
-        }*/
-
         [Fact]
-        public async Task ModifyUserAsync_CorrectModify_ShouldReturnUser()
+        public async Task ModifyUserAsync_GivenValidInput_ShouldReturnUpdatedUser()
         {
             // Arrange
             var model = new EditUserModel()

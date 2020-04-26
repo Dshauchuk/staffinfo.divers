@@ -8,11 +8,10 @@ using Staffinfo.Divers.Services;
 using Staffinfo.Divers.Shared.Exceptions;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace staffinfo.divers.tests
+namespace staffinfo.divers.tests.Service
 {
     public class RescueStationServiceTests
     {
@@ -34,35 +33,8 @@ namespace staffinfo.divers.tests
             await Assert.ThrowsAsync<ArgumentNullException>(() => rescueStationService.AddStationAsync(null));
         }
 
-        /*[Fact]
-        public async Task AddRescueStationAsync_AddAsyncReturnNull_ShouldThrowArgumentNullException()
-        {
-            // Arrange
-            var model = new EditRescueStationModel()
-            {
-                StationId = 1,
-                StationName = "Ветковская"
-            };
-
-            var modelPoco = new RescueStationPoco()
-            {
-                CreatedAt = DateTime.Now,
-                StationId = 1,
-                StationName = "Ветковская",
-                UpdatedAt = DateTime.Now
-            };
-
-            var rescueStationRepositoryMock = new Mock<IRescueStationRepository>();
-            rescueStationRepositoryMock.Setup(repo => repo.AddAsync(It.IsAny<RescueStationPoco>()))
-                .Returns(Task.FromResult(null as RescueStationPoco));
-            var rescueStationService = new RescueStationService(rescueStationRepositoryMock.Object, _mapper);
-
-            // Act & Assert
-            await Assert.ThrowsAsync<ArgumentNullException>(() => rescueStationService.AddStationAsync(model));
-        }*/
-
         [Fact]
-        public async Task AddRescueStationAsync_CorrectAdd_ShouldReturnRescueStation()
+        public async Task AddRescueStationAsync_GivenValidInput_ShouldReturnCreatedRescueStation()
         {
             // Arrange
             var model = new EditRescueStationModel()
@@ -92,10 +64,11 @@ namespace staffinfo.divers.tests
             Assert.IsType<RescueStation>(result);
             Assert.Equal(result.StationName, model.StationName);
             Assert.Equal(result.StationId, model.StationId);
+            Assert.NotNull(result.CreatedAt);
         }
 
         [Fact]
-        public async Task DeleteAsync_CorrectDelete_Success()
+        public async Task DeleteAsync_GivenValidInput_ShouldSuccessfullyDeleteRescueStation()
         {
             // Arrange
             var modelPoco = new RescueStationPoco()
@@ -147,7 +120,7 @@ namespace staffinfo.divers.tests
         }
 
         [Fact]
-        public async Task EditRescueStationAsync_InvalidParameter_ShouldThrowNotFoundException()
+        public async Task EditRescueStationAsync_GivenInvalidInput_ShouldThrowNotFoundException()
         {
             // Arrange
             var rescueStationRepositoryMock = new Mock<IRescueStationRepository>();
@@ -160,7 +133,7 @@ namespace staffinfo.divers.tests
         }
 
         [Fact]
-        public async Task EditRescueStationAsync_CorrectEdit_ShouldReturnRescueStation()
+        public async Task EditRescueStationAsync_GivenValidInput_ShouldReturnUpdatedRescueStation()
         {
             // Arrange
             var model = new EditRescueStationModel()
@@ -192,11 +165,11 @@ namespace staffinfo.divers.tests
             Assert.IsType<RescueStation>(result);
             Assert.Equal(result.StationId, model.StationId);
             Assert.Equal(result.StationName, model.StationName);
+            Assert.NotNull(result.UpdatedAt);
         }
 
-
         [Fact]
-        public async Task GetAsync_CorrectGet_ShouldReturnRescueStation()
+        public async Task GetAsync_GivenValidInput_ShouldReturnRescueStation()
         {
             // Arrange
             var modelPoco = new RescueStationPoco()
@@ -225,7 +198,7 @@ namespace staffinfo.divers.tests
         }
 
         [Fact]
-        public async Task GetAsync_InvalidParameter_ShouldThrowNotFoundException()
+        public async Task GetAsync_GivenInvalidInput_ShouldThrowNotFoundException()
         {
             // Arrange
             var rescueStationRepositoryMock = new Mock<IRescueStationRepository>();
@@ -237,9 +210,8 @@ namespace staffinfo.divers.tests
             await Assert.ThrowsAsync<NotFoundException>(() => rescueStationService.GetAsync(111111));
         }
 
-
         [Fact]
-        public async Task GetAsync_CorrectGet_ShouldReturnListRescueStation()
+        public async Task GetAsync_GivenValidInput_ShouldReturnListRescueStation()
         {
             // Arrange
             var modelPoco1 = new RescueStationPoco()
@@ -249,13 +221,15 @@ namespace staffinfo.divers.tests
                 CreatedAt = DateTime.Now,
                 UpdatedAt = DateTime.Now
             };
+
             var modelPoco2 = new RescueStationPoco()
             {
-                StationId = 1,
+                StationId = 2,
                 StationName = "Гомельская",
                 CreatedAt = DateTime.Now,
                 UpdatedAt = DateTime.Now
             };
+
             var modelPocos = new List<RescueStationPoco>()
             {
                 modelPoco1,
@@ -281,12 +255,62 @@ namespace staffinfo.divers.tests
             // Arrange
             var rescueStationRepositoryMock = new Mock<IRescueStationRepository>();
             rescueStationRepositoryMock.Setup(repo => repo.GetListAsync())
-                .Returns(Task.FromResult((IEnumerable<RescueStationPoco>)null));
+                .Returns(Task.FromResult(null as IEnumerable<RescueStationPoco>));
             var rescueStationService = new RescueStationService(rescueStationRepositoryMock.Object, _mapper);
 
             // Act & Assert
             await Assert.ThrowsAsync<ArgumentNullException>(() => rescueStationService.GetAsync());
         }
 
+        [Fact]
+        public async Task GetAsyncPredicate_GivenValidInput_ShouldReturnListRescueStation()
+        {
+            // Arrange
+            var modelPoco1 = new RescueStationPoco()
+            {
+                StationId = 1,
+                StationName = "Ветковская",
+                CreatedAt = DateTime.Now,
+                UpdatedAt = DateTime.Now
+            };
+            var modelPoco2 = new RescueStationPoco()
+            {
+                StationId = 2,
+                StationName = "Гомельская",
+                CreatedAt = DateTime.Now,
+                UpdatedAt = DateTime.Now
+            };
+            var modelPocos = new List<RescueStationPoco>()
+            {
+                modelPoco1,
+                modelPoco2
+            };
+            Func<RescueStation, bool> predicate = x => x.StationName != "Ветковская";
+            var rescueStationRepositoryMock = new Mock<IRescueStationRepository>();
+            rescueStationRepositoryMock.Setup(repo => repo.GetListAsync())
+                .Returns(Task.FromResult(modelPocos as IEnumerable<RescueStationPoco>));
+            var rescueStationService = new RescueStationService(rescueStationRepositoryMock.Object, _mapper);
+
+            // Act
+            var result = await rescueStationService.GetAsync(predicate);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsAssignableFrom<IEnumerable<RescueStation>>(result);
+        }
+
+        [Fact]
+        public async Task GetAsyncPredicate_NotFoundElements_ShouldThrowArgumentNullException()
+        {
+            // Arrange
+            Func<RescueStation, bool> predicate = x => x.StationName != "Ветковская";
+            var rescueStationRepositoryMock = new Mock<IRescueStationRepository>();
+            rescueStationRepositoryMock.Setup(repo => repo.GetListAsync())
+                .Returns(Task.FromResult(null as IEnumerable<RescueStationPoco>));
+            var rescueStationService = new RescueStationService(rescueStationRepositoryMock.Object, _mapper);
+
+            // Act & Assert
+            await Assert.ThrowsAsync<ArgumentNullException>(() => rescueStationService.GetAsync(predicate));
+        }
     }
 }
