@@ -147,6 +147,8 @@ namespace staffinfo.divers.tests.Service
         public async Task DeleteAsync_InputModelIsNull_ShouldThrowArgumentNullException()
         {
             // Arrange
+            var notExistingId = 1111;
+
             var diverRepositoryMock = new Mock<IDiverRepository>();
             diverRepositoryMock.Setup(repo => repo.GetAsync(It.IsAny<int>()))
                 .Returns(Task.FromResult(null as DiverPoco));
@@ -155,7 +157,7 @@ namespace staffinfo.divers.tests.Service
             var diverService = new DiverService(diverRepositoryMock.Object, divingTimeRepositoryMock.Object, _mapper);
 
             // Act & Assert
-            await Assert.ThrowsAsync<NotFoundException>(() => diverService.DeleteAsync(11111));
+            await Assert.ThrowsAsync<NotFoundException>(() => diverService.DeleteAsync(notExistingId));
         }
 
         [Fact]
@@ -174,6 +176,8 @@ namespace staffinfo.divers.tests.Service
         public async Task EditDiverAsync_GivenInvalidInput_ShouldThrowNotFoundException()
         {
             // Arrange
+            var notExistingId = 1111;
+
             var diverRepositoryMock = new Mock<IDiverRepository>();
             diverRepositoryMock.Setup(repo => repo.GetAsync(It.IsAny<int>()))
                 .Returns(Task.FromResult(null as DiverPoco));
@@ -181,7 +185,7 @@ namespace staffinfo.divers.tests.Service
             var diverService = new DiverService(diverRepositoryMock.Object, divingTimeRepositoryMock.Object, _mapper);
 
             // Act & Assert
-            await Assert.ThrowsAsync<NotFoundException>(() => diverService.EditDiverAsync(111111, new EditDiverModel()));
+            await Assert.ThrowsAsync<NotFoundException>(() => diverService.EditDiverAsync(notExistingId, new EditDiverModel()));
         }
 
         [Fact]
@@ -320,6 +324,8 @@ namespace staffinfo.divers.tests.Service
         public async Task GetAsync_GivenInvalidInput_ShouldThrowNotFoundException()
         {
             // Arrange
+            var notExistingId = 1111;
+
             var diverRepositoryMock = new Mock<IDiverRepository>();
             diverRepositoryMock.Setup(repo => repo.GetAsync(It.IsAny<int>()))
                 .Returns(Task.FromResult(null as DiverPoco));
@@ -327,7 +333,7 @@ namespace staffinfo.divers.tests.Service
             var diverService = new DiverService(diverRepositoryMock.Object, divingTimeRepositoryMock.Object, _mapper);
 
             // Act & Assert
-            await Assert.ThrowsAsync<NotFoundException>(() => diverService.GetAsync(111111));
+            await Assert.ThrowsAsync<NotFoundException>(() => diverService.GetAsync(notExistingId));
         }
 
         [Fact]
@@ -473,6 +479,9 @@ namespace staffinfo.divers.tests.Service
         public async Task AddPhoto_GivenInvalidInput_ShouldThrowNotFoundException()
         {
             // Arrange
+            var notExistingId = 1111;
+            var notExistingphotoBase64 = "qwerty123";
+
             var diverRepositoryMock = new Mock<IDiverRepository>();
             diverRepositoryMock.Setup(repo => repo.GetAsync(It.IsAny<int>()))
                 .Returns(Task.FromResult(null as DiverPoco));
@@ -480,7 +489,7 @@ namespace staffinfo.divers.tests.Service
             var diverService = new DiverService(diverRepositoryMock.Object, divingTimeRepositoryMock.Object, _mapper);
 
             // Act & Assert
-            await Assert.ThrowsAsync<NotFoundException>(() => diverService.AddPhoto("", 1111));
+            await Assert.ThrowsAsync<NotFoundException>(() => diverService.AddPhoto(notExistingphotoBase64, notExistingId));
         }
 
         [Fact]
@@ -506,6 +515,8 @@ namespace staffinfo.divers.tests.Service
                 UpdatedAt = DateTime.Now
             };
 
+            var photoBase64 = "qwerty123";
+
             var diverRepositoryMock = new Mock<IDiverRepository>();
             diverRepositoryMock.Setup(repo => repo.GetAsync(It.IsAny<int>()))
                 .Returns(Task.FromResult(modelPoco));
@@ -513,7 +524,7 @@ namespace staffinfo.divers.tests.Service
             var diverService = new DiverService(diverRepositoryMock.Object, divingTimeRepositoryMock.Object, _mapper);
 
             // Act
-            await diverService.AddPhoto("asdadaasss", 1);
+            await diverService.AddPhoto(photoBase64, modelPoco.DiverId);
 
             // Assert
             diverRepositoryMock.Verify(repo => repo.UpdateAsync(It.IsAny<DiverPoco>()), Times.Once);

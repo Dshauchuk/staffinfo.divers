@@ -86,6 +86,7 @@ namespace staffinfo.divers.tests.Service
 
             // Assert
             Assert.NotNull(result);
+            Assert.IsType<UserIdentity>(result);
             Assert.Equal(result.User.FirstName, modelPoco.FirstName);
             Assert.Equal(result.User.LastName, modelPoco.LastName);
             Assert.Equal(result.User.MiddleName, modelPoco.MiddleName);
@@ -186,6 +187,7 @@ namespace staffinfo.divers.tests.Service
 
             // Assert
             Assert.NotNull(result);
+            Assert.IsType<UserIdentity>(result);
             Assert.Equal(result.User.FirstName, modelPoco.FirstName);
             Assert.Equal(result.User.LastName, modelPoco.LastName);
             Assert.Equal(result.User.MiddleName, modelPoco.MiddleName);
@@ -200,6 +202,9 @@ namespace staffinfo.divers.tests.Service
         public async Task RefreshAsync_GivenInvalidInput_ShouldThrowNotFoundException()
         {
             // Arrange
+            var notExistingId = 1111;
+            var notExistingRefreshToken = "qwerty123"; 
+
             var httpContextAccessorMock = new Mock<IHttpContextAccessor>();
             var userRepositoryMock = new Mock<IUserRepository>();
             userRepositoryMock.Setup(repo => repo.GetAsync(It.IsAny<int>()))
@@ -208,7 +213,7 @@ namespace staffinfo.divers.tests.Service
             var userService = new AccountService(userRepositoryMock.Object, _mapper, _config, userManagerMock.Object);
 
             // Act & Assert
-            await Assert.ThrowsAsync<NotFoundException>(() => userService.RefreshAsync(1111, ""));
+            await Assert.ThrowsAsync<NotFoundException>(() => userService.RefreshAsync(notExistingId, notExistingRefreshToken));
         }
 
         [Fact]
@@ -230,6 +235,8 @@ namespace staffinfo.divers.tests.Service
                 UserId = 1
             };
 
+            var notExistingRefreshToken = "qwerty123";
+
             var httpContextAccessorMock = new Mock<IHttpContextAccessor>();
             var userRepositoryMock = new Mock<IUserRepository>();
             userRepositoryMock.Setup(repo => repo.GetAsync(It.IsAny<int>()))
@@ -238,7 +245,7 @@ namespace staffinfo.divers.tests.Service
             var userService = new AccountService(userRepositoryMock.Object, _mapper, _config, userManagerMock.Object);
 
             // Act
-            var result = await userService.RefreshAsync(modelPoco.UserId, "badRefreshToken");
+            var result = await userService.RefreshAsync(modelPoco.UserId, notExistingRefreshToken);
 
             // Assert
             Assert.Null(result);
@@ -282,6 +289,7 @@ namespace staffinfo.divers.tests.Service
 
             // Assert
             Assert.NotNull(result);
+            Assert.IsType<UserIdentity>(result);
             Assert.Equal(result.User.FirstName, modelPoco.FirstName);
             Assert.Equal(result.User.LastName, modelPoco.LastName);
             Assert.Equal(result.User.MiddleName, modelPoco.MiddleName);

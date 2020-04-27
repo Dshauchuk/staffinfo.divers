@@ -96,7 +96,7 @@ namespace staffinfo.divers.tests.Service
         public async Task DeleteAsync_InputModelIsNull_ShouldThrowArgumentNullException()
         {
             // Arrange
-            var badId = 11111;
+            var notExistingId = 1111;
 
             var rescueStationRepositoryMock = new Mock<IRescueStationRepository>();
             rescueStationRepositoryMock.Setup(repo => repo.GetAsync(It.IsAny<int>()))
@@ -105,7 +105,7 @@ namespace staffinfo.divers.tests.Service
             var rescueStationService = new RescueStationService(rescueStationRepositoryMock.Object, _mapper);
 
             // Act & Assert
-            await Assert.ThrowsAsync<NotFoundException>(() => rescueStationService.DeleteAsync(badId));
+            await Assert.ThrowsAsync<NotFoundException>(() => rescueStationService.DeleteAsync(notExistingId));
         }
 
         [Fact]
@@ -201,13 +201,15 @@ namespace staffinfo.divers.tests.Service
         public async Task GetAsync_GivenInvalidInput_ShouldThrowNotFoundException()
         {
             // Arrange
+            var notExistingId = 1111;
+
             var rescueStationRepositoryMock = new Mock<IRescueStationRepository>();
             rescueStationRepositoryMock.Setup(repo => repo.GetAsync(It.IsAny<int>()))
                 .Returns(Task.FromResult(null as RescueStationPoco));
             var rescueStationService = new RescueStationService(rescueStationRepositoryMock.Object, _mapper);
 
             // Act & Assert
-            await Assert.ThrowsAsync<NotFoundException>(() => rescueStationService.GetAsync(111111));
+            await Assert.ThrowsAsync<NotFoundException>(() => rescueStationService.GetAsync(notExistingId));
         }
 
         [Fact]

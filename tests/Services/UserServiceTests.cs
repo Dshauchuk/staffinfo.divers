@@ -85,11 +85,13 @@ namespace staffinfo.divers.tests.Service
         public async Task ModifyUserAsync_InputModelIsNull_ShouldThrowArgumentNullException()
         {
             // Arrange
+            var notExistingId = 1111;
+
             var userRepositoryMock = new Mock<IUserRepository>();
             var userService = new UserService(userRepositoryMock.Object, _mapper);
 
             // Act & Assert
-            await Assert.ThrowsAsync<ArgumentNullException>(() => userService.ModifyUserAsync(1, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => userService.ModifyUserAsync(notExistingId, null));
         }
 
         [Fact]
@@ -105,13 +107,15 @@ namespace staffinfo.divers.tests.Service
                 Role = "admin"
             };
 
+            var notExistingId = 1111;
+
             var userRepositoryMock = new Mock<IUserRepository>();
             userRepositoryMock.Setup(repo => repo.GetAsync(It.IsAny<int>()))
                 .Returns(Task.FromResult(null as UserPoco));
             var userService = new UserService(userRepositoryMock.Object, _mapper);
 
             // Act & Assert
-            await Assert.ThrowsAsync<NotFoundException>(() => userService.ModifyUserAsync(111111, model));
+            await Assert.ThrowsAsync<NotFoundException>(() => userService.ModifyUserAsync(notExistingId, model));
         }
 
         [Fact]
@@ -126,11 +130,13 @@ namespace staffinfo.divers.tests.Service
                 NeedToChangePwd = false
             };
 
+            var notExistingId = 1111;
+
             var userRepositoryMock = new Mock<IUserRepository>();
             var userService = new UserService(userRepositoryMock.Object, _mapper);
 
             // Act & Assert
-            await Assert.ThrowsAsync<ArgumentException>(() => userService.ModifyUserAsync(111111, model));
+            await Assert.ThrowsAsync<ArgumentException>(() => userService.ModifyUserAsync(notExistingId, model));
         }
 
         [Fact]
