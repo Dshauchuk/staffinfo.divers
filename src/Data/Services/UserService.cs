@@ -21,6 +21,9 @@ namespace Staffinfo.Divers.Services
 
         public async Task DeleteUserAsync(int userId)
         {
+            var existing = await _userRepository.GetAsync(userId);
+            if (existing == null)
+                throw new NotFoundException("Пользователь не найден.");
             await _userRepository.DeleteAsync(userId);
         }
         
