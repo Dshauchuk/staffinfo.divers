@@ -93,7 +93,7 @@ namespace staffinfo.divers.tests.Service
         }
 
         [Fact]
-        public async Task DeleteAsync_InputModelIsNull_ShouldThrowArgumentNullException()
+        public async Task DeleteAsync_GivenInvalidInput_ShouldThrowNotFoundException()
         {
             // Arrange
             var notExistingId = 1111;

@@ -1,9 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Staffinfo.Divers.Services.Contracts;
-using Staffinfo.Divers.Models;
-using System.ComponentModel.DataAnnotations;
-using System.Threading.Tasks;
 
 namespace Staffinfo.Divers.Controllers
 {
@@ -15,9 +11,6 @@ namespace Staffinfo.Divers.Controllers
         {
             _accountService = accountService;
         }
-
-
-
 
         ///// <summary>
         ///// Register a new user
