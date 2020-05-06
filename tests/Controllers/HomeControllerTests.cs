@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Staffinfo.Divers.Controllers;
@@ -35,19 +36,23 @@ namespace staffinfo.divers.tests.Controllers
             // Assert
             Assert.NotNull(result);
         }
-
-        /*[Fact]
+        
+        [Fact]
         public void Error_GivenValidInput_ShouldSuccessfullyOpenIndexView()
         {
             // Arrange
             var loggerMock = new Mock<ILogger<HomeController>>();
             var homeController = new HomeController(loggerMock.Object);
 
+            homeController.ControllerContext = new ControllerContext(); 
+            homeController.ControllerContext.HttpContext = new DefaultHttpContext();
+            homeController.HttpContext.TraceIdentifier = "qweqwe";
+
             // Act
             var result = homeController.Error() as ViewResult;
 
             // Assert
             Assert.NotNull(result);
-        }*/
+        }
     }
 }

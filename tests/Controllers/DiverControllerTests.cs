@@ -303,6 +303,8 @@ namespace staffinfo.divers.tests.Controllers
                 NameQuery = "Иван"
             };
 
+            var existingCountOfListItems = 1;
+
             var diverServiceMock = new Mock<IDiverService>();
             diverServiceMock.Setup(repo => repo.GetAsync(It.IsAny<FilterOptions>()))
                 .Returns(Task.FromResult((IEnumerable<Diver>)modelsFilter));
@@ -313,24 +315,21 @@ namespace staffinfo.divers.tests.Controllers
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(1, result.Count);
-            foreach(Diver diver in result)
-            {
-                Assert.Equal(model1.FirstName, diver.FirstName);
-                Assert.Equal(model1.LastName, diver.LastName);
-                Assert.Equal(model1.MiddleName, diver.MiddleName);
-                Assert.Equal(model1.Address, diver.Address);
-                Assert.Equal(model1.BirthDate, diver.BirthDate);
-                Assert.Equal(model1.DiverId, diver.DiverId);
-                Assert.Equal(model1.MedicalExaminationDate, diver.MedicalExaminationDate);
-                Assert.Equal(model1.PersonalBookIssueDate, diver.PersonalBookIssueDate);
-                Assert.Equal(model1.PersonalBookNumber, diver.PersonalBookNumber);
-                Assert.Equal(model1.PersonalBookProtocolNumber, diver.PersonalBookProtocolNumber);
-                Assert.Equal(model1.PhotoUrl, diver.PhotoUrl);
-                Assert.Equal(model1.Qualification, diver.Qualification);
-                Assert.Equal(model1.CreatedAt, diver.CreatedAt);
-                Assert.Equal(model1.UpdatedAt, diver.UpdatedAt);
-            }
+            Assert.Equal(existingCountOfListItems, result.Count);
+            Assert.Equal(model1.FirstName, result[0].FirstName);
+            Assert.Equal(model1.LastName, result[0].LastName);
+            Assert.Equal(model1.MiddleName, result[0].MiddleName);
+            Assert.Equal(model1.Address, result[0].Address);
+            Assert.Equal(model1.BirthDate, result[0].BirthDate);
+            Assert.Equal(model1.DiverId, result[0].DiverId);
+            Assert.Equal(model1.MedicalExaminationDate, result[0].MedicalExaminationDate);
+            Assert.Equal(model1.PersonalBookIssueDate, result[0].PersonalBookIssueDate);
+            Assert.Equal(model1.PersonalBookNumber, result[0].PersonalBookNumber);
+            Assert.Equal(model1.PersonalBookProtocolNumber, result[0].PersonalBookProtocolNumber);
+            Assert.Equal(model1.PhotoUrl, result[0].PhotoUrl);
+            Assert.Equal(model1.Qualification, result[0].Qualification);
+            Assert.Equal(model1.CreatedAt, result[0].CreatedAt);
+            Assert.Equal(model1.UpdatedAt, result[0].UpdatedAt);
         }
 
         [Fact]
@@ -365,6 +364,5 @@ namespace staffinfo.divers.tests.Controllers
             // Act & Assert
             await Assert.ThrowsAsync<ArgumentNullException>(() => diverController.DeleteAsync(notExistingId));
         }
-
     }
 }

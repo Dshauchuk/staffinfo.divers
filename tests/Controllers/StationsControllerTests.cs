@@ -269,6 +269,8 @@ namespace staffinfo.divers.tests.Controllers
                 model2
             };
 
+            var existingCountOfListItems = 2;
+
             var rescueStationServiceMock = new Mock<IRescueStationService>();
             rescueStationServiceMock.Setup(repo => repo.GetAsync())
                 .Returns(Task.FromResult(models as IEnumerable<RescueStation>));
@@ -279,6 +281,15 @@ namespace staffinfo.divers.tests.Controllers
 
             // Assert
             Assert.NotNull(result);
+            Assert.Equal(existingCountOfListItems, result.Count);
+            Assert.Equal(model1.StationId, result[0].StationId);
+            Assert.Equal(model1.StationName, result[0].StationName);
+            Assert.Equal(model1.CreatedAt, result[0].CreatedAt);
+            Assert.Equal(model1.UpdatedAt, result[0].UpdatedAt);
+            Assert.Equal(model2.StationId, result[1].StationId);
+            Assert.Equal(model2.StationName, result[1].StationName);
+            Assert.Equal(model2.CreatedAt, result[1].CreatedAt);
+            Assert.Equal(model2.UpdatedAt, result[1].UpdatedAt);
         }
     }
 }
