@@ -7,7 +7,7 @@ namespace staffinfo.divers.tests.Controllers
     public class DashboardControllerTests
     {
         [Fact]
-        public void Index_GivenValidInput_ShouldSuccessfullyOpenIndexView()
+        public void Index_NoInput_ShouldReturnViewResultForIndexPage()
         {
             // Arrange
             var dashboardController = new DashboardController();

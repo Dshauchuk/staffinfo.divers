@@ -66,16 +66,22 @@ namespace staffinfo.divers.tests.Controllers
                 UpdatedAt = DateTime.Now
             };
 
+            var existingUrl = "api/divers";
+
             var diverServiceMock = new Mock<IDiverService>();
             diverServiceMock.Setup(repo => repo.AddDiverAsync(It.IsAny<EditDiverModel>()))
                 .Returns(Task.FromResult(model));
             var diverController = new DiverController(diverServiceMock.Object);
 
             // Act
-            var result = ((await diverController.CreateAsync(modelEdit)) as CreatedResult).Value as Diver;
+            var createdResult = (await diverController.CreateAsync(modelEdit)) as CreatedResult;
 
             // Assert
+            Assert.NotNull(createdResult);
+            var result = createdResult.Value as Diver;
             Assert.NotNull(result);
+            Assert.Equal(existingUrl, createdResult.Location);
+            Assert.Equal(model.FirstName, result.FirstName);
             Assert.Equal(model.FirstName, result.FirstName);
             Assert.Equal(model.LastName, result.LastName);
             Assert.Equal(model.MiddleName, result.MiddleName);
@@ -168,9 +174,11 @@ namespace staffinfo.divers.tests.Controllers
             var diverController = new DiverController(diverServiceMock.Object);
 
             // Act
-            var result = ((await diverController.UpdateAsync(model.DiverId, modelEdit)) as OkObjectResult).Value as Diver;
+            var okObjectResult = (await diverController.UpdateAsync(model.DiverId, modelEdit)) as OkObjectResult;
 
             // Assert
+            Assert.NotNull(okObjectResult);
+            var result = okObjectResult.Value as Diver;
             Assert.NotNull(result);
             Assert.Equal(model.FirstName, result.FirstName);
             Assert.Equal(model.LastName, result.LastName);
@@ -231,9 +239,11 @@ namespace staffinfo.divers.tests.Controllers
             var diverController = new DiverController(diverServiceMock.Object);
 
             // Act
-            var result = ((await diverController.GetAsync(model.DiverId)) as OkObjectResult).Value as Diver;
+            var okObjectResult = (await diverController.GetAsync(model.DiverId)) as OkObjectResult;
 
             // Assert
+            Assert.NotNull(okObjectResult);
+            var result = okObjectResult.Value as Diver;
             Assert.NotNull(result);
             Assert.Equal(model.FirstName, result.FirstName);
             Assert.Equal(model.LastName, result.LastName);
@@ -303,7 +313,7 @@ namespace staffinfo.divers.tests.Controllers
                 NameQuery = "Иван"
             };
 
-            var existingCountOfListItems = 1;
+            var expectedCountOfItems = 1;
 
             var diverServiceMock = new Mock<IDiverService>();
             diverServiceMock.Setup(repo => repo.GetAsync(It.IsAny<FilterOptions>()))
@@ -311,11 +321,13 @@ namespace staffinfo.divers.tests.Controllers
             var diverController = new DiverController(diverServiceMock.Object);
 
             // Act
-            var result = ((await diverController.GetListAsync(options)) as OkObjectResult).Value as List<Diver>;
+            var okObjectResult = (await diverController.GetListAsync(options)) as OkObjectResult;
 
             // Assert
+            Assert.NotNull(okObjectResult);
+            var result = okObjectResult.Value as List<Diver>;
             Assert.NotNull(result);
-            Assert.Equal(existingCountOfListItems, result.Count);
+            Assert.Equal(expectedCountOfItems, result.Count);
             Assert.Equal(model1.FirstName, result[0].FirstName);
             Assert.Equal(model1.LastName, result[0].LastName);
             Assert.Equal(model1.MiddleName, result[0].MiddleName);

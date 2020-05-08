@@ -23,7 +23,7 @@ namespace staffinfo.divers.tests.Controllers
         }
 
         [Fact]
-        public void Index_GivenValidInput_ShouldSuccessfullyOpenIndexView()
+        public void Index_NoInput_ShouldReturnViewResultForIndexPage()
         {
             // Arrange
             var rescueStationServiceMock = new Mock<IRescueStationService>();
@@ -37,9 +37,11 @@ namespace staffinfo.divers.tests.Controllers
         }
 
         [Fact]
-        public void New_GivenValidInput_ShouldSuccessfullyOpenEditView()
+        public void New_NoInput_ShouldReturnViewResultForEditPage()
         {
             // Arrange
+            var existingViewName = "Edit";
+
             var rescueStationServiceMock = new Mock<IRescueStationService>();
             var stationsController = new StationsController(rescueStationServiceMock.Object, _mapper);
 
@@ -48,6 +50,7 @@ namespace staffinfo.divers.tests.Controllers
 
             // Assert
             Assert.NotNull(result);
+            Assert.Equal(existingViewName, result.ViewName);
         }
 
         [Fact]
@@ -77,16 +80,21 @@ namespace staffinfo.divers.tests.Controllers
                 UpdatedAt = DateTime.Now
             };
 
+            var existingViewName = "Edit";
+
             var rescueStationServiceMock = new Mock<IRescueStationService>();
             rescueStationServiceMock.Setup(repo => repo.GetAsync(It.IsAny<int>()))
                 .Returns(Task.FromResult(model));
             var stationsController = new StationsController(rescueStationServiceMock.Object, _mapper);
 
             // Act
-            var result = ((await stationsController.Edit(model.StationId)) as ViewResult).Model as EditRescueStationModel;
+            var viewResult = (await stationsController.Edit(model.StationId)) as ViewResult;
 
             // Assert
+            Assert.NotNull(viewResult);
+            var result = viewResult.Model as EditRescueStationModel;
             Assert.NotNull(result);
+            Assert.Equal(existingViewName, viewResult.ViewName);
             Assert.Equal(model.StationId, result.StationId);
             Assert.Equal(model.StationName, result.StationName);
         }
@@ -122,6 +130,9 @@ namespace staffinfo.divers.tests.Controllers
                 UpdatedAt = DateTime.Now
             };
 
+            var existingActionName = "Index";
+            var existingControllerName = "Stations";
+
             var rescueStationServiceMock = new Mock<IRescueStationService>();
             rescueStationServiceMock.Setup(repo => repo.AddStationAsync(It.IsAny<EditRescueStationModel>()))
                 .Returns(Task.FromResult(model));
@@ -132,6 +143,8 @@ namespace staffinfo.divers.tests.Controllers
 
             // Assert
             Assert.NotNull(result);
+            Assert.Equal(existingActionName, result.ActionName);
+            Assert.Equal(existingControllerName, result.ControllerName);
             rescueStationServiceMock.Verify(repo => repo.AddStationAsync(It.IsAny<EditRescueStationModel>()), Times.Once);
         }
 
@@ -185,6 +198,9 @@ namespace staffinfo.divers.tests.Controllers
                 UpdatedAt = DateTime.Now
             };
 
+            var existingActionName = "Index";
+            var existingControllerName = "Stations";
+
             var rescueStationServiceMock = new Mock<IRescueStationService>();
             rescueStationServiceMock.Setup(repo => repo.EditStationAsync(It.IsAny<EditRescueStationModel>()))
                 .Returns(Task.FromResult(model));
@@ -195,6 +211,8 @@ namespace staffinfo.divers.tests.Controllers
 
             // Assert
             Assert.NotNull(result);
+            Assert.Equal(existingActionName, result.ActionName);
+            Assert.Equal(existingControllerName, result.ControllerName);
             rescueStationServiceMock.Verify(repo => repo.EditStationAsync(It.IsAny<EditRescueStationModel>()), Times.Once);
         }
 
@@ -269,7 +287,7 @@ namespace staffinfo.divers.tests.Controllers
                 model2
             };
 
-            var existingCountOfListItems = 2;
+            var expectedCountOfItems = 2;
 
             var rescueStationServiceMock = new Mock<IRescueStationService>();
             rescueStationServiceMock.Setup(repo => repo.GetAsync())
@@ -277,11 +295,13 @@ namespace staffinfo.divers.tests.Controllers
             var stationsController = new StationsController(rescueStationServiceMock.Object, _mapper);
 
             // Act
-            var result = (await stationsController.GetListJson()).Value as List<RescueStation>;
+            var jsonResult = await stationsController.GetListJson() as JsonResult;
 
             // Assert
+            Assert.NotNull(jsonResult);
+            var result = jsonResult.Value as List<RescueStation>;
             Assert.NotNull(result);
-            Assert.Equal(existingCountOfListItems, result.Count);
+            Assert.Equal(expectedCountOfItems, result.Count);
             Assert.Equal(model1.StationId, result[0].StationId);
             Assert.Equal(model1.StationName, result[0].StationName);
             Assert.Equal(model1.CreatedAt, result[0].CreatedAt);

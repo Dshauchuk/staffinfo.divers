@@ -10,7 +10,7 @@ namespace staffinfo.divers.tests.Controllers
     public class HomeControllerTests
     {
         [Fact]
-        public void Index_GivenValidInput_ShouldSuccessfullyOpenIndexView()
+        public void Index_NoInput_ShouldReturnViewResultForIndexPage()
         {
             // Arrange
             var loggerMock = new Mock<ILogger<HomeController>>();

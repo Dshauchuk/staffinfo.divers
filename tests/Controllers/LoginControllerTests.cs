@@ -24,7 +24,7 @@ namespace staffinfo.divers.tests.Controllers
         }
 
         [Fact]
-        public void Index_GivenValidInput_ShouldSuccessfullyOpenIndexView()
+        public void Index_NoInput_ShouldReturnViewResultForIndexPage()
         {
             // Arrange
             var httpContextAccessorMock = new Mock<IHttpContextAccessor>();
@@ -72,6 +72,8 @@ namespace staffinfo.divers.tests.Controllers
                 User = _mapper.Map<User>(modelPoco)
             };
 
+            var existingViewName = "/Dashboard";
+
             var httpContextAccessorMock = new Mock<IHttpContextAccessor>();
             var userManagerMock = new Mock<UserManager>(httpContextAccessorMock.Object);
             var accountServiceMock = new Mock<IAccountService>();
@@ -84,6 +86,7 @@ namespace staffinfo.divers.tests.Controllers
 
             // Assert
             Assert.NotNull(result);
+            Assert.Equal(existingViewName, result.Url);
         }
 
         [Fact]
@@ -95,6 +98,8 @@ namespace staffinfo.divers.tests.Controllers
                 Login = "admin",
                 Password = "qwerty123"
             };
+
+            var existingViewName = "Index";
 
             var httpContextAccessorMock = new Mock<IHttpContextAccessor>();
             var userManagerMock = new Mock<UserManager>(httpContextAccessorMock.Object);
@@ -108,12 +113,16 @@ namespace staffinfo.divers.tests.Controllers
 
             // Assert
             Assert.NotNull(result);
+            Assert.Equal(existingViewName, result.ViewName);
         }
 
         [Fact]
         public async Task SignOut_GivenValidInput_ShouldSuccessfullySignOut()
         {
             // Arrange
+            var existingActionName = "Index";
+            var existingControllerName = "Login";
+
             var httpContextAccessorMock = new Mock<IHttpContextAccessor>();
             var sessionMock = new Mock<ISession>();
             var userManagerMock = new Mock<UserManager>(httpContextAccessorMock.Object);
@@ -126,6 +135,8 @@ namespace staffinfo.divers.tests.Controllers
 
             // Assert
             Assert.NotNull(result);
+            Assert.Equal(existingActionName, result.ActionName);
+            Assert.Equal(existingControllerName, result.ControllerName);
         }
     }
 }

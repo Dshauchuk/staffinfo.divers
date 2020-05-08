@@ -26,7 +26,7 @@ namespace staffinfo.divers.tests.Controllers
         }
 
         [Fact]
-        public void Index_GivenValidInput_ShouldSuccessfullyOpenIndexView()
+        public void Index_NoInput_ShouldReturnViewResultForIndexPage()
         {
             // Arrange
             var diverServiceMock = new Mock<IDiverService>();
@@ -94,11 +94,16 @@ namespace staffinfo.divers.tests.Controllers
                 .Returns(Task.FromResult(model));
             var diversController = new DiversController(divingTimeServiceMock.Object, rescueStationServiceMock.Object, diverServiceMock.Object, _mapper);
 
+            var existingViewName = "Edit";
+
             // Act
-            var result = ((await diversController.Edit(model.DiverId)) as ViewResult).Model as EditDiverModel;
+            var viewResult = (await diversController.Edit(model.DiverId)) as ViewResult;
 
             // Assert
+            Assert.NotNull(viewResult);
+            var result = viewResult.Model as EditDiverModel;
             Assert.NotNull(result);
+            Assert.Equal(existingViewName, viewResult.ViewName);
             Assert.Equal(model.FirstName, result.FirstName);
             Assert.Equal(model.LastName, result.LastName);
             Assert.Equal(model.MiddleName, result.MiddleName);
@@ -152,6 +157,8 @@ namespace staffinfo.divers.tests.Controllers
                 UpdatedAt = DateTime.Now
             };
 
+            var existingViewName = "Details";
+
             var diverServiceMock = new Mock<IDiverService>();
             var rescueStationServiceMock = new Mock<IRescueStationService>();
             var divingTimeServiceMock = new Mock<IDivingTimeRepository>();
@@ -160,10 +167,13 @@ namespace staffinfo.divers.tests.Controllers
             var diversController = new DiversController(divingTimeServiceMock.Object, rescueStationServiceMock.Object, diverServiceMock.Object, _mapper);
 
             // Act
-            var result = ((await diversController.Details(model.DiverId)) as ViewResult).Model as Diver;
+            var viewResult = (await diversController.Details(model.DiverId)) as ViewResult;
 
             // Assert
+            Assert.NotNull(viewResult);
+            var result = viewResult.Model as Diver;
             Assert.NotNull(result);
+            Assert.Equal(existingViewName, viewResult.ViewName);
             Assert.Equal(model.FirstName, result.FirstName);
             Assert.Equal(model.LastName, result.LastName);
             Assert.Equal(model.MiddleName, result.MiddleName);
@@ -181,7 +191,7 @@ namespace staffinfo.divers.tests.Controllers
         }
 
         [Fact]
-        public void New_GivenValidInput_ShouldSuccessfullyOpenEditView()
+        public void New_NoInput_ShouldReturnViewResultForEditPage()
         {
             // Arrange
             var diverServiceMock = new Mock<IDiverService>();
@@ -189,11 +199,14 @@ namespace staffinfo.divers.tests.Controllers
             var divingTimeServiceMock = new Mock<IDivingTimeRepository>();
             var diversController = new DiversController(divingTimeServiceMock.Object, rescueStationServiceMock.Object, diverServiceMock.Object, _mapper);
 
+            var existingViewName = "Edit";
+
             // Act
             var result = diversController.New() as ViewResult;
 
             // Assert
             Assert.NotNull(result);
+            Assert.Equal(existingViewName, result.ViewName);
         }
 
         [Fact]
@@ -282,6 +295,8 @@ namespace staffinfo.divers.tests.Controllers
                 UpdatedAt = DateTime.Now
             };
 
+            var existingViewName = "Details";
+
             var diverServiceMock = new Mock<IDiverService>();
             var rescueStationServiceMock = new Mock<IRescueStationService>();
             var divingTimeServiceMock = new Mock<IDivingTimeRepository>();
@@ -290,10 +305,13 @@ namespace staffinfo.divers.tests.Controllers
             var diversController = new DiversController(divingTimeServiceMock.Object, rescueStationServiceMock.Object, diverServiceMock.Object, _mapper);
 
             // Act
-            var result = ((await diversController.Update(modelEdit.DiverId, modelEdit)) as ViewResult).Model as Diver;
+            var viewResult = (await diversController.Update(modelEdit.DiverId, modelEdit)) as ViewResult;
 
             // Assert
+            Assert.NotNull(viewResult);
+            var result = viewResult.Model as Diver;
             Assert.NotNull(result);
+            Assert.Equal(existingViewName, viewResult.ViewName);
             Assert.Equal(model.FirstName, result.FirstName);
             Assert.Equal(model.LastName, result.LastName);
             Assert.Equal(model.MiddleName, result.MiddleName);
@@ -321,6 +339,8 @@ namespace staffinfo.divers.tests.Controllers
                 Year = 2000
             };
 
+            var existingActionName = "Divers";
+
             var diverServiceMock = new Mock<IDiverService>();
             var rescueStationServiceMock = new Mock<IRescueStationService>();
             var divingTimeServiceMock = new Mock<IDivingTimeRepository>();
@@ -329,10 +349,13 @@ namespace staffinfo.divers.tests.Controllers
             var diversController = new DiversController(divingTimeServiceMock.Object, rescueStationServiceMock.Object, diverServiceMock.Object, _mapper);
 
             // Act
-            var result = ((await diversController.AddDivingTime(model)) as CreatedAtActionResult).Value as DivingTime;
+            var createdAtActionResult = (await diversController.AddDivingTime(model)) as CreatedAtActionResult;
 
             // Assert
+            Assert.NotNull(createdAtActionResult);
+            var result = createdAtActionResult.Value as DivingTime;
             Assert.NotNull(result);
+            Assert.Equal(existingActionName, createdAtActionResult.ActionName);
             Assert.Equal(model.DiverId, result.DiverId);
             Assert.Equal(model.WorkingMinutes, result.WorkingMinutes);
             Assert.Equal(model.Year, result.Year);
@@ -360,6 +383,8 @@ namespace staffinfo.divers.tests.Controllers
                 UpdatedAt = DateTime.Now
             };
 
+            var existingViewName = "Details";
+
             var formFileMock = new Mock<IFormFile>();
             var ms = new MemoryStream();
             formFileMock.Setup(m => m.OpenReadStream()).Returns(ms);
@@ -374,10 +399,13 @@ namespace staffinfo.divers.tests.Controllers
             var diversController = new DiversController(divingTimeServiceMock.Object, rescueStationServiceMock.Object, diverServiceMock.Object, _mapper);
 
             // Act
-            var result = ((await diversController.UploadPhoto(formFileMock.Object, model.DiverId)) as ViewResult).Model as Diver;
+            var viewResult = (await diversController.UploadPhoto(formFileMock.Object, model.DiverId)) as ViewResult;
 
             // Assert
+            Assert.NotNull(viewResult);
+            var result = viewResult.Model as Diver;
             Assert.NotNull(result);
+            Assert.Equal(existingViewName, viewResult.ViewName);
             Assert.Equal(model.FirstName, result.FirstName);
             Assert.Equal(model.LastName, result.LastName);
             Assert.Equal(model.MiddleName, result.MiddleName);
@@ -443,6 +471,8 @@ namespace staffinfo.divers.tests.Controllers
         public async Task DeleteDiver_GivenValidInput_ShouldSuccessfullyDeleteDiver()
         {
             var existingId = 1;
+            var existingControllerName = "Divers";
+            var existingActionName = "Index";
 
             var diverServiceMock = new Mock<IDiverService>();
             var rescueStationServiceMock = new Mock<IRescueStationService>();
@@ -452,9 +482,12 @@ namespace staffinfo.divers.tests.Controllers
             var diversController = new DiversController(divingTimeServiceMock.Object, rescueStationServiceMock.Object, diverServiceMock.Object, _mapper);
 
             // Act
-            await diversController.DeleteDiver(existingId);
+            var result = await diversController.DeleteDiver(existingId) as RedirectToActionResult;
 
             // Assert
+            Assert.NotNull(result);
+            Assert.Equal(existingActionName, result.ActionName);
+            Assert.Equal(existingControllerName, result.ControllerName);
             diverServiceMock.Verify(repo => repo.DeleteAsync(It.IsAny<int>()), Times.Once);
         }
 
@@ -512,6 +545,8 @@ namespace staffinfo.divers.tests.Controllers
                 UpdatedAt = DateTime.Now
             };
 
+            var existingViewName = "Details";
+
             var diverServiceMock = new Mock<IDiverService>();
             var rescueStationServiceMock = new Mock<IRescueStationService>();
             var divingTimeServiceMock = new Mock<IDivingTimeRepository>();
@@ -520,10 +555,13 @@ namespace staffinfo.divers.tests.Controllers
             var diversController = new DiversController(divingTimeServiceMock.Object, rescueStationServiceMock.Object, diverServiceMock.Object, _mapper);
 
             // Act
-            var result = ((await diversController.Add(modelEdit)) as ViewResult).Model as Diver;
+            var viewResult = (await diversController.Add(modelEdit)) as ViewResult;
 
             // Assert
+            Assert.NotNull(viewResult);
+            var result = viewResult.Model as Diver;
             Assert.NotNull(result);
+            Assert.Equal(existingViewName, viewResult.ViewName);
             Assert.Equal(model.FirstName, result.FirstName);
             Assert.Equal(model.LastName, result.LastName);
             Assert.Equal(model.MiddleName, result.MiddleName);
@@ -607,7 +645,7 @@ namespace staffinfo.divers.tests.Controllers
                 NameQuery = "Иван"
             };
 
-            var existingCountOfListItems = 1;
+            var expectedCountOfItems = 1;
 
             var diverServiceMock = new Mock<IDiverService>();
             var rescueStationServiceMock = new Mock<IRescueStationService>();
@@ -617,11 +655,13 @@ namespace staffinfo.divers.tests.Controllers
             var diversController = new DiversController(divingTimeServiceMock.Object, rescueStationServiceMock.Object, diverServiceMock.Object, _mapper);
 
             // Act
-            var result = ((await diversController.GetListJson(options)) as JsonResult).Value as List<Diver>;
+            var jsonResult = (await diversController.GetListJson(options)) as JsonResult;
 
             // Assert
+            Assert.NotNull(jsonResult);
+            var result = jsonResult.Value as List<Diver>;
             Assert.NotNull(result);
-            Assert.Equal(existingCountOfListItems, result.Count);
+            Assert.Equal(expectedCountOfItems, result.Count);
             Assert.Equal(model1.FirstName, result[0].FirstName);
             Assert.Equal(model1.LastName, result[0].LastName);
             Assert.Equal(model1.MiddleName, result[0].MiddleName);

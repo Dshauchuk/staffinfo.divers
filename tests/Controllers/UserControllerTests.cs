@@ -107,9 +107,11 @@ namespace staffinfo.divers.tests.Controllers
             var userController = new UserController(userServiceMock.Object);
 
             // Act
-            var result = ((await userController.ModifyUser(model.UserId, modelEdit)) as OkObjectResult).Value as User;
+            var okObjectResult = await userController.ModifyUser(model.UserId, modelEdit) as OkObjectResult;
 
             // Assert
+            Assert.NotNull(okObjectResult);
+            var result = okObjectResult.Value as User;
             Assert.NotNull(result);
             Assert.Equal(model.Login, result.Login);
             Assert.Equal(model.FirstName, result.FirstName);
