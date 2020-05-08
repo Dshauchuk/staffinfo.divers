@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using Staffinfo.Divers.Data.Repositories.Contracts;
+using Staffinfo.Divers.Models;
 using Staffinfo.Divers.Services.Contracts;
 using Staffinfo.Divers.Shared.Exceptions;
-using Staffinfo.Divers.Models;
 using System;
 using System.Threading.Tasks;
 

@@ -62,6 +62,10 @@ namespace staffinfo.divers.Controllers
         [HttpPost]
         public async Task<IActionResult> Update(int diverId, EditDiverModel model)
         {
+            if(model == null)
+            {
+                throw new ArgumentNullException(nameof(model));
+            }
             var divingTimes = await _divingTimeRepository.GetListAsync(diverId);
             model.WorkingTime = _mapper.Map<List<DivingTime>>(divingTimes);
             var diver = await _diverService.EditDiverAsync(diverId, model);

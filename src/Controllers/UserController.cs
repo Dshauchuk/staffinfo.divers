@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Staffinfo.Divers.Services.Contracts;
 using Staffinfo.Divers.Models;
+using Staffinfo.Divers.Services.Contracts;
 using System.Threading.Tasks;
 
 namespace Staffinfo.Divers.Controllers

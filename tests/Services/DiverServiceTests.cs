@@ -1,20 +1,15 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Mvc;
+using Moq;
+using Staffinfo.Divers.Data.Poco;
 using Staffinfo.Divers.Data.Repositories.Contracts;
+using Staffinfo.Divers.Infrastructure.Mapping;
+using Staffinfo.Divers.Models;
 using Staffinfo.Divers.Services;
-using Staffinfo;
+using Staffinfo.Divers.Shared.Exceptions;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
-using Staffinfo.Divers.Models;
-using Staffinfo.Divers.Data.Poco;
-using Staffinfo.Divers;
-using Staffinfo.Divers.Infrastructure.Mapping;
-using Moq;
-using Staffinfo.Divers.Shared.Exceptions;
-using Staffinfo.Divers.Models.Abstract;
 
 namespace staffinfo.divers.tests.Service
 {
@@ -144,7 +139,7 @@ namespace staffinfo.divers.tests.Service
         }
 
         [Fact]
-        public async Task DeleteAsync_InputModelIsNull_ShouldThrowArgumentNullException()
+        public async Task DeleteAsync_GivenInvalidInput_ShouldThrowNotFoundException()
         {
             // Arrange
             var notExistingId = 1111;
