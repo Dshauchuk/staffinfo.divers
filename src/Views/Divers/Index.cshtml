@@ -1,4 +1,4 @@
-﻿
+﻿@model RescueStation
 @{
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -189,7 +189,25 @@
                             .append($("<option></option>")
                                 .attr("value", i.stationId)
                                 .text(i.stationName));
-                    });                    
+                    });
+                })
+                .fail(function (error) {
+                    errorAlert(error);
+                });
+
+            $.ajax({
+                url: "/Divers/LoadFromStation",
+                type: "GET",
+                dataType: "json",
+                cache: false,
+                data: {
+                    stationId: @Model.StationId
+                }
+            })
+                .done(function (dataSet) {
+                    $('#divers-table-block').show();
+
+                    loadDivers(dataSet);
                 })
                 .fail(function (error) {
                     errorAlert(error);

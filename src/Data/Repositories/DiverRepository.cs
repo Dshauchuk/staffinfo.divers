@@ -154,31 +154,19 @@ namespace Staffinfo.Divers.Data.Repositories
                 "d.photo_url, d.birth_date, d.rescue_station_id, d.medical_examination_date, d.address, " +
                 "d.qualification, convert_from(decrypt(d.personal_book_number::bytea, @p_key::bytea, 'aes'), 'SQL_ASCII') personal_book_number, " +
                 "d.personal_book_issue_date, convert_from(decrypt(d.personal_book_protocol_number::bytea, @p_key::bytea, 'aes'), 'SQL_ASCII') personal_book_protocol_number, " +
-                "d.created_at, d.updated_at from _staffinfo.divers d left join _staffinfo.rescue_stations on station_id = rescue_station_id left join _staffinfo.diving_hours dh on sf.diver_id = dh.diver_id";
+                "d.created_at, d.updated_at from _staffinfo.divers d";
 
             using (IDbConnection conn = Connection)
             {
-                var lookup = new Dictionary<int, DiverPoco>();
+                var diverPocos = await conn.QueryAsync<DiverPoco>(sql, parameters);
 
-                var diverPoco = (await conn.QueryAsync<DiverPoco, RescueStationPoco, DivingTimePoco, DiverPoco>(sql, (diver, station, time) =>
+                foreach (DiverPoco diver in diverPocos)
                 {
-                    DiverPoco diverItem;
+                    diver.RescueStation = diver.RescueStationId == null ? null : await _rescueStationRepository.GetAsync((int)diver.RescueStationId);
+                    diver.WorkingTime = (await _divingTimeRepository.GetListAsync(diver.DiverId)).ToList();
+                }
 
-                    if (!lookup.TryGetValue(diver.DiverId, out diverItem))
-                        lookup.Add(diver.DiverId, diverItem = diver);
-                    if (diverItem.WorkingTime == null)
-                        diverItem.WorkingTime = new List<DivingTimePoco>();
-                    diverItem.WorkingTime.Add(time);
-
-                    if (diverItem.RescueStation == null)
-                        diverItem.RescueStation = station;
-
-                    return diverItem;
-                },
-                splitOn: "station_id,diver_id",
-                param: parameters));
-
-                return diverPoco;
+                return diverPocos;
             }
         }
 

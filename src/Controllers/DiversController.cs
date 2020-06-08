@@ -27,9 +27,20 @@ namespace staffinfo.divers.Controllers
             _mapper = mapper;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(RescueStation station = null)
         {
-            return View();
+            return station == null ? View() : View(station);
+        }
+        
+        [HttpGet]
+        public FilterOptions LoadFromStation([FromQuery]int stationId)
+        {
+            return stationId == 0 ? new FilterOptions() : new FilterOptions
+            {
+                RescueStationId = stationId,
+                MinQualification = 1,
+                MaxQualification = 3
+            };
         }
 
         public async Task<IActionResult> Edit(int diverId)
