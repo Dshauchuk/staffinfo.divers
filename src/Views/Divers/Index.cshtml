@@ -35,6 +35,7 @@
             <div class="form-group col-md-4 col-sm-12">
                 <label for="minQualification" class="input-name">Мин. квалификация</label>
                 <select name="minQualification" class="form-control" id="minQualification">
+                    <option value="">-Не Выбрано-</option>
                     <option value="1">1</option>
                     <option value="2">2</option>
                     <option value="3">3</option>
@@ -43,6 +44,7 @@
             <div class="form-group col-md-4 col-sm-12">
                 <label for="maxQualification" class="input-name">Макс. квалификация</label>
                 <select name="maxQualification" class="form-control" id="maxQualification">
+                    <option value="">-Не Выбрано-</option>
                     <option value="3">3</option>
                     <option value="2">2</option>
                     <option value="1">1</option>
@@ -184,12 +186,20 @@
                 cache: false
             })
                 .done(function (dataSet) {
+                    var index = 1;
+                    var selectedIndex = 0;
+                    var model = @Json.Serialize(Model);
                     dataSet.forEach(function (i) {
                         $('#rescueStationId')
                             .append($("<option></option>")
                                 .attr("value", i.stationId)
                                 .text(i.stationName));
+                        if (model.stationName == i.stationName) {
+                            selectedIndex = index;
+                        }
+                        index += 1;
                     });
+                    document.getElementById('rescueStationId').selectedIndex = selectedIndex;
                 })
                 .fail(function (error) {
                     errorAlert(error);
@@ -206,7 +216,6 @@
             })
                 .done(function (dataSet) {
                     $('#divers-table-block').show();
-
                     loadDivers(dataSet);
                 })
                 .fail(function (error) {

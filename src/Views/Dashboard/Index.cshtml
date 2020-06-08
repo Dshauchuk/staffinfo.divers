@@ -4,40 +4,39 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Dashboard</h1>
+<h1 class="text-center">Общая статистика</h1>
+    
+<div class="row">
+    <div class="col-md-5">
+        <ejs-accumulationchart id="container" title="Количество водолазов на станции" load="load" enableAnimation="true">
+            <e-accumulationchart-center x="50%" y="50%"></e-accumulationchart-center>
+            <e-accumulationchart-tooltipsettings enable="true"></e-accumulationchart-tooltipsettings>
+            <e-accumulationchart-legendsettings visible="false" />
+            <e-accumulation-series-collection>
+                <e-accumulation-series dataSource="ViewBag.dataSource" xName="Name" yName="Count" name="Водолазов на станции">
+                    <e-accumulationseries-datalabel name="Name" visible="true">
+                        <e-font fontWeight="600" color="white"></e-font>
+                    </e-accumulationseries-datalabel>
+                </e-accumulation-series> 
+            </e-accumulation-series-collection>
+        </ejs-accumulationchart>
+    </div>
 
-<div>
-    <h4 style="margin-left:200px">Line Chart</h4>
-
-    <ejs-accumulationchart id="container" title="Количество водолазов на станции" load="load" enableAnimation="true">
-        <e-accumulationchart-center x="50%" y="50%"></e-accumulationchart-center>
-        <e-accumulationchart-tooltipsettings enable="true"></e-accumulationchart-tooltipsettings>
-        <e-accumulationchart-legendsettings visible="false" />
-        <e-accumulation-series-collection>
-            <e-accumulation-series dataSource="ViewBag.dataSource" xName="Name" yName="Count" name="Водолазов на станции">
-                <e-accumulationseries-datalabel name="Name" visible="true">
-                    <e-font fontWeight="600" color="white"></e-font>
-                </e-accumulationseries-datalabel>
-            </e-accumulation-series> 
-        </e-accumulation-series-collection>
-    </ejs-accumulationchart>
+    <div class="col-md-7">
+        <ejs-chart id="containerDivingTimePerStation" title="Количество часов погружения на станциях" enableAnimation="true">
+            <e-chart-primaryxaxis valueType="Category"></e-chart-primaryxaxis>
+            <e-series-collection>
+                <e-series dataSource="ViewBag.dataSource1" xName="Name" yName="Count" type="@Syncfusion.EJ2.Charts.ChartSeriesType.Bar">
+                    <e-series-marker>
+                        <e-series-datalabel visible="true" position="Top">
+                            <e-font fontWeight="600" color="#ffffff"></e-font>
+                        </e-series-datalabel>
+                    </e-series-marker>
+                </e-series>
+            </e-series-collection>
+        </ejs-chart>
+    </div>
 </div>
-
-<div>
-    <ejs-chart id="containerDivingTimePerStation" title="Количество часов погружения на станциях" enableAnimation="true">
-        <e-chart-primaryxaxis valueType="Category"></e-chart-primaryxaxis>
-        <e-series-collection>
-            <e-series dataSource="ViewBag.dataSource1" xName="Name" yName="Count" type="@Syncfusion.EJ2.Charts.ChartSeriesType.Bar">
-                <e-series-marker>
-                    <e-series-datalabel visible="true" position="Top">
-                        <e-font fontWeight="600" color="#ffffff"></e-font>
-                    </e-series-datalabel>
-                </e-series-marker>
-            </e-series>
-        </e-series-collection>
-    </ejs-chart>
-</div>
-
 <div>
     <ejs-chart id="containerAverageDivingTimePerStation" title="Среднее количество часов погружения на станциях" enableAnimation="true">
         <e-chart-primaryxaxis valueType="Category"></e-chart-primaryxaxis>
