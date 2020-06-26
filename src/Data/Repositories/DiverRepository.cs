@@ -290,8 +290,8 @@ namespace Staffinfo.Divers.Data.Repositories
                 "left join _staffinfo.diving_hours dh on d.diver_id = dh.diver_id " +
             "where 1 = 1 " +
                 (parameters.p_station_id == null ? "" : "AND @p_station_id = d.rescue_station_id ") +
-                (parameters.p_med_exam_end_date == null   ? "" : "AND @p_med_exam_start_date <= d.medical_examination_date ") +
-                (parameters.p_med_exam_start_date == null ? "" : "AND @p_med_exam_end_date >= d.medical_examination_date ") +
+                (parameters.p_med_exam_start_date == null   ? "" : "AND @p_med_exam_start_date::date <= d.medical_examination_date ") +
+                (parameters.p_med_exam_end_date == null ? "" : "AND @p_med_exam_end_date::date >= d.medical_examination_date ") +
                 (parameters.p_min_qualif == null ? "" : "AND @p_min_qualif <= d.qualification ") +
                 (parameters.p_max_qualif == null ? "" : "AND @p_max_qualif >= d.qualification ") +
                 (parameters.p_name_query == null ? "" : "AND (convert_from(decrypt(d.last_name::bytea, @p_key::bytea, 'aes'), 'SQL_ASCII') LIKE CONCAT('%', @p_name_query, '%') OR convert_from(decrypt(d.first_name::bytea, @p_key::bytea, 'aes'), 'SQL_ASCII') LIKE CONCAT('%', @p_name_query, '%'))");

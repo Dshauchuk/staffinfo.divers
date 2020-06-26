@@ -10,10 +10,10 @@ namespace Staffinfo.Divers.Models
         public int? RescueStationId { get; set; }
 
         /// <inheritdoc/>
-        public DateTime? MedicalExaminationStartDate { get; set; }
+        public string? MedicalExaminationStartDate { get; set; }
 
         /// <inheritdoc/>
-        public DateTime? MedicalExaminationEndDate { get; set; }
+        public string? MedicalExaminationEndDate { get; set; }
 
         /// <inheritdoc/>
         public int? MinQualification { get; set; }
