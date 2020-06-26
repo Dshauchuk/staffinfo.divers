@@ -1,14 +1,14 @@
 ﻿namespace Staffinfo.Divers.Models
 {
-    public class DiversPerStationChartModel
+    public class DivingTimePerStationModel
     {
-        public DiversPerStationChartModel()
+        public DivingTimePerStationModel()
         {
         }
 
-        public DiversPerStationChartModel(int id, string name, int count)
+        public DivingTimePerStationModel(int id, string name, int count)
         {
-            Id = id;
+            Id = Id;
             Name = name;
             Count = count;
         }

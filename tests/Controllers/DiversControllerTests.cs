@@ -44,57 +44,16 @@ namespace staffinfo.divers.tests.Controllers
         [Fact]
         public void Index_GivenValidInput_ShouldReturnRescueStation()
         {
-            // Arrange
-            var model = new RescueStation()
-            {
-                StationId = 1,
-                StationName = "Ветковская",
-                CreatedAt = DateTime.Now,
-                UpdatedAt = DateTime.Now
-            };
-
             var diverServiceMock = new Mock<IDiverService>();
             var rescueStationServiceMock = new Mock<IRescueStationService>();
             var divingTimeServiceMock = new Mock<IDivingTimeRepository>();
             var diversController = new DiversController(divingTimeServiceMock.Object, rescueStationServiceMock.Object, diverServiceMock.Object, _mapper);
 
             // Act
-            var viewResult = diversController.Index(model) as ViewResult;
+            var viewResult = diversController.Index();
 
             // Assert
             Assert.NotNull(viewResult);
-            var result = viewResult.Model as RescueStation;
-            Assert.NotNull(result);
-            Assert.Equal(model.StationId, result.StationId);
-            Assert.Equal(model.StationName, result.StationName);
-        }
-
-        [Fact]
-        public void LoadFromStation_GivenValidInput_ShouldReturnFilterOptions()
-        {
-            // Arrange
-            var existingId = 1;
-
-            var model = new FilterOptions()
-            {
-                RescueStationId = existingId,
-                MinQualification = 1,
-                MaxQualification = 3
-            };
-
-            var diverServiceMock = new Mock<IDiverService>();
-            var rescueStationServiceMock = new Mock<IRescueStationService>();
-            var divingTimeServiceMock = new Mock<IDivingTimeRepository>();
-            var diversController = new DiversController(divingTimeServiceMock.Object, rescueStationServiceMock.Object, diverServiceMock.Object, _mapper);
-
-            // Act
-            var result = diversController.LoadFromStation(existingId) as FilterOptions;
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.Equal(model.RescueStationId, result.RescueStationId);
-            Assert.Equal(model.MinQualification, result.MinQualification);
-            Assert.Equal(model.MaxQualification, result.MaxQualification);
         }
 
         [Fact]
@@ -400,7 +359,7 @@ namespace staffinfo.divers.tests.Controllers
             var diverServiceMock = new Mock<IDiverService>();
             var rescueStationServiceMock = new Mock<IRescueStationService>();
             var divingTimeServiceMock = new Mock<IDivingTimeRepository>();
-            diverServiceMock.Setup(repo => repo.AddDivingTime(It.IsAny<DivingTime>()))
+            diverServiceMock.Setup(repo => repo.AddDivingTimeAsync(It.IsAny<DivingTime>()))
                 .Returns(Task.CompletedTask);
             var diversController = new DiversController(divingTimeServiceMock.Object, rescueStationServiceMock.Object, diverServiceMock.Object, _mapper);
 
@@ -448,7 +407,7 @@ namespace staffinfo.divers.tests.Controllers
             var diverServiceMock = new Mock<IDiverService>();
             var rescueStationServiceMock = new Mock<IRescueStationService>();
             var divingTimeServiceMock = new Mock<IDivingTimeRepository>();
-            diverServiceMock.Setup(repo => repo.AddPhoto(It.IsAny<string>(), It.IsAny<int>()))
+            diverServiceMock.Setup(repo => repo.AddPhotoAsync(It.IsAny<string>(), It.IsAny<int>()))
                 .Returns(Task.CompletedTask);
             diverServiceMock.Setup(repo => repo.GetAsync(It.IsAny<int>()))
                 .Returns(Task.FromResult(model));
@@ -491,7 +450,7 @@ namespace staffinfo.divers.tests.Controllers
             var diverServiceMock = new Mock<IDiverService>();
             var rescueStationServiceMock = new Mock<IRescueStationService>();
             var divingTimeServiceMock = new Mock<IDivingTimeRepository>();
-            diverServiceMock.Setup(repo => repo.AddPhoto(It.IsAny<string>(), It.IsAny<int>()))
+            diverServiceMock.Setup(repo => repo.AddPhotoAsync(It.IsAny<string>(), It.IsAny<int>()))
                 .Throws(new NotFoundException());
             var diversController = new DiversController(divingTimeServiceMock.Object, rescueStationServiceMock.Object, diverServiceMock.Object, _mapper);
 
@@ -512,7 +471,7 @@ namespace staffinfo.divers.tests.Controllers
             var diverServiceMock = new Mock<IDiverService>();
             var rescueStationServiceMock = new Mock<IRescueStationService>();
             var divingTimeServiceMock = new Mock<IDivingTimeRepository>();
-            diverServiceMock.Setup(repo => repo.DeleteDivingTime(It.IsAny<int>(), It.IsAny<int>()))
+            diverServiceMock.Setup(repo => repo.DeleteDivingTimeAsync(It.IsAny<int>(), It.IsAny<int>()))
                 .Returns(Task.CompletedTask);
             var diversController = new DiversController(divingTimeServiceMock.Object, rescueStationServiceMock.Object, diverServiceMock.Object, _mapper);
 
@@ -520,7 +479,7 @@ namespace staffinfo.divers.tests.Controllers
             await diversController.DeleteDivingTime(model.DiverId, model.Year, model.WorkingMinutes);
 
             // Assert
-            diverServiceMock.Verify(repo => repo.DeleteDivingTime(It.IsAny<int>(), It.IsAny<int>()), Times.Once);
+            diverServiceMock.Verify(repo => repo.DeleteDivingTimeAsync(It.IsAny<int>(), It.IsAny<int>()), Times.Once);
         }
 
         [Fact]

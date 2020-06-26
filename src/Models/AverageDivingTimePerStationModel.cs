@@ -1,17 +1,20 @@
 ﻿namespace Staffinfo.Divers.Models
 {
-    public class AverageDivingTimePerStationChartModel
+    public class AverageDivingTimePerStationModel
     {
-        public AverageDivingTimePerStationChartModel()
+        public AverageDivingTimePerStationModel()
         {
         }
 
-        public AverageDivingTimePerStationChartModel(string name, double average, int count)
+        public AverageDivingTimePerStationModel(int id, string name, double average, int count)
         {
+            Id = id;
             Name = name;
             Average = average;
             Count = count;
         }
+
+        public int Id { get; set; }
 
         public string Name { get; set; }
 

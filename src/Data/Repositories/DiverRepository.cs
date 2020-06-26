@@ -8,23 +8,18 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Staffinfo.Divers.Data.Repositories
 {
     public class DiverRepository : DapperRepository, IDiverRepository
     {
-        RescueStationRepository _rescueStationRepository;
-        DivingTimeRepository _divingTimeRepository;
         private Settings _settings;
 
 
         public DiverRepository(string connectionString, IOptions<Settings> settings) : base(connectionString)
         {
             _settings = settings.Value;
-            _rescueStationRepository = new RescueStationRepository(connectionString);
-            _divingTimeRepository = new DivingTimeRepository(connectionString);
         }
 
         public async Task<DiverPoco> AddAsync(DiverPoco poco)
@@ -191,7 +186,6 @@ namespace Staffinfo.Divers.Data.Repositories
                         param: parameters))
                     .FirstOrDefault();
 
-
                 return diverPoco;
             }
         }
@@ -218,21 +212,40 @@ namespace Staffinfo.Divers.Data.Repositories
                 "d.personal_book_issue_date, " +
                 "convert_from(decrypt(d.personal_book_protocol_number::bytea, @p_key::bytea, 'aes'), 'SQL_ASCII') personal_book_protocol_number, " +
                 "d.created_at, " +
-                "d.updated_at " +
+                "d.updated_at, " +
+                "rs.*, " +
+                "dh.diver_id, " +
+                "dh.year, " +
+                "dh.working_minutes " +
             "from " +
-                "_staffinfo.divers d";
+                "_staffinfo.divers d " +
+                "left join _staffinfo.rescue_stations rs on station_id = rescue_station_id " +
+                "left join _staffinfo.diving_hours dh on d.diver_id = dh.diver_id ";
 
             using (IDbConnection conn = Connection)
             {
-                var diverPocos = await conn.QueryAsync<DiverPoco>(sql, parameters);
+                var lookup = new Dictionary<int, DiverPoco>();
 
-                foreach (DiverPoco diver in diverPocos)
+                await conn.QueryAsync<DiverPoco, RescueStationPoco, DivingTimePoco, DiverPoco>(sql, (diver, station, time) =>
                 {
-                    diver.RescueStation = diver.RescueStationId == null ? null : await _rescueStationRepository.GetAsync((int)diver.RescueStationId);
-                    diver.WorkingTime = (await _divingTimeRepository.GetListAsync(diver.DiverId)).ToList();
-                }
+                    DiverPoco diverItem;
 
-                return diverPocos;
+                    if (!lookup.TryGetValue(diver.DiverId, out diverItem))
+                        lookup.Add(diver.DiverId, diverItem = diver);
+                    if (diverItem.WorkingTime == null)
+                        diverItem.WorkingTime = new List<DivingTimePoco>();
+                    if (time != null)
+                        diverItem.WorkingTime.Add(time);
+
+                    if (diverItem.RescueStation == null)
+                        diverItem.RescueStation = station;
+
+                    return diverItem;
+                },
+                    splitOn: "station_id,diver_id",
+                    param: parameters);
+
+                return lookup.Values;
             }
         }
 
@@ -252,43 +265,63 @@ namespace Staffinfo.Divers.Data.Repositories
             };
 
             string sql = "select " +
-                "d.diver_id," +
-                "convert_from(decrypt(d.last_name :: bytea, @p_key :: bytea, 'aes'), 'SQL_ASCII') last_name," +
-                "convert_from(decrypt(d.first_name :: bytea, @p_key :: bytea, 'aes'), 'SQL_ASCII') first_name," +
-                "convert_from(decrypt(d.middle_name :: bytea, @p_key :: bytea, 'aes'), 'SQL_ASCII') middle_name," +
-                "d.photo_url," +
-                "d.birth_date," +
-                "d.rescue_station_id," +
-                "d.medical_examination_date," +
-                "d.address," +
-                "d.qualification," +
-                "convert_from(decrypt(d.personal_book_number :: bytea, @p_key :: bytea, 'aes'), 'SQL_ASCII') personal_book_number," +
-                "d.personal_book_issue_date," +
-                "convert_from(decrypt(d.personal_book_protocol_number :: bytea, @p_key :: bytea, 'aes'), 'SQL_ASCII') personal_book_protocol_number," +
-                "d.created_at," +
-                "d.updated_at " +
+                "d.diver_id, " +
+                "convert_from(decrypt(d.last_name::bytea, @p_key::bytea, 'aes'), 'SQL_ASCII') last_name, " +
+                "convert_from(decrypt(d.first_name::bytea, @p_key::bytea, 'aes'), 'SQL_ASCII') first_name, " +
+                "convert_from(decrypt(d.middle_name::bytea, @p_key::bytea, 'aes'), 'SQL_ASCII') middle_name, " +
+                "d.photo_url, " +
+                "d.birth_date, " +
+                "d.rescue_station_id, " +
+                "d.medical_examination_date, " +
+                "d.address, " +
+                "d.qualification, " +
+                "convert_from(decrypt(d.personal_book_number::bytea, @p_key::bytea, 'aes'), 'SQL_ASCII') personal_book_number, " +
+                "d.personal_book_issue_date, " +
+                "convert_from(decrypt(d.personal_book_protocol_number::bytea, @p_key::bytea, 'aes'), 'SQL_ASCII') personal_book_protocol_number, " +
+                "d.created_at, " +
+                "d.updated_at, " +
+                "rs.*, " +
+                "dh.diver_id, " +
+                "dh.year, " +
+                "dh.working_minutes " +
             "from " +
-                "_staffinfo.divers d";
+                "_staffinfo.divers d " +
+                "left join _staffinfo.rescue_stations rs on station_id = rescue_station_id " +
+                "left join _staffinfo.diving_hours dh on d.diver_id = dh.diver_id " +
+            "where 1 = 1 " +
+                (parameters.p_station_id == null ? "" : "AND @p_station_id = d.rescue_station_id ") +
+                (parameters.p_med_exam_end_date == null   ? "" : "AND @p_med_exam_start_date <= d.medical_examination_date ") +
+                (parameters.p_med_exam_start_date == null ? "" : "AND @p_med_exam_end_date >= d.medical_examination_date ") +
+                (parameters.p_min_qualif == null ? "" : "AND @p_min_qualif <= d.qualification ") +
+                (parameters.p_max_qualif == null ? "" : "AND @p_max_qualif >= d.qualification ") +
+                (parameters.p_name_query == null ? "" : "AND (convert_from(decrypt(d.last_name::bytea, @p_key::bytea, 'aes'), 'SQL_ASCII') LIKE CONCAT('%', @p_name_query, '%') OR convert_from(decrypt(d.first_name::bytea, @p_key::bytea, 'aes'), 'SQL_ASCII') LIKE CONCAT('%', @p_name_query, '%'))");
 
             using (IDbConnection conn = Connection)
             {
-                var diverPocos = await conn.QueryAsync<DiverPoco>(sql, parameters);
+                var lookup = new Dictionary<int, DiverPoco>();
 
-                foreach(DiverPoco diver in diverPocos)
+                await conn.QueryAsync<DiverPoco, RescueStationPoco, DivingTimePoco, DiverPoco>(sql, (diver, station, time) =>
                 {
-                    diver.RescueStation = diver.RescueStationId == null ? null : await _rescueStationRepository.GetAsync((int)diver.RescueStationId);
-                    diver.WorkingTime = (await _divingTimeRepository.GetListAsync(diver.DiverId)).ToList();
-                }
+                    DiverPoco diverItem;
 
-                diverPocos = diverPocos.Where(diver => ((parameters.p_station_id == null) ? true : (parameters.p_station_id == diver.RescueStationId)) &&
-                                          ((parameters.p_min_qualif == null) ? true : (parameters.p_min_qualif <= diver.Qualification)) &&
-                                          ((parameters.p_max_qualif == null) ? true : (parameters.p_max_qualif >= diver.Qualification)) &&
-                                          ((parameters.p_med_exam_start_date == null) ? true : (parameters.p_med_exam_start_date <= diver.MedicalExaminationDate)) &&
-                                          ((parameters.p_med_exam_end_date == null) ? true : (parameters.p_med_exam_end_date >= diver.MedicalExaminationDate)) &&
-                                          ((parameters.p_name_query == null) ? true : (diver.FirstName.ToLower().Contains(parameters.p_name_query.ToLower()))) &&
-                                          ((parameters.p_min_hours == 0) ? true : (parameters.p_min_hours <= (diver.WorkingTime.Sum(c => c.WorkingMinutes) / 60.0))) &&
+                    if (!lookup.TryGetValue(diver.DiverId, out diverItem))
+                        lookup.Add(diver.DiverId, diverItem = diver);
+                    if (diverItem.WorkingTime == null)
+                        diverItem.WorkingTime = new List<DivingTimePoco>();
+                    if(time != null)
+                        diverItem.WorkingTime.Add(time);
+
+                    if (diverItem.RescueStation == null)
+                        diverItem.RescueStation = station;
+
+                    return diverItem;
+                },
+                    splitOn: "station_id,diver_id",
+                    param: parameters);
+
+                var diverPocos = lookup.Values.Where(diver => ((parameters.p_min_hours == 0) ? true : (parameters.p_min_hours <= (diver.WorkingTime.Sum(c => c.WorkingMinutes) / 60.0))) &&
                                           ((parameters.p_max_hours == 0) ? true : (parameters.p_max_hours >= (diver.WorkingTime.Sum(c => c.WorkingMinutes) / 60.0)))).ToList();
-
+                
                 return diverPocos;
             }
         }

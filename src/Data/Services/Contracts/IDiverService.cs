@@ -17,10 +17,16 @@ namespace Staffinfo.Divers.Services.Contracts
 
         Task DeleteAsync(int diverId);
 
-        Task AddPhoto(string photoBase64, int diverId);
+        Task AddPhotoAsync(string photoBase64, int diverId);
 
-        Task AddDivingTime(DivingTime time);
+        Task AddDivingTimeAsync(DivingTime time);
 
-        Task DeleteDivingTime(int diverId, int year);
+        Task DeleteDivingTimeAsync(int diverId, int year);
+
+        Task<List<DiversPerStationModel>> GetDiversPerStationAsync();
+
+        Task<List<DivingTimePerStationModel>> GetDivingTimePerStationAsync();
+
+        Task<List<AverageDivingTimePerStationModel>> GetAverageDivingTimePerStationAsync();
     }
 }

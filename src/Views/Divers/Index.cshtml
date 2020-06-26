@@ -1,4 +1,4 @@
-﻿@model RescueStation
+﻿@model int
 @{
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -98,7 +98,20 @@
 @section scripts{
     <script type="text/javascript">
 
-        function loadDivers(options) {
+        function loadDivers() {
+            var options = {
+                rescueStationId: $('#rescueStationId').val(),
+                medicalExaminationStartDate: $('#medicalExaminationStartDate').val(),
+                medicalExaminationEndDate: $('#medicalExaminationEndDate').val(),
+                minQualification: $('#minQualification').val(),
+                maxQualification: $('#maxQualification').val(),
+                nameQuery: $('#nameQuery').val(),
+                minHours: $('#minHours').val(),
+                maxHours: $('#maxHours').val()
+            };
+
+            $('#divers-table-block').show();
+
             $.ajax({
                 url: "/Divers/GetListJson",
                 type: "GET",
@@ -194,29 +207,14 @@
                             .append($("<option></option>")
                                 .attr("value", i.stationId)
                                 .text(i.stationName));
-                        if (model.stationName == i.stationName) {
+                        if (model == i.stationId) {
                             selectedIndex = index;
                         }
                         index += 1;
                     });
                     document.getElementById('rescueStationId').selectedIndex = selectedIndex;
-                })
-                .fail(function (error) {
-                    errorAlert(error);
-                });
 
-            $.ajax({
-                url: "/Divers/LoadFromStation",
-                type: "GET",
-                dataType: "json",
-                cache: false,
-                data: {
-                    stationId: @Model.StationId
-                }
-            })
-                .done(function (dataSet) {
-                    $('#divers-table-block').show();
-                    loadDivers(dataSet);
+                    loadDivers();
                 })
                 .fail(function (error) {
                     errorAlert(error);
@@ -232,24 +230,8 @@
             });
 
             $('#loadDiversBtn').click(function (e) {
-
-                var options = {
-                    rescueStationId: $('#rescueStationId').val(),
-                    medicalExaminationStartDate: $('#medicalExaminationStartDate').val(),
-                    medicalExaminationEndDate: $('#medicalExaminationEndDate').val(),
-                    minQualification: $('#minQualification').val(),
-                    maxQualification: $('#maxQualification').val(),
-                    nameQuery: $('#nameQuery').val(),
-                    minHours: $('#minHours').val(),
-                    maxHours: $('#maxHours').val()
-                };
-
-                $('#divers-table-block').show();
-
-                loadDivers(options);
+                loadDivers();
             })
         })
-
-
     </script>
 }

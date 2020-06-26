@@ -1,5 +1,4 @@
-﻿@model List<DiversPerStationChartModel>
-@{
+﻿@{
     ViewData["Title"] = "Dashboard";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
@@ -8,12 +7,12 @@
     
 <div class="row">
     <div class="col-md-5">
-        <ejs-accumulationchart id="container" title="Количество водолазов на станции" load="load" enableAnimation="true">
+        <ejs-accumulationchart id="diversPerStationContainer" title="Количество водолазов на станции" load="load" enableAnimation="true">
             <e-accumulationchart-center x="50%" y="50%"></e-accumulationchart-center>
             <e-accumulationchart-tooltipsettings enable="true"></e-accumulationchart-tooltipsettings>
             <e-accumulationchart-legendsettings visible="false" />
             <e-accumulation-series-collection>
-                <e-accumulation-series dataSource="ViewBag.dataSource" xName="Name" yName="Count" name="Водолазов на станции">
+                <e-accumulation-series dataSource="ViewBag.diversPerStationChartSource" xName="Name" yName="Count" name="Водолазов на станции">
                     <e-accumulationseries-datalabel name="Name" visible="true">
                         <e-font fontWeight="600" color="white"></e-font>
                     </e-accumulationseries-datalabel>
@@ -26,7 +25,7 @@
         <ejs-chart id="containerDivingTimePerStation" title="Количество часов погружения на станциях" enableAnimation="true">
             <e-chart-primaryxaxis valueType="Category"></e-chart-primaryxaxis>
             <e-series-collection>
-                <e-series dataSource="ViewBag.dataSource1" xName="Name" yName="Count" type="@Syncfusion.EJ2.Charts.ChartSeriesType.Bar">
+                <e-series dataSource="ViewBag.divingTimePerStationChartSource" xName="Name" yName="Count" type="@Syncfusion.EJ2.Charts.ChartSeriesType.Bar">
                     <e-series-marker>
                         <e-series-datalabel visible="true" position="Top">
                             <e-font fontWeight="600" color="#ffffff"></e-font>
@@ -41,7 +40,7 @@
     <ejs-chart id="containerAverageDivingTimePerStation" title="Среднее количество часов погружения на станциях" enableAnimation="true">
         <e-chart-primaryxaxis valueType="Category"></e-chart-primaryxaxis>
         <e-series-collection>
-            <e-series dataSource="ViewBag.dataSource2" xName="Name" yName="Average" type="@Syncfusion.EJ2.Charts.ChartSeriesType.Bar">
+            <e-series dataSource="ViewBag.averageDivingTimePerStationChartSource" xName="Name" yName="Average" type="@Syncfusion.EJ2.Charts.ChartSeriesType.Bar">
                 <e-series-marker>
                     <e-series-datalabel visible="true" position="Top">
                         <e-font fontWeight="600" color="#ffffff"></e-font>
@@ -77,7 +76,7 @@
 </div>
 
 <script>
-    var model = @Json.Serialize(Model);
+    var model = @Json.Serialize(ViewBag.diversPerStationChartSource);
 
     function seriesSelection(sender) {
         var selected = sender.target.id.split('_');
@@ -89,7 +88,7 @@
         $("#confirmDeleteDiver").modal('show');
     }
 
-    document.getElementById('container').onclick = (e) => {
+    document.getElementById('diversPerStationContainer').onclick = (e) => {
         seriesSelection(e);
     };
 
