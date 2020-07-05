@@ -7,7 +7,7 @@
     
 <div class="row">
     <div class="col-md-5">
-        <ejs-accumulationchart id="diversPerStationContainer" title="Количество водолазов на станции" load="load" enableAnimation="true">
+        <ejs-accumulationchart id="diversPerStationContainer" title="Количество водолазов на станции" enableAnimation="true">
             <e-accumulationchart-center x="50%" y="50%"></e-accumulationchart-center>
             <e-accumulationchart-tooltipsettings enable="true"></e-accumulationchart-tooltipsettings>
             <e-accumulationchart-legendsettings visible="false" />
@@ -88,9 +88,9 @@
         $("#confirmDeleteDiver").modal('show');
     }
 
-    document.getElementById('diversPerStationContainer').onclick = (e) => {
+    $('#diversPerStationContainer').click(function (e) {
         seriesSelection(e);
-    };
+    });
 
     $("#confirm").click(function () {
         $("#confirmDeleteDiver").modal('hide');
@@ -100,10 +100,4 @@
             async: false
         });
     });
-
-    function load(args) {
-        var indexedTheme = location.hash.split('/')[1];
-        indexedTheme = indexedTheme ? indexedTheme : 'Material';
-        args.accumulation.theme = (indexedTheme.charAt(0).toUpperCase() + indexedTheme.slice(1).replace(/dark/i, "Dark").replace(/light/i, "Light"));
-    }
 </script>

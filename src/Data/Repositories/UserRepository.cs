@@ -5,6 +5,7 @@ using Staffinfo.Divers.Data.Repositories.Contracts;
 using Staffinfo.Divers.Models;
 using System.Collections.Generic;
 using System.Data;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Staffinfo.Divers.Data.Repositories
@@ -35,34 +36,34 @@ namespace Staffinfo.Divers.Data.Repositories
                 p_key = _settings.SecurityKey
             };
 
-            string sql = "INSERT into " +
-            "_staffinfo.users(" +
-                "last_name, " +
-                "first_name, " +
-                "middle_name," +
-                "login, " +
-                "pwd_hash, " +
-                "need_to_change_pwd," +
-                "refresh_token, " +
-                "token_refresh_timestamp, " +
-                "role, " +
-                "registration_timestamp) " +
-            "VALUES(" +
-                "encrypt(@p_last_name::bytea, @p_key::bytea, 'aes'), " +
-                "encrypt(@p_first_name::bytea, @p_key::bytea, 'aes'), " +
-                "encrypt(@p_middle_name::bytea, @p_key::bytea, 'aes')," +
-                "@p_login, " +
-                "@pwd_hash, " +
-                "@p_need_to_change_pwd," +
-                "@p_refresh_token, " +
-                "@p_token_refresh_timestamp, " +
-                "@p_role, " +
-                "@p_registration_timestamp) " +
-            "returning *; ";
+            var sqlBuilder = new StringBuilder("INSERT into ");
+            sqlBuilder.Append("_staffinfo.users(");
+                sqlBuilder.Append("last_name, ");
+                sqlBuilder.Append("first_name, ");
+                sqlBuilder.Append("middle_name,");
+                sqlBuilder.Append("login, ");
+                sqlBuilder.Append("pwd_hash, ");
+                sqlBuilder.Append("need_to_change_pwd,");
+                sqlBuilder.Append("refresh_token, ");
+                sqlBuilder.Append("token_refresh_timestamp, ");
+                sqlBuilder.Append("role, ");
+                sqlBuilder.Append("registration_timestamp) ");
+            sqlBuilder.Append("VALUES(");
+                sqlBuilder.Append("encrypt(@p_last_name::bytea, @p_key::bytea, 'aes'), ");
+                sqlBuilder.Append("encrypt(@p_first_name::bytea, @p_key::bytea, 'aes'), ");
+                sqlBuilder.Append("encrypt(@p_middle_name::bytea, @p_key::bytea, 'aes'),");
+                sqlBuilder.Append("@p_login, ");
+                sqlBuilder.Append("@pwd_hash, ");
+                sqlBuilder.Append("@p_need_to_change_pwd,");
+                sqlBuilder.Append("@p_refresh_token, ");
+                sqlBuilder.Append("@p_token_refresh_timestamp, ");
+                sqlBuilder.Append("@p_role, ");
+                sqlBuilder.Append("@p_registration_timestamp) ");
+            sqlBuilder.Append("returning *; ");
 
             using (IDbConnection conn = Connection)
             {
-                var addedDiverPoco = await conn.QueryFirstOrDefaultAsync<UserPoco>(sql, parameters);
+                var addedDiverPoco = await conn.QueryFirstOrDefaultAsync<UserPoco>(sqlBuilder.ToString(), parameters);
 
                 return addedDiverPoco;
             }
@@ -91,26 +92,26 @@ namespace Staffinfo.Divers.Data.Repositories
                 p_key = _settings.SecurityKey
             };
 
-            string sql = "select " +
-                "user_id, " +
-                "convert_from(decrypt(last_name::bytea, @p_key::bytea, 'aes'), 'SQL_ASCII') last_name, " +
-                "convert_from(decrypt(first_name::bytea, @p_key::bytea, 'aes'), 'SQL_ASCII') first_name, " +
-                "convert_from(decrypt(middle_name::bytea, @p_key::bytea, 'aes'), 'SQL_ASCII') middle_name, " +
-                "login, " +
-                "pwd_hash, " +
-                "need_to_change_pwd, " +
-                "refresh_token, " +
-                "token_refresh_timestamp, " +
-                "role, " +
-                "registration_timestamp " +
-            "from " +
-                "_staffinfo.users " +
-            "where " +
-                "user_id = @p_user_id";
+            var sqlBuilder = new StringBuilder("select ");
+                sqlBuilder.Append("user_id, ");
+                sqlBuilder.Append("convert_from(decrypt(last_name::bytea, @p_key::bytea, 'aes'), 'SQL_ASCII') last_name, ");
+                sqlBuilder.Append("convert_from(decrypt(first_name::bytea, @p_key::bytea, 'aes'), 'SQL_ASCII') first_name, ");
+                sqlBuilder.Append("convert_from(decrypt(middle_name::bytea, @p_key::bytea, 'aes'), 'SQL_ASCII') middle_name, ");
+                sqlBuilder.Append("login, ");
+                sqlBuilder.Append("pwd_hash, ");
+                sqlBuilder.Append("need_to_change_pwd, ");
+                sqlBuilder.Append("refresh_token, ");
+                sqlBuilder.Append("token_refresh_timestamp, ");
+                sqlBuilder.Append("role, ");
+                sqlBuilder.Append("registration_timestamp ");
+            sqlBuilder.Append("from ");
+                sqlBuilder.Append("_staffinfo.users ");
+            sqlBuilder.Append("where ");
+                sqlBuilder.Append("user_id = @p_user_id");
 
             using (IDbConnection conn = Connection)
             {
-                var userPoco = await conn.QueryFirstOrDefaultAsync<UserPoco>(sql, parameters);
+                var userPoco = await conn.QueryFirstOrDefaultAsync<UserPoco>(sqlBuilder.ToString(), parameters);
 
                 return userPoco;
             }
@@ -123,23 +124,23 @@ namespace Staffinfo.Divers.Data.Repositories
                 p_key = _settings.SecurityKey
             };
 
-            string sql = "select " +
-                "user_id, " +
-                "convert_from(decrypt(last_name::bytea, @p_key::bytea, 'aes'), 'SQL_ASCII') last_name, " +
-                "convert_from(decrypt(first_name::bytea, @p_key::bytea, 'aes'), 'SQL_ASCII') first_name, " +
-                "convert_from(decrypt(middle_name::bytea, @p_key::bytea, 'aes'), 'SQL_ASCII') middle_name, " +
-                "login, " +
-                "pwd_hash, " +
-                "need_to_change_pwd, " +
-                "refresh_token, " +
-                "token_refresh_timestamp, " +
-                "role, " +
-                "registration_timestamp " +
-            "from _staffinfo.users";
+            var sqlBuilder = new StringBuilder("select ");
+                sqlBuilder.Append("user_id, ");
+                sqlBuilder.Append("convert_from(decrypt(last_name::bytea, @p_key::bytea, 'aes'), 'SQL_ASCII') last_name, ");
+                sqlBuilder.Append("convert_from(decrypt(first_name::bytea, @p_key::bytea, 'aes'), 'SQL_ASCII') first_name, ");
+                sqlBuilder.Append("convert_from(decrypt(middle_name::bytea, @p_key::bytea, 'aes'), 'SQL_ASCII') middle_name, ");
+                sqlBuilder.Append("login, ");
+                sqlBuilder.Append("pwd_hash, ");
+                sqlBuilder.Append("need_to_change_pwd, ");
+                sqlBuilder.Append("refresh_token, ");
+                sqlBuilder.Append("token_refresh_timestamp, ");
+                sqlBuilder.Append("role, ");
+                sqlBuilder.Append("registration_timestamp ");
+            sqlBuilder.Append("from _staffinfo.users");
 
             using (IDbConnection conn = Connection)
             {
-                var userPocos = await conn.QueryAsync<UserPoco>(sql, parameters);
+                var userPocos = await conn.QueryAsync<UserPoco>(sqlBuilder.ToString(), parameters);
 
                 return userPocos;
             }
@@ -163,40 +164,40 @@ namespace Staffinfo.Divers.Data.Repositories
                 p_key = _settings.SecurityKey
             };
 
-            string sql = "update " +
-                "_staffinfo.users " +
-            "set " +
-                "last_name = encrypt(@p_last_name::bytea, @p_key::bytea, 'aes'), " +
-                "first_name = encrypt(@p_first_name::bytea, @p_key::bytea, 'aes'), " +
-                "middle_name = encrypt(@p_middle_name::bytea, @p_key::bytea, 'aes'), " +
-                "login = @p_login, " +
-                "need_to_change_pwd = @p_need_to_change_pwd::boolean, " +
-                "pwd_hash = @p_pwd_hash, " +
-                "refresh_token = @p_refresh_token, " +
-                "token_refresh_timestamp = @p_token_refresh_timestamp, " +
-                "role = @p_role, " +
-                "registration_timestamp = @p_registration_timestamp " +
-                "where user_id = @p_user_id; " +
-            "select " +
-                "user_id, " +
-                "convert_from(decrypt(last_name::bytea, @p_key::bytea, 'aes'), 'SQL_ASCII') last_name, " +
-                "convert_from(decrypt(first_name::bytea, @p_key::bytea, 'aes'), 'SQL_ASCII') first_name, " +
-                "convert_from(decrypt(middle_name::bytea, @p_key::bytea, 'aes'), 'SQL_ASCII') middle_name, " +
-                "login, " +
-                "pwd_hash, " +
-                "need_to_change_pwd, " +
-                "refresh_token, " +
-                "token_refresh_timestamp, " +
-                "role, " +
-                "registration_timestamp " +
-            "from " +
-                "_staffinfo.users " +
-            "where " +
-                "user_id = @p_user_id;";
+            var sqlBuilder = new StringBuilder("update ");
+                sqlBuilder.Append("_staffinfo.users ");
+            sqlBuilder.Append("set ");
+                sqlBuilder.Append("last_name = encrypt(@p_last_name::bytea, @p_key::bytea, 'aes'), ");
+                sqlBuilder.Append("first_name = encrypt(@p_first_name::bytea, @p_key::bytea, 'aes'), ");
+                sqlBuilder.Append("middle_name = encrypt(@p_middle_name::bytea, @p_key::bytea, 'aes'), ");
+                sqlBuilder.Append("login = @p_login, ");
+                sqlBuilder.Append("need_to_change_pwd = @p_need_to_change_pwd::boolean, ");
+                sqlBuilder.Append("pwd_hash = @p_pwd_hash, ");
+                sqlBuilder.Append("refresh_token = @p_refresh_token, ");
+                sqlBuilder.Append("token_refresh_timestamp = @p_token_refresh_timestamp, ");
+                sqlBuilder.Append("role = @p_role, ");
+                sqlBuilder.Append("registration_timestamp = @p_registration_timestamp ");
+                sqlBuilder.Append("where user_id = @p_user_id; ");
+            sqlBuilder.Append("select ");
+                sqlBuilder.Append("user_id, ");
+                sqlBuilder.Append("convert_from(decrypt(last_name::bytea, @p_key::bytea, 'aes'), 'SQL_ASCII') last_name, ");
+                sqlBuilder.Append("convert_from(decrypt(first_name::bytea, @p_key::bytea, 'aes'), 'SQL_ASCII') first_name, ");
+                sqlBuilder.Append("convert_from(decrypt(middle_name::bytea, @p_key::bytea, 'aes'), 'SQL_ASCII') middle_name, ");
+                sqlBuilder.Append("login, ");
+                sqlBuilder.Append("pwd_hash, ");
+                sqlBuilder.Append("need_to_change_pwd, ");
+                sqlBuilder.Append("refresh_token, ");
+                sqlBuilder.Append("token_refresh_timestamp, ");
+                sqlBuilder.Append("role, ");
+                sqlBuilder.Append("registration_timestamp ");
+            sqlBuilder.Append("from ");
+                sqlBuilder.Append("_staffinfo.users ");
+            sqlBuilder.Append("where ");
+                sqlBuilder.Append("user_id = @p_user_id;");
 
             using (IDbConnection conn = Connection)
             {
-                var updatedUserPoco = await conn.QueryFirstOrDefaultAsync<UserPoco>(sql, parameters);
+                var updatedUserPoco = await conn.QueryFirstOrDefaultAsync<UserPoco>(sqlBuilder.ToString(), parameters);
 
                 return updatedUserPoco;
             }

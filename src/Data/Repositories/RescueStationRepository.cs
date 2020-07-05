@@ -4,6 +4,7 @@ using Staffinfo.Divers.Data.Repositories.Contracts;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Staffinfo.Divers.Data.Repositories
@@ -95,21 +96,20 @@ namespace Staffinfo.Divers.Data.Repositories
                 p_updated_at = DateTimeOffset.UtcNow
             };
 
-            string sql = 
-            "update " +
-                "_staffinfo.rescue_stations " +
-            "set " +
-                "station_name = @p_station_name, " +
-                "updated_at = @p_updated_at " +
-                "where station_id = @p_station_id; " +
-            "select * from " +
-                "_staffinfo.rescue_stations " +
-            "where " +
-                "station_id = @p_station_id;";
+            var sqlBuilder = new StringBuilder("update ");
+                sqlBuilder.Append("_staffinfo.rescue_stations ");
+            sqlBuilder.Append("set ");
+                sqlBuilder.Append("station_name = @p_station_name, ");
+                sqlBuilder.Append("updated_at = @p_updated_at ");
+                sqlBuilder.Append("where station_id = @p_station_id; ");
+            sqlBuilder.Append("select * from ");
+                sqlBuilder.Append("_staffinfo.rescue_stations ");
+            sqlBuilder.Append("where ");
+                sqlBuilder.Append("station_id = @p_station_id;");
 
             using (IDbConnection conn = Connection)
             {
-                var updatedStationPoco = await conn.QueryFirstOrDefaultAsync<RescueStationPoco>(sql, parameters);
+                var updatedStationPoco = await conn.QueryFirstOrDefaultAsync<RescueStationPoco>(sqlBuilder.ToString(), parameters);
 
                 return updatedStationPoco;
             }
