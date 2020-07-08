@@ -1,4 +1,4 @@
-﻿
+﻿@model int
 @{
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -35,6 +35,7 @@
             <div class="form-group col-md-4 col-sm-12">
                 <label for="minQualification" class="input-name">Мин. квалификация</label>
                 <select name="minQualification" class="form-control" id="minQualification">
+                    <option value="">-Не Выбрано-</option>
                     <option value="1">1</option>
                     <option value="2">2</option>
                     <option value="3">3</option>
@@ -43,6 +44,7 @@
             <div class="form-group col-md-4 col-sm-12">
                 <label for="maxQualification" class="input-name">Макс. квалификация</label>
                 <select name="maxQualification" class="form-control" id="maxQualification">
+                    <option value="">-Не Выбрано-</option>
                     <option value="3">3</option>
                     <option value="2">2</option>
                     <option value="1">1</option>
@@ -96,7 +98,20 @@
 @section scripts{
     <script type="text/javascript">
 
-        function loadDivers(options) {
+        function loadDivers() {
+            var options = {
+                rescueStationId: $('#rescueStationId').val(),
+                medicalExaminationStartDate: $('#medicalExaminationStartDate').val(),
+                medicalExaminationEndDate: $('#medicalExaminationEndDate').val(),
+                minQualification: $('#minQualification').val(),
+                maxQualification: $('#maxQualification').val(),
+                nameQuery: $('#nameQuery').val(),
+                minHours: $('#minHours').val(),
+                maxHours: $('#maxHours').val()
+            };
+
+            $('#divers-table-block').show();
+
             $.ajax({
                 url: "/Divers/GetListJson",
                 type: "GET",
@@ -184,12 +199,22 @@
                 cache: false
             })
                 .done(function (dataSet) {
+                    var index = 1;
+                    var selectedIndex = 0;
+                    var model = @Json.Serialize(Model);
                     dataSet.forEach(function (i) {
                         $('#rescueStationId')
                             .append($("<option></option>")
                                 .attr("value", i.stationId)
                                 .text(i.stationName));
-                    });                    
+                        if (model == i.stationId) {
+                            selectedIndex = index;
+                        }
+                        index += 1;
+                    });
+                    document.getElementById('rescueStationId').selectedIndex = selectedIndex;
+
+                    loadDivers();
                 })
                 .fail(function (error) {
                     errorAlert(error);
@@ -205,24 +230,8 @@
             });
 
             $('#loadDiversBtn').click(function (e) {
-
-                var options = {
-                    rescueStationId: $('#rescueStationId').val(),
-                    medicalExaminationStartDate: $('#medicalExaminationStartDate').val(),
-                    medicalExaminationEndDate: $('#medicalExaminationEndDate').val(),
-                    minQualification: $('#minQualification').val(),
-                    maxQualification: $('#maxQualification').val(),
-                    nameQuery: $('#nameQuery').val(),
-                    minHours: $('#minHours').val(),
-                    maxHours: $('#maxHours').val()
-                };
-
-                $('#divers-table-block').show();
-
-                loadDivers(options);
+                loadDivers();
             })
         })
-
-
     </script>
 }

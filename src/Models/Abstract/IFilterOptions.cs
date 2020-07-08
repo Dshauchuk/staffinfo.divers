@@ -15,12 +15,12 @@ namespace Staffinfo.Divers.Models.Abstract
         /// <summary>
         /// Minimum medical examination date
         /// </summary>
-        DateTime? MedicalExaminationStartDate { get; set; }
+        string? MedicalExaminationStartDate { get; set; }
 
         /// <summary>
         /// Maximum medical examination date
         /// </summary>
-        DateTime? MedicalExaminationEndDate { get; set; }
+        string? MedicalExaminationEndDate { get; set; }
 
         /// <summary>
         /// Min qualification

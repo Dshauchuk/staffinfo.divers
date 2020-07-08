@@ -8,6 +8,7 @@ using Staffinfo.Divers.Services;
 using Staffinfo.Divers.Shared.Exceptions;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -28,7 +29,8 @@ namespace staffinfo.divers.tests.Service
             // Arrange
             var diverRepositoryMock = new Mock<IDiverRepository>();
             var divingTimeRepositoryMock = new Mock<IDivingTimeRepository>();
-            var diverService = new DiverService(diverRepositoryMock.Object, divingTimeRepositoryMock.Object, _mapper);
+            var rescueStationRepositoryMock = new Mock<IRescueStationRepository>();
+            var diverService = new DiverService(diverRepositoryMock.Object, divingTimeRepositoryMock.Object, rescueStationRepositoryMock.Object, _mapper);
 
             // Act & Assert
             await Assert.ThrowsAsync<ArgumentNullException>(() => diverService.AddDiverAsync(null));
@@ -79,7 +81,8 @@ namespace staffinfo.divers.tests.Service
             diverRepositoryMock.Setup(repo => repo.AddAsync(It.IsAny<DiverPoco>()))
                 .Returns(Task.FromResult(modelPoco));
             var divingTimeRepositoryMock = new Mock<IDivingTimeRepository>();
-            var diverService = new DiverService(diverRepositoryMock.Object, divingTimeRepositoryMock.Object, _mapper);
+            var rescueStationRepositoryMock = new Mock<IRescueStationRepository>();
+            var diverService = new DiverService(diverRepositoryMock.Object, divingTimeRepositoryMock.Object, rescueStationRepositoryMock.Object, _mapper);
 
             // Act
             var result = await diverService.AddDiverAsync(model);
@@ -129,7 +132,8 @@ namespace staffinfo.divers.tests.Service
                 .Returns(Task.FromResult(modelPoco));
             diverRepositoryMock.Setup(repo => repo.DeleteAsync(It.IsAny<int>())).Returns(Task.CompletedTask);
             var divingTimeRepositoryMock = new Mock<IDivingTimeRepository>();
-            var diverService = new DiverService(diverRepositoryMock.Object, divingTimeRepositoryMock.Object, _mapper);
+            var rescueStationRepositoryMock = new Mock<IRescueStationRepository>();
+            var diverService = new DiverService(diverRepositoryMock.Object, divingTimeRepositoryMock.Object, rescueStationRepositoryMock.Object, _mapper);
 
             // Act
             await diverService.DeleteAsync(modelPoco.DiverId);
@@ -149,7 +153,8 @@ namespace staffinfo.divers.tests.Service
                 .Returns(Task.FromResult(null as DiverPoco));
             diverRepositoryMock.Setup(repo => repo.DeleteAsync(It.IsAny<int>())).Returns(Task.CompletedTask);
             var divingTimeRepositoryMock = new Mock<IDivingTimeRepository>();
-            var diverService = new DiverService(diverRepositoryMock.Object, divingTimeRepositoryMock.Object, _mapper);
+            var rescueStationRepositoryMock = new Mock<IRescueStationRepository>();
+            var diverService = new DiverService(diverRepositoryMock.Object, divingTimeRepositoryMock.Object, rescueStationRepositoryMock.Object, _mapper);
 
             // Act & Assert
             await Assert.ThrowsAsync<NotFoundException>(() => diverService.DeleteAsync(notExistingId));
@@ -161,7 +166,8 @@ namespace staffinfo.divers.tests.Service
             // Arrange
             var diverRepositoryMock = new Mock<IDiverRepository>();
             var divingTimeRepositoryMock = new Mock<IDivingTimeRepository>();
-            var diverService = new DiverService(diverRepositoryMock.Object, divingTimeRepositoryMock.Object, _mapper);
+            var rescueStationRepositoryMock = new Mock<IRescueStationRepository>();
+            var diverService = new DiverService(diverRepositoryMock.Object, divingTimeRepositoryMock.Object, rescueStationRepositoryMock.Object, _mapper);
 
             // Act & Assert
             await Assert.ThrowsAsync<ArgumentNullException>(() => diverService.EditDiverAsync(1, null));
@@ -177,7 +183,8 @@ namespace staffinfo.divers.tests.Service
             diverRepositoryMock.Setup(repo => repo.GetAsync(It.IsAny<int>()))
                 .Returns(Task.FromResult(null as DiverPoco));
             var divingTimeRepositoryMock = new Mock<IDivingTimeRepository>();
-            var diverService = new DiverService(diverRepositoryMock.Object, divingTimeRepositoryMock.Object, _mapper);
+            var rescueStationRepositoryMock = new Mock<IRescueStationRepository>();
+            var diverService = new DiverService(diverRepositoryMock.Object, divingTimeRepositoryMock.Object, rescueStationRepositoryMock.Object, _mapper);
 
             // Act & Assert
             await Assert.ThrowsAsync<NotFoundException>(() => diverService.EditDiverAsync(notExistingId, new EditDiverModel()));
@@ -244,7 +251,8 @@ namespace staffinfo.divers.tests.Service
                 .Returns(Task.FromResult((IEnumerable<DivingTimePoco>)workingTime));
             divingTimeRepositoryMock.Setup(repo => repo.AddAsync(It.IsAny<IEnumerable<DivingTimePoco>>()))
                 .Returns(Task.FromResult((IEnumerable<DivingTimePoco>)workingTime));
-            var diverService = new DiverService(diverRepositoryMock.Object, divingTimeRepositoryMock.Object, _mapper);
+            var rescueStationRepositoryMock = new Mock<IRescueStationRepository>();
+            var diverService = new DiverService(diverRepositoryMock.Object, divingTimeRepositoryMock.Object, rescueStationRepositoryMock.Object, _mapper);
 
             // Act
             var result = await diverService.EditDiverAsync(model.DiverId, model);
@@ -293,7 +301,8 @@ namespace staffinfo.divers.tests.Service
             diverRepositoryMock.Setup(repo => repo.GetAsync(It.IsAny<int>()))
                 .Returns(Task.FromResult(modelPoco));
             var divingTimeRepositoryMock = new Mock<IDivingTimeRepository>();
-            var diverService = new DiverService(diverRepositoryMock.Object, divingTimeRepositoryMock.Object, _mapper);
+            var rescueStationRepositoryMock = new Mock<IRescueStationRepository>();
+            var diverService = new DiverService(diverRepositoryMock.Object, divingTimeRepositoryMock.Object, rescueStationRepositoryMock.Object, _mapper);
 
             // Act
             var result = await diverService.GetAsync(modelPoco.DiverId);
@@ -325,7 +334,8 @@ namespace staffinfo.divers.tests.Service
             diverRepositoryMock.Setup(repo => repo.GetAsync(It.IsAny<int>()))
                 .Returns(Task.FromResult(null as DiverPoco));
             var divingTimeRepositoryMock = new Mock<IDivingTimeRepository>();
-            var diverService = new DiverService(diverRepositoryMock.Object, divingTimeRepositoryMock.Object, _mapper);
+            var rescueStationRepositoryMock = new Mock<IRescueStationRepository>();
+            var diverService = new DiverService(diverRepositoryMock.Object, divingTimeRepositoryMock.Object, rescueStationRepositoryMock.Object, _mapper);
 
             // Act & Assert
             await Assert.ThrowsAsync<NotFoundException>(() => diverService.GetAsync(notExistingId));
@@ -397,7 +407,8 @@ namespace staffinfo.divers.tests.Service
             diverRepositoryMock.Setup(repo => repo.GetListAsync(It.IsAny<FilterOptions>()))
                 .Returns(Task.FromResult((IEnumerable<DiverPoco>)modelFilterPocos));
             var divingTimeRepositoryMock = new Mock<IDivingTimeRepository>();
-            var diverService = new DiverService(diverRepositoryMock.Object, divingTimeRepositoryMock.Object, _mapper);
+            var rescueStationRepositoryMock = new Mock<IRescueStationRepository>();
+            var diverService = new DiverService(diverRepositoryMock.Object, divingTimeRepositoryMock.Object, rescueStationRepositoryMock.Object, _mapper);
 
             // Act
             var result = await diverService.GetAsync(options);
@@ -411,7 +422,7 @@ namespace staffinfo.divers.tests.Service
         }
 
         [Fact]
-        public async Task AddDivingTime_GivenValidInput_ShouldSuccessfullyCreateDivingTime()
+        public async Task AddDivingTimeAsync_GivenValidInput_ShouldSuccessfullyCreateDivingTime()
         {
             // Arrange
             var modelPoco = new DiverPoco()
@@ -461,17 +472,18 @@ namespace staffinfo.divers.tests.Service
                 .Returns(Task.FromResult((IEnumerable<DivingTimePoco>)workingTime));
             divingTimeRepositoryMock.Setup(repo => repo.AddAsync(It.IsAny<IEnumerable<DivingTimePoco>>()))
                 .Returns(Task.FromResult((IEnumerable<DivingTimePoco>)workingTimeAfterAdd));
-            var diverService = new DiverService(diverRepositoryMock.Object, divingTimeRepositoryMock.Object, _mapper);
+            var rescueStationRepositoryMock = new Mock<IRescueStationRepository>();
+            var diverService = new DiverService(diverRepositoryMock.Object, divingTimeRepositoryMock.Object, rescueStationRepositoryMock.Object, _mapper);
 
             // Act
-            await diverService.AddDivingTime(divingTime);
+            await diverService.AddDivingTimeAsync(divingTime);
 
             // Assert
             divingTimeRepositoryMock.Verify(repo => repo.AddAsync(It.IsAny<IEnumerable<DivingTimePoco>>()), Times.Once);
         }
 
         [Fact]
-        public async Task AddPhoto_GivenInvalidInput_ShouldThrowNotFoundException()
+        public async Task AddPhotoAsync_GivenInvalidInput_ShouldThrowNotFoundException()
         {
             // Arrange
             var notExistingId = 1111;
@@ -481,14 +493,15 @@ namespace staffinfo.divers.tests.Service
             diverRepositoryMock.Setup(repo => repo.GetAsync(It.IsAny<int>()))
                 .Returns(Task.FromResult(null as DiverPoco));
             var divingTimeRepositoryMock = new Mock<IDivingTimeRepository>();
-            var diverService = new DiverService(diverRepositoryMock.Object, divingTimeRepositoryMock.Object, _mapper);
+            var rescueStationRepositoryMock = new Mock<IRescueStationRepository>();
+            var diverService = new DiverService(diverRepositoryMock.Object, divingTimeRepositoryMock.Object, rescueStationRepositoryMock.Object, _mapper);
 
             // Act & Assert
-            await Assert.ThrowsAsync<NotFoundException>(() => diverService.AddPhoto(notExistingphotoBase64, notExistingId));
+            await Assert.ThrowsAsync<NotFoundException>(() => diverService.AddPhotoAsync(notExistingphotoBase64, notExistingId));
         }
 
         [Fact]
-        public async Task AddPhoto_GivenValidInput_ShouldSuccessfullyUpdateDiver()
+        public async Task AddPhotoAsync_GivenValidInput_ShouldSuccessfullyUpdateDiver()
         {
             // Arrange
             var modelPoco = new DiverPoco()
@@ -516,17 +529,18 @@ namespace staffinfo.divers.tests.Service
             diverRepositoryMock.Setup(repo => repo.GetAsync(It.IsAny<int>()))
                 .Returns(Task.FromResult(modelPoco));
             var divingTimeRepositoryMock = new Mock<IDivingTimeRepository>();
-            var diverService = new DiverService(diverRepositoryMock.Object, divingTimeRepositoryMock.Object, _mapper);
+            var rescueStationRepositoryMock = new Mock<IRescueStationRepository>();
+            var diverService = new DiverService(diverRepositoryMock.Object, divingTimeRepositoryMock.Object, rescueStationRepositoryMock.Object, _mapper);
 
             // Act
-            await diverService.AddPhoto(photoBase64, modelPoco.DiverId);
+            await diverService.AddPhotoAsync(photoBase64, modelPoco.DiverId);
 
             // Assert
             diverRepositoryMock.Verify(repo => repo.UpdateAsync(It.IsAny<DiverPoco>()), Times.Once);
         }
 
         [Fact]
-        public async Task DeleteDivingTime_GivenValidInput_ShouldSuccessfullyDeleteDivingTime()
+        public async Task DeleteDivingTimeAsync_GivenValidInput_ShouldSuccessfullyDeleteDivingTime()
         {
             // Arrange
             var workingTime = new List<DivingTimePoco>()
@@ -555,14 +569,229 @@ namespace staffinfo.divers.tests.Service
                 .Returns(Task.FromResult(workingTime as IEnumerable<DivingTimePoco>));
             divingTimeRepositoryMock.Setup(repo => repo.AddAsync(It.IsAny<IEnumerable<DivingTimePoco>>()))
                 .Returns(Task.FromResult(workingTimeAfterAdd as IEnumerable<DivingTimePoco>));
-            var diverServiceMock = new Mock<DiverService>(diverRepositoryMock.Object, divingTimeRepositoryMock.Object, _mapper);
-            var diverService = new DiverService(diverRepositoryMock.Object, divingTimeRepositoryMock.Object, _mapper);
+            var rescueStationRepositoryMock = new Mock<IRescueStationRepository>();
+            var diverService = new DiverService(diverRepositoryMock.Object, divingTimeRepositoryMock.Object, rescueStationRepositoryMock.Object, _mapper);
 
             // Act
-            await diverService.DeleteDivingTime(divingTime.DiverId, divingTime.Year);
+            await diverService.DeleteDivingTimeAsync(divingTime.DiverId, divingTime.Year);
 
             // Assert
             divingTimeRepositoryMock.Verify(repo => repo.AddAsync(It.IsAny<IEnumerable<DivingTimePoco>>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task GetDiversPerStationAsync_NoInput_ShouldReturnListDiversPerStationModel()
+        {
+            // Arrange
+            var modelStationPoco = new RescueStationPoco()
+            {
+                CreatedAt = DateTime.Now,
+                StationId = 1,
+                StationName = "Ветковская",
+                UpdatedAt = DateTime.Now
+            };
+
+            var modelDiverPoco = new DiverPoco()
+            {
+                Address = "г.Ветка, ул.Батракова 32",
+                BirthDate = DateTime.Now,
+                DiverId = 1,
+                FirstName = "Иван",
+                LastName = "Иванов",
+                MedicalExaminationDate = DateTime.Now,
+                MiddleName = "Иванов",
+                PersonalBookIssueDate = DateTime.Now,
+                PersonalBookNumber = "132412",
+                PersonalBookProtocolNumber = "13233434",
+                PhotoUrl = "",
+                Qualification = 1,
+                RescueStationId = 1,
+                RescueStation = modelStationPoco,
+                CreatedAt = DateTime.Now,
+                UpdatedAt = DateTime.Now
+            };
+
+            var modelDiverPocos = new List<DiverPoco>()
+            {
+                modelDiverPoco
+            };
+
+            var modelStationsPocos = new List<RescueStationPoco>()
+            {
+                modelStationPoco
+            };
+
+            var diversPerStationModel = new MinStationModel()
+            {
+                Id = modelStationPoco.StationId,
+                Name = modelStationPoco.StationName,
+                DiversCount = modelDiverPocos.Where(c => c.RescueStation.StationId == modelStationPoco.StationId).Count()
+            };
+
+            var diverRepositoryMock = new Mock<IDiverRepository>();
+            diverRepositoryMock.Setup(repo => repo.GetListAsync())
+                .Returns(Task.FromResult((IEnumerable<DiverPoco>)modelDiverPocos));
+            var divingTimeRepositoryMock = new Mock<IDivingTimeRepository>();
+            var rescueStationRepositoryMock = new Mock<IRescueStationRepository>();
+            rescueStationRepositoryMock.Setup(repo => repo.GetListAsync())
+                .Returns(Task.FromResult((IEnumerable<RescueStationPoco>)modelStationsPocos));
+            var diverService = new DiverService(diverRepositoryMock.Object, divingTimeRepositoryMock.Object, rescueStationRepositoryMock.Object, _mapper);
+
+            // Act
+            var result = await diverService.GetDiversPerStationAsync();
+
+            // Act & Assert
+            Assert.NotNull(result);
+            Assert.IsType<List<MinStationModel>>(result);
+            Assert.Equal(result[0].Id, diversPerStationModel.Id);
+            Assert.Equal(result[0].Name, diversPerStationModel.Name);
+            Assert.Equal(result[0].DiversCount, diversPerStationModel.DiversCount);
+        }
+
+        [Fact]
+        public async Task GetDivingTimePerStationAsync_NoInput_ShouldReturnListDivingTimePerStationModel()
+        {
+            // Arrange
+            var modelStationPoco = new RescueStationPoco()
+            {
+                CreatedAt = DateTime.Now,
+                StationId = 1,
+                StationName = "Ветковская",
+                UpdatedAt = DateTime.Now
+            };
+
+            var modelDiverPoco = new DiverPoco()
+            {
+                Address = "г.Ветка, ул.Батракова 32",
+                BirthDate = DateTime.Now,
+                DiverId = 1,
+                FirstName = "Иван",
+                LastName = "Иванов",
+                MedicalExaminationDate = DateTime.Now,
+                MiddleName = "Иванов",
+                PersonalBookIssueDate = DateTime.Now,
+                PersonalBookNumber = "132412",
+                PersonalBookProtocolNumber = "13233434",
+                PhotoUrl = "",
+                Qualification = 1,
+                RescueStationId = 1,
+                RescueStation = modelStationPoco,
+                CreatedAt = DateTime.Now,
+                UpdatedAt = DateTime.Now,
+                WorkingTime = new List<DivingTimePoco>()
+                {
+                    new DivingTimePoco() { DiverId = 1, WorkingMinutes = 122, Year = 2000},
+                    new DivingTimePoco() { DiverId = 1, WorkingMinutes = 46, Year = 2001}
+                }
+            };
+
+            var modelDiverPocos = new List<DiverPoco>()
+            {
+                modelDiverPoco
+            };
+
+            var modelStationsPocos = new List<RescueStationPoco>()
+            {
+                modelStationPoco
+            };
+
+            var divingTimePerStationModel = new StationDivingTimeModel()
+            {
+                Name = modelStationPoco.StationName,
+                TotalDivingTime = modelDiverPoco.WorkingTime.Sum(c => c.WorkingMinutes)
+            };
+
+            var diverRepositoryMock = new Mock<IDiverRepository>();
+            diverRepositoryMock.Setup(repo => repo.GetListAsync())
+                .Returns(Task.FromResult((IEnumerable<DiverPoco>)modelDiverPocos));
+            var divingTimeRepositoryMock = new Mock<IDivingTimeRepository>();
+            var rescueStationRepositoryMock = new Mock<IRescueStationRepository>();
+            rescueStationRepositoryMock.Setup(repo => repo.GetListAsync())
+                .Returns(Task.FromResult((IEnumerable<RescueStationPoco>)modelStationsPocos));
+            var diverService = new DiverService(diverRepositoryMock.Object, divingTimeRepositoryMock.Object, rescueStationRepositoryMock.Object, _mapper);
+
+            // Act
+            var result = await diverService.GetDivingTimePerStationAsync();
+
+            // Act & Assert
+            Assert.NotNull(result);
+            Assert.IsType<List<StationDivingTimeModel>>(result);
+            Assert.Equal(result[0].Name, divingTimePerStationModel.Name);
+            Assert.Equal(result[0].TotalDivingTime, divingTimePerStationModel.TotalDivingTime);
+        }
+
+        [Fact]
+        public async Task GetAverageDivingTimePerStationAsync_NoInput_ShouldReturnListAverageDivingTimePerStationModel()
+        {
+            // Arrange
+            var modelStationPoco = new RescueStationPoco()
+            {
+                CreatedAt = DateTime.Now,
+                StationId = 1,
+                StationName = "Ветковская",
+                UpdatedAt = DateTime.Now
+            };
+
+            var modelDiverPoco = new DiverPoco()
+            {
+                Address = "г.Ветка, ул.Батракова 32",
+                BirthDate = DateTime.Now,
+                DiverId = 1,
+                FirstName = "Иван",
+                LastName = "Иванов",
+                MedicalExaminationDate = DateTime.Now,
+                MiddleName = "Иванов",
+                PersonalBookIssueDate = DateTime.Now,
+                PersonalBookNumber = "132412",
+                PersonalBookProtocolNumber = "13233434",
+                PhotoUrl = "",
+                Qualification = 1,
+                RescueStationId = 1,
+                RescueStation = modelStationPoco,
+                CreatedAt = DateTime.Now,
+                UpdatedAt = DateTime.Now,
+                WorkingTime = new List<DivingTimePoco>()
+                {
+                    new DivingTimePoco() { DiverId = 1, WorkingMinutes = 122, Year = 2000},
+                    new DivingTimePoco() { DiverId = 1, WorkingMinutes = 46, Year = 2001}
+                }
+            };
+
+            var modelDiverPocos = new List<DiverPoco>()
+            {
+                modelDiverPoco
+            };
+
+            var modelStationsPocos = new List<RescueStationPoco>()
+            {
+                modelStationPoco
+            };
+
+            var averageDivingTimePerStationModel = new AverageStationDivingTimeModel()
+            {
+                Name = modelStationPoco.StationName,
+                DiveNumber = modelDiverPoco.WorkingTime.Count,
+                AverageDivingTime = Math.Round(modelDiverPoco.WorkingTime.Sum(c => c.WorkingMinutes) / (double)modelDiverPoco.WorkingTime.Count, 1)
+            };
+
+            var diverRepositoryMock = new Mock<IDiverRepository>();
+            diverRepositoryMock.Setup(repo => repo.GetListAsync())
+                .Returns(Task.FromResult((IEnumerable<DiverPoco>)modelDiverPocos));
+            var divingTimeRepositoryMock = new Mock<IDivingTimeRepository>();
+            var rescueStationRepositoryMock = new Mock<IRescueStationRepository>();
+            rescueStationRepositoryMock.Setup(repo => repo.GetListAsync())
+                .Returns(Task.FromResult((IEnumerable<RescueStationPoco>)modelStationsPocos));
+            var diverService = new DiverService(diverRepositoryMock.Object, divingTimeRepositoryMock.Object, rescueStationRepositoryMock.Object, _mapper);
+
+            // Act
+            var result = await diverService.GetAverageDivingTimePerStationAsync();
+
+            // Act & Assert
+            Assert.NotNull(result);
+            Assert.IsType<List<AverageStationDivingTimeModel>>(result);
+            Assert.Equal(result[0].Name, averageDivingTimePerStationModel.Name);
+            Assert.Equal(result[0].DiveNumber, averageDivingTimePerStationModel.DiveNumber);
+            Assert.Equal(result[0].AverageDivingTime, averageDivingTimePerStationModel.AverageDivingTime);
         }
     }
 }

@@ -22,7 +22,10 @@ namespace Staffinfo.Divers.Data.Repositories
                 p_station_name = poco.StationName
             };
 
-            string sql = "insert into _staffinfo.rescue_stations(station_name) values(@p_station_name) returning *;";
+            string sql = 
+            "insert into " +
+                "_staffinfo.rescue_stations(station_name) " +
+                "values(@p_station_name) returning *;";
 
             using (IDbConnection conn = Connection)
             {
@@ -39,7 +42,11 @@ namespace Staffinfo.Divers.Data.Repositories
                 p_station_id = stationId
             };
 
-            string sql = "delete from _staffinfo.rescue_stations where station_id = @p_station_id";
+            string sql = 
+            "delete from " +
+                "_staffinfo.rescue_stations " +
+            "where " +
+                "station_id = @p_station_id";
 
             using (IDbConnection conn = Connection)
             {
@@ -54,7 +61,11 @@ namespace Staffinfo.Divers.Data.Repositories
                 p_station_id = stationId
             };
 
-            string sql = "select * from _staffinfo.rescue_stations where station_id = @p_station_id";
+            string sql = 
+            "select * from " +
+                "_staffinfo.rescue_stations " +
+            "where " +
+                "station_id = @p_station_id";
 
             using (IDbConnection conn = Connection)
             {
@@ -85,10 +96,16 @@ namespace Staffinfo.Divers.Data.Repositories
                 p_updated_at = DateTimeOffset.UtcNow
             };
 
-            var sqlBuilder = new StringBuilder("update _staffinfo.rescue_stations set station_name = @p_station_name, ");
+            var sqlBuilder = new StringBuilder("update ");
+            sqlBuilder.Append("_staffinfo.rescue_stations ");
+            sqlBuilder.Append("set ");
+            sqlBuilder.Append("station_name = @p_station_name, ");
             sqlBuilder.Append("updated_at = @p_updated_at ");
             sqlBuilder.Append("where station_id = @p_station_id; ");
-            sqlBuilder.Append("select * from _staffinfo.rescue_stations where station_id = @p_station_id;");
+            sqlBuilder.Append("select * from ");
+            sqlBuilder.Append("_staffinfo.rescue_stations ");
+            sqlBuilder.Append("where ");
+            sqlBuilder.Append("station_id = @p_station_id;");
 
             using (IDbConnection conn = Connection)
             {

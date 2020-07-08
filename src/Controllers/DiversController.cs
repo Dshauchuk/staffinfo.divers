@@ -27,9 +27,9 @@ namespace staffinfo.divers.Controllers
             _mapper = mapper;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(int? stationId = null)
         {
-            return View();
+            return View(stationId);
         }
 
         public async Task<IActionResult> Edit(int diverId)
@@ -76,7 +76,7 @@ namespace staffinfo.divers.Controllers
         [HttpPost]
         public async Task<IActionResult> AddDivingTime(DivingTime time)
         {
-            await _diverService.AddDivingTime(time);
+            await _diverService.AddDivingTimeAsync(time);
 
             return CreatedAtAction("Divers", time);
         }
@@ -91,7 +91,7 @@ namespace staffinfo.divers.Controllers
                 fileStream.Read(bytes, 0, (int)uploadedFile.Length);
                 string base64ImageRepresentation = "data:" + uploadedFile.ContentType + ";base64," + Convert.ToBase64String(bytes);
 
-                await _diverService.AddPhoto(base64ImageRepresentation, diverId);
+                await _diverService.AddPhotoAsync(base64ImageRepresentation, diverId);
             }
             return View("Details", await _diverService.GetAsync(diverId));
         }
@@ -99,7 +99,7 @@ namespace staffinfo.divers.Controllers
         [HttpDelete]
         public async Task<IActionResult> DeleteDivingTime(int diverId, int year, int minutes)
         {
-            await _diverService.DeleteDivingTime(diverId, year);
+            await _diverService.DeleteDivingTimeAsync(diverId, year);
 
             return NoContent();
         }

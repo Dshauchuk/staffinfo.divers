@@ -16,12 +16,14 @@ namespace Staffinfo.Divers.Services
     {
         private readonly IDiverRepository _diverRepository;
         private readonly IDivingTimeRepository _divingTimeRepository;
+        private readonly IRescueStationRepository _rescueStationRepository;
         private readonly IMapper _mapper;
 
-        public DiverService(IDiverRepository diverRepository, IDivingTimeRepository divingTimeRepository, IMapper mapper)
+        public DiverService(IDiverRepository diverRepository, IDivingTimeRepository divingTimeRepository, IRescueStationRepository rescueStationRepository, IMapper mapper)
         {
             _diverRepository = diverRepository;
             _divingTimeRepository = divingTimeRepository;
+            _rescueStationRepository = rescueStationRepository;
             _mapper = mapper;
         }
 
@@ -72,7 +74,7 @@ namespace Staffinfo.Divers.Services
             existing.PersonalBookProtocolNumber = model.PersonalBookProtocolNumber;
 
             var updated = await _diverRepository.UpdateAsync(existing);
-            var hours = await SetWorkingHours(updated.DiverId, model.WorkingTime);
+            var hours = await SetWorkingHoursAsync(updated.DiverId, model.WorkingTime);
             var diver = _mapper.Map<Diver>(updated);
             diver.WorkingTime = hours;
 
@@ -103,7 +105,7 @@ namespace Staffinfo.Divers.Services
             return divers;
         }
 
-        public async Task AddDivingTime(DivingTime time)
+        public async Task AddDivingTimeAsync(DivingTime time)
         {
             var allDiverHours = await _divingTimeRepository.GetListAsync(time.DiverId);
             var times = new List<DivingTime>();
@@ -113,10 +115,10 @@ namespace Staffinfo.Divers.Services
 
             times.Add(time);
 
-            await SetWorkingHours(time.DiverId, times);
+            await SetWorkingHoursAsync(time.DiverId, times);
         }
 
-        public async Task AddPhoto(string photoBase64, int diverId)
+        public async Task AddPhotoAsync(string photoBase64, int diverId)
         {
             DiverPoco diver = await _diverRepository.GetAsync(diverId);
             if (diver == null)
@@ -126,18 +128,98 @@ namespace Staffinfo.Divers.Services
             await _diverRepository.UpdateAsync(diver);
         }
 
-        public async Task DeleteDivingTime(int diverId, int year)
+        public async Task DeleteDivingTimeAsync(int diverId, int year)
         {
             var allDiverHours = (await _divingTimeRepository.GetListAsync(diverId)).ToList();
 
             if (allDiverHours != null && allDiverHours.Any())
             {
                 allDiverHours.RemoveAll(t => t.Year == year);
-                await SetWorkingHours(diverId, allDiverHours.Select(t => _mapper.Map<DivingTime>(t)));
+                await SetWorkingHoursAsync(diverId, allDiverHours.Select(t => _mapper.Map<DivingTime>(t)));
             }
         }
 
-        private async Task<List<DivingTime>> SetWorkingHours(int diverId, IEnumerable<DivingTime> time)
+        public async Task<List<MinStationModel>> GetDiversPerStationAsync()
+        {
+            var stations = (await _rescueStationRepository.GetListAsync()).ToArray();
+            var divers = (await _diverRepository.GetListAsync()).ToArray();
+
+            List<MinStationModel> diversPerStation = new List<MinStationModel>();
+
+            foreach (RescueStationPoco rescueStation in stations)
+            {
+                diversPerStation.Add(new MinStationModel()
+                {
+                    Id = rescueStation.StationId,
+                    Name = rescueStation.StationName,
+                    DiversCount = divers.Where(c => c.RescueStation.StationId == rescueStation.StationId).Count()
+                });
+            }
+
+            diversPerStation = diversPerStation.OrderByDescending(c => c.DiversCount).Take(10).ToList();
+
+            return diversPerStation;
+        }
+
+        public async Task<List<StationDivingTimeModel>> GetDivingTimePerStationAsync()
+        {
+            var stations = (await _rescueStationRepository.GetListAsync()).ToArray();
+            var divers = (await _diverRepository.GetListAsync()).ToArray();
+
+            List<StationDivingTimeModel> divingTimePerStation = new List<StationDivingTimeModel>();
+
+            foreach (RescueStationPoco rescueStation in stations)
+            {
+                divingTimePerStation.Add(new StationDivingTimeModel()
+                {
+                    Id = rescueStation.StationId,
+                    Name = rescueStation.StationName,
+                    TotalDivingTime = 0
+                });
+            }
+
+            foreach (DiverPoco diver in divers)
+            {
+                divingTimePerStation.First(c => c.Id == diver.RescueStationId).TotalDivingTime += diver.WorkingTime.Sum(c => c.WorkingMinutes);
+            }
+
+            return divingTimePerStation;
+        }
+
+        public async Task<List<AverageStationDivingTimeModel>> GetAverageDivingTimePerStationAsync()
+        {
+            var stations = (await _rescueStationRepository.GetListAsync()).ToArray();
+            var divers = (await _diverRepository.GetListAsync()).ToArray();
+
+            List<AverageStationDivingTimeModel> averageDivingTimePerStation = new List<AverageStationDivingTimeModel>();
+
+            foreach (RescueStationPoco rescueStation in stations)
+            {
+                averageDivingTimePerStation.Add(new AverageStationDivingTimeModel()
+                {
+                    Id = rescueStation.StationId,
+                    Name = rescueStation.StationName,
+                    AverageDivingTime = 0,
+                    DiveNumber = 0
+                });
+            }
+
+            foreach (DiverPoco diver in divers)
+            {
+                var chartModel = averageDivingTimePerStation.First(c => c.Id == diver.RescueStationId);
+                chartModel.AverageDivingTime += diver.WorkingTime.Sum(c => c.WorkingMinutes);
+                chartModel.DiveNumber += diver.WorkingTime.Count;
+            }
+
+            foreach (AverageStationDivingTimeModel model in averageDivingTimePerStation)
+            {
+                model.AverageDivingTime = Math.Round(model.AverageDivingTime / model.DiveNumber, 1);
+            }
+
+            return averageDivingTimePerStation;
+        }
+
+        private async Task<List<DivingTime>> SetWorkingHoursAsync(int diverId, IEnumerable<DivingTime> time)
         {
             List<DivingTime> currentTime = new List<DivingTime>();
 

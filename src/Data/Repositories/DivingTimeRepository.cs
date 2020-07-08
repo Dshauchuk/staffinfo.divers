@@ -4,6 +4,7 @@ using Staffinfo.Divers.Data.Repositories.Contracts;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Staffinfo.Divers.Data.Repositories
@@ -24,12 +25,24 @@ namespace Staffinfo.Divers.Data.Repositories
                 p_working_minutes = poco.WorkingMinutes
             };
 
-            var sql = "with ins as (INSERT into _staffinfo.diving_hours(diver_id, year, working_minutes) VALUES(@p_diver_id, @p_year, @p_working_minutes) returning *) select * from ins left join _staffinfo.divers d on ins.diver_id = d.diver_id";
+            var sqlBuilder = new StringBuilder("with ins as (insert into ");
+            sqlBuilder.Append("_staffinfo.diving_hours(");
+            sqlBuilder.Append("diver_id, ");
+            sqlBuilder.Append("year, ");
+            sqlBuilder.Append("working_minutes) ");
+            sqlBuilder.Append("values(");
+            sqlBuilder.Append("@p_diver_id, ");
+            sqlBuilder.Append("@p_year, ");
+            sqlBuilder.Append("@p_working_minutes) ");
+            sqlBuilder.Append("returning *) ");
+            sqlBuilder.Append("select * from ");
+            sqlBuilder.Append("ins ");
+            sqlBuilder.Append("left join _staffinfo.divers d on ins.diver_id = d.diver_id");
 
             using (IDbConnection conn = Connection)
             {
                 var addedTimePoco =
-                    (await conn.QueryAsync<DivingTimePoco, DiverPoco, DivingTimePoco>(sql, (time, diver) =>
+                    (await conn.QueryAsync<DivingTimePoco, DiverPoco, DivingTimePoco>(sqlBuilder.ToString(), (time, diver) =>
                     {
                         time.Diver = diver;
 
@@ -52,17 +65,29 @@ namespace Staffinfo.Divers.Data.Repositories
                 p_working_minutes = p.WorkingMinutes
             });
 
-            //var sql = "with ins as (INSERT into diving_hours(diver_id, year, working_minutes) VALUES(@p_diver_id, @p_year, @p_working_minutes) returning *) select * from ins left join divers d on ins.diver_id = d.diver_id";
-            var sql = "INSERT into _staffinfo.diving_hours(diver_id, year, working_minutes) VALUES(@p_diver_id, @p_year, @p_working_minutes)";
+            var sqlBuilder = new StringBuilder("insert into ");
+            sqlBuilder.Append("_staffinfo.diving_hours(");
+            sqlBuilder.Append("diver_id, ");
+            sqlBuilder.Append("year, ");
+            sqlBuilder.Append("working_minutes) ");
+            sqlBuilder.Append("values(");
+            sqlBuilder.Append("@p_diver_id, ");
+            sqlBuilder.Append("@p_year, ");
+            sqlBuilder.Append("@p_working_minutes)");
 
             using (IDbConnection conn = Connection)
             {
-                await conn.ExecuteAsync(sql, parameters);
+                await conn.ExecuteAsync(sqlBuilder.ToString(), parameters);
 
-                sql = "select * from _staffinfo.diving_hours dh left join _staffinfo.divers d on dh.diver_id = d.diver_id where dh.diver_id = any(@p_diver_ids) and year = any(@p_years)";
+                sqlBuilder = new StringBuilder("select * from ");
+                sqlBuilder.Append("_staffinfo.diving_hours dh ");
+                sqlBuilder.Append("left join _staffinfo.divers d on dh.diver_id = d.diver_id ");
+                sqlBuilder.Append("where ");
+                sqlBuilder.Append("dh.diver_id = any(@p_diver_ids) ");
+                sqlBuilder.Append("and year = any(@p_years)");
 
                 var addedTimePocos =
-                    (await conn.QueryAsync<DivingTimePoco, DiverPoco, DivingTimePoco>(sql, (time, diver) =>
+                    (await conn.QueryAsync<DivingTimePoco, DiverPoco, DivingTimePoco>(sqlBuilder.ToString(), (time, diver) =>
                     {
                         time.Diver = diver;
 
@@ -83,7 +108,12 @@ namespace Staffinfo.Divers.Data.Repositories
                 p_year = year,
             };
 
-            var sql = "delete from _staffinfo.diving_hours where diver_id = @p_diver_id and year = @p_year";
+            var sql = 
+            "delete from " +
+                "_staffinfo.diving_hours " +
+            "where " +
+                "diver_id = @p_diver_id " +
+                "and year = @p_year";
 
 
             using (IDbConnection conn = Connection)
@@ -100,7 +130,13 @@ namespace Staffinfo.Divers.Data.Repositories
                 p_years = years.ToList(),
             };
 
-            var sql = "delete from _staffinfo.diving_hours where diver_id = @p_diver_id and year = any(@p_years)";
+            var sql = 
+            "delete from " +
+                "_staffinfo.diving_hours " +
+            "where " +
+                "diver_id = @p_diver_id " +
+                "and year = any(@p_years)";
+
 
 
             using (IDbConnection conn = Connection)
@@ -117,7 +153,13 @@ namespace Staffinfo.Divers.Data.Repositories
                 p_year = year,
             };
 
-            string sql = "select * from _staffinfo.diving_hours dh left join _staffinfo.divers d on dh.diver_id = d.diver_id where dh.diver_id = @p_diver_id and year = @p_year";
+            string sql = 
+            "select * from " +
+                "_staffinfo.diving_hours dh " +
+                "left join _staffinfo.divers d on dh.diver_id = d.diver_id " +
+            "where " +
+                "dh.diver_id = @p_diver_id " +
+                "and year = @p_year";
 
             using (IDbConnection conn = Connection)
             {
@@ -143,7 +185,12 @@ namespace Staffinfo.Divers.Data.Repositories
                 p_diver_id = diverId
             };
 
-            string sql = "select * from _staffinfo.diving_hours dh left join _staffinfo.divers d on dh.diver_id = d.diver_id where dh.diver_id = @p_diver_id";
+            string sql = 
+            "select * from " +
+                "_staffinfo.diving_hours dh " +
+                "left join _staffinfo.divers d on dh.diver_id = d.diver_id " +
+            "where " +
+                "dh.diver_id = @p_diver_id";
 
             using (IDbConnection conn = Connection)
             {
@@ -169,12 +216,17 @@ namespace Staffinfo.Divers.Data.Repositories
                 p_working_minutes = poco.WorkingMinutes
             };
 
-            string sql = "UPDATE _staffinfo.diving_hours set working_minutes = @p_working_minutes where diver_id = @p_diver_id and year = @p_year returning *;";
-
+            var sqlBuilder = new StringBuilder("update ");
+            sqlBuilder.Append("_staffinfo.diving_hours ");
+            sqlBuilder.Append("set ");
+            sqlBuilder.Append("working_minutes = @p_working_minutes ");
+            sqlBuilder.Append("where ");
+            sqlBuilder.Append("diver_id = @p_diver_id ");
+            sqlBuilder.Append("and year = @p_year returning *;");
 
             using (IDbConnection conn = Connection)
             {
-                var updatedTimePoco = (await conn.QueryAsync<DivingTimePoco>(sql, parameters)).FirstOrDefault();
+                var updatedTimePoco = (await conn.QueryAsync<DivingTimePoco>(sqlBuilder.ToString(), parameters)).FirstOrDefault();
 
                 return updatedTimePoco;
             }

@@ -1,8 +1,103 @@
-﻿
-@{
+﻿@{
     ViewData["Title"] = "Dashboard";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Dashboard</h1>
+<h1 class="text-center">Общая статистика</h1>
+    
+<div class="row">
+    <div class="col-md-5">
+        <ejs-accumulationchart id="diversPerStationContainer" title="Количество водолазов на станции" enableAnimation="true">
+            <e-accumulationchart-center x="50%" y="50%"></e-accumulationchart-center>
+            <e-accumulationchart-tooltipsettings enable="true"></e-accumulationchart-tooltipsettings>
+            <e-accumulationchart-legendsettings visible="false" />
+            <e-accumulation-series-collection>
+                <e-accumulation-series dataSource="ViewBag.diversPerStationChartSource" xName="Name" yName="DiversCount" name="Водолазов на станции">
+                    <e-accumulationseries-datalabel name="Name" visible="true">
+                        <e-font fontWeight="600" color="white"></e-font>
+                    </e-accumulationseries-datalabel>
+                </e-accumulation-series>
+            </e-accumulation-series-collection>
+        </ejs-accumulationchart>
+    </div>
 
+    <div class="col-md-7">
+        <ejs-chart id="containerDivingTimePerStation" title="Количество часов погружения на станциях" enableAnimation="true">
+            <e-chart-primaryxaxis valueType="Category"></e-chart-primaryxaxis>
+            <e-series-collection>
+                <e-series dataSource="ViewBag.divingTimePerStationChartSource" xName="Name" yName="TotalDivingTime" type="@Syncfusion.EJ2.Charts.ChartSeriesType.Bar">
+                    <e-series-marker>
+                        <e-series-datalabel visible="true" position="Top">
+                            <e-font fontWeight="600" color="#ffffff"></e-font>
+                        </e-series-datalabel>
+                    </e-series-marker>
+                </e-series>
+            </e-series-collection>
+        </ejs-chart>
+    </div>
+</div>
+<div>
+    <ejs-chart id="containerAverageDivingTimePerStation" title="Среднее количество часов погружения на станциях" enableAnimation="true">
+        <e-chart-primaryxaxis valueType="Category"></e-chart-primaryxaxis>
+        <e-series-collection>
+            <e-series dataSource="ViewBag.averageDivingTimePerStationChartSource" xName="Name" yName="AverageDivingTime" type="@Syncfusion.EJ2.Charts.ChartSeriesType.Bar">
+                <e-series-marker>
+                    <e-series-datalabel visible="true" position="Top">
+                        <e-font fontWeight="600" color="#ffffff"></e-font>
+                    </e-series-datalabel>
+                </e-series-marker>
+            </e-series>
+        </e-series-collection>
+    </ejs-chart>
+</div>
+
+<div class="modal fade" id="confirmDeleteDiver" tabindex="-1" role="dialog" aria-labelledby="deleteConfirmTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteConfirmTitle">Подтверждение перехода на станцию</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form asp-action="RedirectToDivers" asp-controller="Dashboard" method="post">
+                    <label id="confirmText" class="input-name"></label>
+
+                    <input id="index" type="hidden" name="index"/>
+                    <div class="modal-footer align-content-center">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+                        <button id="confirm" type="submit" class="btn btn-primary">Перейти</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var model = @Json.Serialize(ViewBag.diversPerStationChartSource);
+
+    function seriesSelection(sender) {
+        var selected = sender.target.id.split('_');
+        var index = parseInt(selected[selected.length - 1], 10);
+
+        document.getElementById('index').value = index;
+        document.getElementById('confirmText').innerHTML = 'Вы действительно хотите перейти на станцию: <b><i>' + model[index].name + '</i></b>';
+          
+        $("#confirmDeleteDiver").modal('show');
+    }
+
+    $('#diversPerStationContainer').click(function (e) {
+        seriesSelection(e);
+    });
+
+    $("#confirm").click(function () {
+        $("#confirmDeleteDiver").modal('hide');
+        $.ajax({
+            url: "/Dashboard/RedirectToDivers",
+            dataType: "json",
+            async: false
+        });
+    });
+</script>
