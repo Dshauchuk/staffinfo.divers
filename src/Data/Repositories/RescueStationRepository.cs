@@ -23,9 +23,9 @@ namespace Staffinfo.Divers.Data.Repositories
             };
 
             string sql = 
-            "INSERT into " +
+            "insert into " +
                 "_staffinfo.rescue_stations(station_name) " +
-                "VALUES(@p_station_name) returning *;";
+                "values(@p_station_name) returning *;";
 
             using (IDbConnection conn = Connection)
             {
@@ -97,15 +97,15 @@ namespace Staffinfo.Divers.Data.Repositories
             };
 
             var sqlBuilder = new StringBuilder("update ");
-                sqlBuilder.Append("_staffinfo.rescue_stations ");
+            sqlBuilder.Append("_staffinfo.rescue_stations ");
             sqlBuilder.Append("set ");
-                sqlBuilder.Append("station_name = @p_station_name, ");
-                sqlBuilder.Append("updated_at = @p_updated_at ");
-                sqlBuilder.Append("where station_id = @p_station_id; ");
+            sqlBuilder.Append("station_name = @p_station_name, ");
+            sqlBuilder.Append("updated_at = @p_updated_at ");
+            sqlBuilder.Append("where station_id = @p_station_id; ");
             sqlBuilder.Append("select * from ");
-                sqlBuilder.Append("_staffinfo.rescue_stations ");
+            sqlBuilder.Append("_staffinfo.rescue_stations ");
             sqlBuilder.Append("where ");
-                sqlBuilder.Append("station_id = @p_station_id;");
+            sqlBuilder.Append("station_id = @p_station_id;");
 
             using (IDbConnection conn = Connection)
             {

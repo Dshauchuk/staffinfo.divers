@@ -139,81 +139,81 @@ namespace Staffinfo.Divers.Services
             }
         }
 
-        public async Task<List<DiversPerStationModel>> GetDiversPerStationAsync()
+        public async Task<List<MinStationModel>> GetDiversPerStationAsync()
         {
             var stations = (await _rescueStationRepository.GetListAsync()).ToArray();
             var divers = (await _diverRepository.GetListAsync()).ToArray();
 
-            List<DiversPerStationModel> diversPerStation = new List<DiversPerStationModel>();
+            List<MinStationModel> diversPerStation = new List<MinStationModel>();
 
             foreach (RescueStationPoco rescueStation in stations)
             {
-                diversPerStation.Add(new DiversPerStationModel()
+                diversPerStation.Add(new MinStationModel()
                 {
                     Id = rescueStation.StationId,
                     Name = rescueStation.StationName,
-                    Count = divers.Where(c => c.RescueStation.StationId == rescueStation.StationId).Count()
+                    DiversCount = divers.Where(c => c.RescueStation.StationId == rescueStation.StationId).Count()
                 });
             }
 
-            diversPerStation = diversPerStation.OrderByDescending(c => c.Count).Take(10).ToList();
+            diversPerStation = diversPerStation.OrderByDescending(c => c.DiversCount).Take(10).ToList();
 
             return diversPerStation;
         }
 
-        public async Task<List<DivingTimePerStationModel>> GetDivingTimePerStationAsync()
+        public async Task<List<StationDivingTimeModel>> GetDivingTimePerStationAsync()
         {
             var stations = (await _rescueStationRepository.GetListAsync()).ToArray();
             var divers = (await _diverRepository.GetListAsync()).ToArray();
 
-            List<DivingTimePerStationModel> divingTimePerStation = new List<DivingTimePerStationModel>();
+            List<StationDivingTimeModel> divingTimePerStation = new List<StationDivingTimeModel>();
 
             foreach (RescueStationPoco rescueStation in stations)
             {
-                divingTimePerStation.Add(new DivingTimePerStationModel()
+                divingTimePerStation.Add(new StationDivingTimeModel()
                 {
                     Id = rescueStation.StationId,
                     Name = rescueStation.StationName,
-                    Count = 0
+                    TotalDivingTime = 0
                 });
             }
 
             foreach (DiverPoco diver in divers)
             {
-                divingTimePerStation.First(c => c.Id == diver.RescueStationId).Count += diver.WorkingTime.Sum(c => c.WorkingMinutes);
+                divingTimePerStation.First(c => c.Id == diver.RescueStationId).TotalDivingTime += diver.WorkingTime.Sum(c => c.WorkingMinutes);
             }
 
             return divingTimePerStation;
         }
 
-        public async Task<List<AverageDivingTimePerStationModel>> GetAverageDivingTimePerStationAsync()
+        public async Task<List<AverageStationDivingTimeModel>> GetAverageDivingTimePerStationAsync()
         {
             var stations = (await _rescueStationRepository.GetListAsync()).ToArray();
             var divers = (await _diverRepository.GetListAsync()).ToArray();
 
-            List<AverageDivingTimePerStationModel> averageDivingTimePerStation = new List<AverageDivingTimePerStationModel>();
+            List<AverageStationDivingTimeModel> averageDivingTimePerStation = new List<AverageStationDivingTimeModel>();
 
             foreach (RescueStationPoco rescueStation in stations)
             {
-                averageDivingTimePerStation.Add(new AverageDivingTimePerStationModel()
+                averageDivingTimePerStation.Add(new AverageStationDivingTimeModel()
                 {
                     Id = rescueStation.StationId,
                     Name = rescueStation.StationName,
-                    Average = 0,
-                    Count = 0
+                    AverageDivingTime = 0,
+                    DiveNumber = 0
                 });
             }
 
             foreach (DiverPoco diver in divers)
             {
                 var chartModel = averageDivingTimePerStation.First(c => c.Id == diver.RescueStationId);
-                chartModel.Average += diver.WorkingTime.Sum(c => c.WorkingMinutes);
-                chartModel.Count += diver.WorkingTime.Count;
+                chartModel.AverageDivingTime += diver.WorkingTime.Sum(c => c.WorkingMinutes);
+                chartModel.DiveNumber += diver.WorkingTime.Count;
             }
 
-            foreach (AverageDivingTimePerStationModel model in averageDivingTimePerStation)
+            foreach (AverageStationDivingTimeModel model in averageDivingTimePerStation)
             {
-                model.Average = Math.Round(model.Average / model.Count, 1);
+                model.AverageDivingTime = Math.Round(model.AverageDivingTime / model.DiveNumber, 1);
             }
 
             return averageDivingTimePerStation;

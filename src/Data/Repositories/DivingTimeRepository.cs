@@ -25,19 +25,19 @@ namespace Staffinfo.Divers.Data.Repositories
                 p_working_minutes = poco.WorkingMinutes
             };
 
-            var sqlBuilder = new StringBuilder("with ins as (INSERT into ");
+            var sqlBuilder = new StringBuilder("with ins as (insert into ");
             sqlBuilder.Append("_staffinfo.diving_hours(");
-                sqlBuilder.Append("diver_id, ");
-                sqlBuilder.Append("year, ");
-                sqlBuilder.Append("working_minutes) ");
-            sqlBuilder.Append("VALUES(");
-                sqlBuilder.Append("@p_diver_id, ");
-                sqlBuilder.Append("@p_year, ");
-                sqlBuilder.Append("@p_working_minutes) ");
+            sqlBuilder.Append("diver_id, ");
+            sqlBuilder.Append("year, ");
+            sqlBuilder.Append("working_minutes) ");
+            sqlBuilder.Append("values(");
+            sqlBuilder.Append("@p_diver_id, ");
+            sqlBuilder.Append("@p_year, ");
+            sqlBuilder.Append("@p_working_minutes) ");
             sqlBuilder.Append("returning *) ");
             sqlBuilder.Append("select * from ");
-                sqlBuilder.Append("ins ");
-                sqlBuilder.Append("left join _staffinfo.divers d on ins.diver_id = d.diver_id");
+            sqlBuilder.Append("ins ");
+            sqlBuilder.Append("left join _staffinfo.divers d on ins.diver_id = d.diver_id");
 
             using (IDbConnection conn = Connection)
             {
@@ -65,26 +65,26 @@ namespace Staffinfo.Divers.Data.Repositories
                 p_working_minutes = p.WorkingMinutes
             });
 
-            var sqlBuilder = new StringBuilder("INSERT into ");
+            var sqlBuilder = new StringBuilder("insert into ");
             sqlBuilder.Append("_staffinfo.diving_hours(");
-                sqlBuilder.Append("diver_id, ");
-                sqlBuilder.Append("year, ");
-                sqlBuilder.Append("working_minutes) ");
-            sqlBuilder.Append("VALUES(");
-                sqlBuilder.Append("@p_diver_id, ");
-                sqlBuilder.Append("@p_year, ");
-                sqlBuilder.Append("@p_working_minutes)");
+            sqlBuilder.Append("diver_id, ");
+            sqlBuilder.Append("year, ");
+            sqlBuilder.Append("working_minutes) ");
+            sqlBuilder.Append("values(");
+            sqlBuilder.Append("@p_diver_id, ");
+            sqlBuilder.Append("@p_year, ");
+            sqlBuilder.Append("@p_working_minutes)");
 
             using (IDbConnection conn = Connection)
             {
                 await conn.ExecuteAsync(sqlBuilder.ToString(), parameters);
 
                 sqlBuilder = new StringBuilder("select * from ");
-                    sqlBuilder.Append("_staffinfo.diving_hours dh ");
-                    sqlBuilder.Append("left join _staffinfo.divers d on dh.diver_id = d.diver_id ");
+                sqlBuilder.Append("_staffinfo.diving_hours dh ");
+                sqlBuilder.Append("left join _staffinfo.divers d on dh.diver_id = d.diver_id ");
                 sqlBuilder.Append("where ");
-                    sqlBuilder.Append("dh.diver_id = any(@p_diver_ids) ");
-                    sqlBuilder.Append("and year = any(@p_years)");
+                sqlBuilder.Append("dh.diver_id = any(@p_diver_ids) ");
+                sqlBuilder.Append("and year = any(@p_years)");
 
                 var addedTimePocos =
                     (await conn.QueryAsync<DivingTimePoco, DiverPoco, DivingTimePoco>(sqlBuilder.ToString(), (time, diver) =>
@@ -216,13 +216,13 @@ namespace Staffinfo.Divers.Data.Repositories
                 p_working_minutes = poco.WorkingMinutes
             };
 
-            var sqlBuilder = new StringBuilder("UPDATE ");
-                sqlBuilder.Append("_staffinfo.diving_hours ");
+            var sqlBuilder = new StringBuilder("update ");
+            sqlBuilder.Append("_staffinfo.diving_hours ");
             sqlBuilder.Append("set ");
-                sqlBuilder.Append("working_minutes = @p_working_minutes ");
+            sqlBuilder.Append("working_minutes = @p_working_minutes ");
             sqlBuilder.Append("where ");
-                sqlBuilder.Append("diver_id = @p_diver_id ");
-                sqlBuilder.Append("and year = @p_year returning *;");
+            sqlBuilder.Append("diver_id = @p_diver_id ");
+            sqlBuilder.Append("and year = @p_year returning *;");
 
             using (IDbConnection conn = Connection)
             {

@@ -621,11 +621,11 @@ namespace staffinfo.divers.tests.Service
                 modelStationPoco
             };
 
-            var diversPerStationModel = new DiversPerStationModel()
+            var diversPerStationModel = new MinStationModel()
             {
                 Id = modelStationPoco.StationId,
                 Name = modelStationPoco.StationName,
-                Count = modelDiverPocos.Where(c => c.RescueStation.StationId == modelStationPoco.StationId).Count()
+                DiversCount = modelDiverPocos.Where(c => c.RescueStation.StationId == modelStationPoco.StationId).Count()
             };
 
             var diverRepositoryMock = new Mock<IDiverRepository>();
@@ -642,10 +642,10 @@ namespace staffinfo.divers.tests.Service
 
             // Act & Assert
             Assert.NotNull(result);
-            Assert.IsType<List<DiversPerStationModel>>(result);
+            Assert.IsType<List<MinStationModel>>(result);
             Assert.Equal(result[0].Id, diversPerStationModel.Id);
             Assert.Equal(result[0].Name, diversPerStationModel.Name);
-            Assert.Equal(result[0].Count, diversPerStationModel.Count);
+            Assert.Equal(result[0].DiversCount, diversPerStationModel.DiversCount);
         }
 
         [Fact]
@@ -695,10 +695,10 @@ namespace staffinfo.divers.tests.Service
                 modelStationPoco
             };
 
-            var divingTimePerStationModel = new DivingTimePerStationModel()
+            var divingTimePerStationModel = new StationDivingTimeModel()
             {
                 Name = modelStationPoco.StationName,
-                Count = modelDiverPoco.WorkingTime.Sum(c => c.WorkingMinutes)
+                TotalDivingTime = modelDiverPoco.WorkingTime.Sum(c => c.WorkingMinutes)
             };
 
             var diverRepositoryMock = new Mock<IDiverRepository>();
@@ -715,9 +715,9 @@ namespace staffinfo.divers.tests.Service
 
             // Act & Assert
             Assert.NotNull(result);
-            Assert.IsType<List<DivingTimePerStationModel>>(result);
+            Assert.IsType<List<StationDivingTimeModel>>(result);
             Assert.Equal(result[0].Name, divingTimePerStationModel.Name);
-            Assert.Equal(result[0].Count, divingTimePerStationModel.Count);
+            Assert.Equal(result[0].TotalDivingTime, divingTimePerStationModel.TotalDivingTime);
         }
 
         [Fact]
@@ -767,11 +767,11 @@ namespace staffinfo.divers.tests.Service
                 modelStationPoco
             };
 
-            var averageDivingTimePerStationModel = new AverageDivingTimePerStationModel()
+            var averageDivingTimePerStationModel = new AverageStationDivingTimeModel()
             {
                 Name = modelStationPoco.StationName,
-                Count = modelDiverPoco.WorkingTime.Count,
-                Average = Math.Round(modelDiverPoco.WorkingTime.Sum(c => c.WorkingMinutes) / (double)modelDiverPoco.WorkingTime.Count, 1)
+                DiveNumber = modelDiverPoco.WorkingTime.Count,
+                AverageDivingTime = Math.Round(modelDiverPoco.WorkingTime.Sum(c => c.WorkingMinutes) / (double)modelDiverPoco.WorkingTime.Count, 1)
             };
 
             var diverRepositoryMock = new Mock<IDiverRepository>();
@@ -788,10 +788,10 @@ namespace staffinfo.divers.tests.Service
 
             // Act & Assert
             Assert.NotNull(result);
-            Assert.IsType<List<AverageDivingTimePerStationModel>>(result);
+            Assert.IsType<List<AverageStationDivingTimeModel>>(result);
             Assert.Equal(result[0].Name, averageDivingTimePerStationModel.Name);
-            Assert.Equal(result[0].Count, averageDivingTimePerStationModel.Count);
-            Assert.Equal(result[0].Average, averageDivingTimePerStationModel.Average);
+            Assert.Equal(result[0].DiveNumber, averageDivingTimePerStationModel.DiveNumber);
+            Assert.Equal(result[0].AverageDivingTime, averageDivingTimePerStationModel.AverageDivingTime);
         }
     }
 }

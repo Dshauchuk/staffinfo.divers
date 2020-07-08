@@ -1,22 +1,22 @@
 ﻿namespace Staffinfo.Divers.Models
 {
-    public class DiversPerStationModel
+    public class MinStationModel
     {
-        public DiversPerStationModel()
+        public MinStationModel()
         {
         }
 
-        public DiversPerStationModel(int id, string name, int count)
+        public MinStationModel(int id, string name, int diversCount)
         {
             Id = id;
             Name = name;
-            Count = count;
+            DiversCount = diversCount;
         }
 
         public int Id { get; set; }
 
         public string Name { get; set; }
 
-        public int Count { get; set; }
+        public int DiversCount { get; set; }
     }
 }

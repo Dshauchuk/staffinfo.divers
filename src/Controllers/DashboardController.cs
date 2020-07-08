@@ -36,7 +36,7 @@ namespace staffinfo.divers.Controllers
         [HttpPost]
         public async Task<IActionResult> RedirectToDivers(int index)
         {
-            List<DiversPerStationModel> models = await _diverService.GetDiversPerStationAsync();
+            List<MinStationModel> models = await _diverService.GetDiversPerStationAsync();
 
             return RedirectToAction("Index", "Divers", new { stationId = models[index].Id });
         }
