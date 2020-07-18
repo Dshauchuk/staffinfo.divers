@@ -60,7 +60,7 @@
         </div>
     </div>
     <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">
-        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addTimeModal">Добавить</button>
+        <button id="add-time-modal-btn" type="button" class="btn btn-primary">Добавить</button>
         <table class="table table-striped display nowrap" id="whours-table" style="width:100%">
             <thead class="thead-dark">
                 <tr>
@@ -70,14 +70,46 @@
                 </tr>
             </thead>
             <tbody>
-                @if (Model.WorkingTime?.Any(t => t != null) != true)
-                {
-                }
-                else
+                @if (Model.WorkingTime?.Any(t => t != null) == true)
                 {
                     foreach (var i in Model.WorkingTime.Where(t => t != null))
                     {
-                        @:<tr><td class="dt-center">@i.Year</td><td class="dt-center">@($"{i.WorkingMinutes / 60} часов {i.WorkingMinutes % 60} минут")</td><td class="dt-center"><button class="btn btn-danger" id="delete-time-btn" data-year="@i.Year">Удалить</button></td></tr>
+
+                        var workingHours = i.WorkingMinutes / 60;
+                        var workingMinutes = i.WorkingMinutes % 60;
+                        var hoursWord = "часов";
+                        var minutesWord = "минут";
+                        if (workingHours > 10 && workingHours < 20) { }
+                        else
+                        {
+                            switch (workingHours.ToString()[workingHours.ToString().Length - 1])
+                            {
+                                case '2':
+                                case '3':
+                                case '4':
+                                    hoursWord = "часа";
+                                    break;
+                                case '1':
+                                    hoursWord = "час";
+                                    break;
+                            }
+                        }
+                        if (workingMinutes > 10 && workingMinutes < 20) { }
+                        else
+                        {
+                            switch (workingMinutes.ToString()[workingMinutes.ToString().Length - 1])
+                            {
+                                case '2':
+                                case '3':
+                                case '4':
+                                    minutesWord = "минуты";
+                                    break;
+                                case '1':
+                                    minutesWord = "минута";
+                                    break;
+                            }
+                        }
+                        @:<tr><td class="dt-center">@i.Year</td><td class="dt-center">@($"{workingHours} {hoursWord} {workingMinutes % 60} {minutesWord}")</td><td class="dt-center"><button class="btn btn-danger" id="delete-time-btn" data-year="@i.Year">Удалить</button></td></tr>
                     }
                 }
             </tbody>
@@ -95,21 +127,21 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form asp-action="AddDivingTime" asp-controller="Divers" method="post">
+                <form id="mainForm" asp-action="AddDivingTime" asp-controller="Divers" method="post">
                     <div class="form-group">
-                        <label asp-for="FirstName" class="input-name">Год</label>
-                        <input asp-for="FirstName" id="year" value="2000" name="Year" type="number" class="form-control" data-val="true" data-val-range="Минимальный год: 1980" data-val-range-min="1980" data-val-range-max="10000" data-val-required="Это поле обязательно." />
-                        <span asp-validation-for="FirstName" data-valmsg-for="Year"></span>
+                        <label class="input-name">Год</label>
+                        <input id="year" name="Year" type="number" class="form-control"  />
+                        <label class="labels" id="yearLabel" for="year" style="color: #DC3545"></label>
                     </div>
                     <div class="form-group">
-                        <label asp-for="LastName" class="input-name">Общее рабочее время за этот год(минуты)</label>
-                        <input asp-for="LastName" id="minutes" value="" name="WorkingMinutes" class="form-control" type="number" data-val="true" data-val-range="Количество минут должно быть больше нуля" data-val-range-min="1" data-val-required="Это поле обязательно." />
-                        <span asp-validation-for="LastName" data-valmsg-for="WorkingMinutes"></span>
+                        <label class="input-name">Общее рабочее время за этот год(минуты)</label>
+                        <input id="minutes" name="WorkingMinutes" class="form-control" type="number"/>
+                        <label class="labels" id="minutesLabel" for="minutes" style="color: #DC3545"></label>
                     </div>
                     <input type="hidden" value="@Model.DiverId" name="diverId" />
                     <div class="modal-footer align-content-center">
                         <button type="submit" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
-                        <button type="button" class="btn btn-danger" id="add-time-btn">Сохранить</button>
+                        <button type="button" class="btn btn-primary" id="add-time-btn">Сохранить</button>
                     </div>
                 </form>
             </div>
@@ -175,9 +207,67 @@
 
 @section scripts {
     <script type="text/javascript">
+        var secondaryColar = "#CED4DA";
+        var dangerColar = "#DC3545";
+        var year = document.getElementById("year");
+        var minutes = document.getElementById("minutes");
+        var yearLabel = document.getElementById("yearLabel");
+        var minutesLabel = document.getElementById("minutesLabel");
         var model = @Json.Serialize(Model);
 
+        function checkYear()
+        {
+            year.style.borderColor = secondaryColar;
+            yearLabel.innerHTML = "";
+
+            if (year.value < 1980) {
+                setErrorStyle(year, yearLabel, "Минимальный год: 1980.");
+                return false;
+            }
+            return true;
+        }
+
+        function checkMinutes()
+        {
+            minutes.style.borderColor = secondaryColar;
+            minutesLabel.innerHTML = "";
+
+            if (minutes.value < 1) {
+                setErrorStyle(minutes, minutesLabel, "Количество минут должно быть больше нуля.");
+                return false;
+            }
+            return true;
+        }
+
+        function checkEmpty()
+        {
+            var flag = true;
+
+            if (year.value.length < 1 || year.value.length == "") {
+                setErrorStyle(year, yearLabel, "Это поле обязательно.");
+                flag = false;
+            }
+            if (minutes.value.length < 1 || minutes.value.length == "") {
+                setErrorStyle(minutes, minutesLabel, "Это поле обязательно.");
+                flag = false;
+            }
+
+            var finalFlag = flag && checkYear() && checkMinutes();
+            return finalFlag;
+        }
+
+        function setErrorStyle(field, label, textError) {
+            field.style.borderColor = dangerColar;
+            label.innerHTML = textError; 
+        }
+
         $(function () {
+            var addDivingTimeBtn = document.getElementById("add-time-btn");
+            addDivingTimeBtn.onclick = function () { return checkEmpty() };
+
+            year.oninput = checkYear;
+            minutes.oninput = checkMinutes;
+
             console.log(model);
 
             $('#confirmName').keyup(function() {
@@ -187,8 +277,6 @@
                     $('#confirm').prop('disabled', true);
                 }
             });
-
-
         })
             .on('click', '#delete-time-btn', function () {
                 var diverId = model.diverId;
@@ -212,15 +300,20 @@
                         errorAlert("Не удалось удалить запись");
                     })
             })
+            .on('click', '#add-time-modal-btn', function () {
+                $('#minutes').val(null);
+                $('#year').val(@DateTime.Now.Year);
+                checkYear();
+                $('#addTimeModal').modal('show');
+            })
             .on('click', '#add-time-btn', function () {
+                if (checkEmpty() == false) {
+                    return;
+                }
+
                 var diverId = model.diverId;
                 var year = $('#year').val();
                 var minutes = $('#minutes').val();
-
-                if (year < 1980 || minutes < 1){
-                     return;
-                }
-                $('#addTimeModal').modal('hide');
 
                 $.ajax({
                     url: '/Divers/AddDivingTime',
@@ -232,7 +325,12 @@
                     }
                 })
                     .done(function () {
-                        $('#whours-table tr:last').after('<tr><td class="dt-center">' + year + '</td><td class="dt-center">' + parseInt(minutes / 60) + ' часов ' + minutes % 60 + ' минут</td><td class="dt-center"><button class="btn btn-danger" id="delete-time-btn" data-year="' + year + '">Удалить</button></td></tr>');
+                        var workingHours = parseInt(minutes / 60);
+                        var workingMinutes = parseInt(minutes % 60);
+                        var hoursWord = GetHoursWord(workingHours);
+                        var minutesWord = GetMinutesWord(workingMinutes);
+                        $('#whours-table tr:last').after('<tr><td class="dt-center">' + year + '</td><td class="dt-center">' + workingHours + ' ' + hoursWord + ' ' + workingMinutes + ' ' + minutesWord + '</td><td class="dt-center"><button class="btn btn-danger" id="delete-time-btn" data-year="' + year + '">Удалить</button></td></tr>');
+                        $('#addTimeModal').modal('hide');
                         successAlert("Запись успешно добавлена");
                     })
                     .fail(function (err) {
@@ -240,6 +338,42 @@
                         errorAlert("Не удалось добавить запись");
                     })
             })
+
+        function GetHoursWord(workingHours) {
+            var hoursWord = "часов";
+            if (workingHours > 10 && workingHours < 20) { }
+            else {
+                switch (workingHours.toString()[workingHours.toString().length - 1]) {
+                    case '2':
+                    case '3':
+                    case '4':
+                        hoursWord = "часа";
+                        break;
+                    case '1':
+                        hoursWord = "час";
+                        break;
+                }
+            }
+            return hoursWord;
+        }
+
+        function GetMinutesWord(workingMinutes) {
+            var minutesWord = "минут";
+            if (workingMinutes > 10 && workingMinutes < 20) { }
+            else {
+                switch (workingMinutes.toString()[workingMinutes.toString().length - 1]) {
+                    case '2':
+                    case '3':
+                    case '4':
+                        minutesWord = "минуты";
+                        break;
+                    case '1':
+                        minutesWord = "минута";
+                        break;
+                }
+            }
+            return minutesWord;
+        }
 
         $(document).ready(function() {
 
