@@ -4,6 +4,7 @@ using Staffinfo.Divers.Models;
 using Staffinfo.Divers.Services.Contracts;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace staffinfo.divers.Controllers
@@ -26,9 +27,11 @@ namespace staffinfo.divers.Controllers
             var loadDivingTime = _diverService.GetDivingTimePerStationAsync();
             var loadAverageDivingTime = _diverService.GetAverageDivingTimePerStationAsync();
 
-            ViewBag.diversPerStationChartSource = await loadDivers;
-            ViewBag.divingTimePerStationChartSource = await loadDivingTime;
-            ViewBag.averageDivingTimePerStationChartSource = await loadAverageDivingTime;
+            ViewBag.diversCount = (await loadDivers).Select(t => t.DiversCount).ToList();
+            ViewBag.topStationsName = (await loadDivers).Select(t => t.Name).ToList();
+            ViewBag.stationsName = (await loadDivingTime).Select(t => t.Name).ToList();
+            ViewBag.totalDivingTime = (await loadDivingTime).Select(t => t.TotalDivingTime).ToList();
+            ViewBag.averageDivingTime = (await loadAverageDivingTime).Select(t => t.AverageDivingTime).ToList();
 
             return View();
         }
