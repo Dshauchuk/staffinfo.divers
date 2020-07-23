@@ -214,6 +214,7 @@
         var yearLabel = document.getElementById("yearLabel");
         var minutesLabel = document.getElementById("minutesLabel");
         var model = @Json.Serialize(Model);
+        var workingTime = model.workingTime;
 
         function checkYear()
         {
@@ -223,6 +224,12 @@
             if (year.value < 1980) {
                 setErrorStyle(year, yearLabel, "Минимальный год: 1980.");
                 return false;
+            }
+            if (workingTime[0] != null) {
+                if (workingTime.some((element) => element.year == year.value) == true) {
+                    setErrorStyle(year, yearLabel, "Данные этого года уже есть");
+                    return false;
+                }
             }
             return true;
         }
@@ -258,7 +265,7 @@
 
         function setErrorStyle(field, label, textError) {
             field.style.borderColor = dangerColar;
-            label.innerHTML = textError; 
+            label.innerHTML = textError;
         }
 
         $(function () {
@@ -292,6 +299,7 @@
                     }
                 })
                     .done(function () {
+                        UpdateWorkingTime();
                         successAlert("Запись успешно удалена");
                         tr.remove();
                     })
@@ -325,6 +333,7 @@
                     }
                 })
                     .done(function () {
+                        UpdateWorkingTime();
                         var workingHours = parseInt(minutes / 60);
                         var workingMinutes = parseInt(minutes % 60);
                         var hoursWord = GetHoursWord(workingHours);
@@ -338,6 +347,20 @@
                         errorAlert("Не удалось добавить запись");
                     })
             })
+
+        function UpdateWorkingTime() {
+            var diverId = model.diverId;
+            $.ajax({
+                url: '/Divers/GetListWorkingTimeJson',
+                method: 'GET',
+                data: {
+                    diverId: diverId
+                }
+            })
+                .done(function (data) {
+                    workingTime = data;
+                });
+        }
 
         function GetHoursWord(workingHours) {
             var hoursWord = "часов";
