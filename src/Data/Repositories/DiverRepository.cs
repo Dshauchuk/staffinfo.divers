@@ -31,7 +31,7 @@ namespace Staffinfo.Divers.Data.Repositories
                 p_first_name = poco.FirstName,
                 p_middle_name = poco.MiddleName,
                 p_photo_url = poco.PhotoUrl,
-                p_birth_date = poco.BirthDate,
+                p_birth_date = poco.BirthDate?.ToString("yyyy-MM-dd"),
                 p_station_id = poco.RescueStationId,
                 p_medical_exam_date = poco.MedicalExaminationDate,
                 p_address = poco.Address,
@@ -61,7 +61,7 @@ namespace Staffinfo.Divers.Data.Repositories
             sqlBuilder.Append("encrypt(@p_first_name::bytea, @p_key::bytea, 'aes'), ");
             sqlBuilder.Append("encrypt(@p_middle_name::bytea, @p_key::bytea, 'aes'),");
             sqlBuilder.Append("@p_photo_url, ");
-            sqlBuilder.Append("@p_birth_date, ");
+            sqlBuilder.Append("to_date(@p_birth_date, 'YYYY-MM-DD'), ");
             sqlBuilder.Append("@p_station_id,");
             sqlBuilder.Append("@p_medical_exam_date, ");
             sqlBuilder.Append("@p_address, ");
@@ -336,7 +336,7 @@ namespace Staffinfo.Divers.Data.Repositories
                 p_first_name = poco.FirstName,
                 p_middle_name = poco.MiddleName,
                 p_photo_url = poco.PhotoUrl,
-                p_birth_date = poco.BirthDate,
+                p_birth_date = poco.BirthDate?.ToString("yyyy-MM-dd"),
                 p_station_id = poco.RescueStationId,
                 p_medical_exam_date = poco.MedicalExaminationDate,
                 p_address = poco.Address,
@@ -353,7 +353,7 @@ namespace Staffinfo.Divers.Data.Repositories
             sqlBuilder.Append("first_name = encrypt(@p_first_name::bytea, @p_key::bytea, 'aes'), ");
             sqlBuilder.Append("middle_name = encrypt(@p_middle_name::bytea, @p_key::bytea, 'aes'),");
             sqlBuilder.Append("photo_url = @p_photo_url, ");
-            sqlBuilder.Append("birth_date = @p_birth_date, ");
+            sqlBuilder.Append("birth_date = to_date(@p_birth_date, 'YYYY-MM-DD'), ");
             sqlBuilder.Append("rescue_station_id = @p_station_id,");
             sqlBuilder.Append("medical_examination_date = @p_medical_exam_date, ");
             sqlBuilder.Append("address = @p_address, ");
