@@ -11,6 +11,8 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Staffinfo.Divers.Data.Repositories;
 using Staffinfo.Divers.Data.Repositories.Contracts;
+using Staffinfo.Divers.Data.Services;
+using Staffinfo.Divers.Data.Services.Contracts;
 using Staffinfo.Divers.Infrastructure.Middleware;
 using Staffinfo.Divers.Models;
 using Staffinfo.Divers.Services;
@@ -61,6 +63,8 @@ namespace Staffinfo.Divers
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IRescueStationService, RescueStationService>();
             services.AddTransient<IDiverService, DiverService>();
+            services.AddTransient<IReportService, ReportService>();
+            services.AddTransient<IReportDataService, ReportDataService>();
             services.AddSingleton<UserManager>();
             services.AddHttpContextAccessor();
 

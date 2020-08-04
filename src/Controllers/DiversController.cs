@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Staffinfo.Divers.Data.Repositories.Contracts;
+using Staffinfo.Divers.Data.Services.Contracts;
 using Staffinfo.Divers.Infrastructure.Attributes;
 using Staffinfo.Divers.Models;
 using Staffinfo.Divers.Services.Contracts;
@@ -14,16 +16,24 @@ namespace staffinfo.divers.Controllers
     [JwtAuthorize]
     public class DiversController : Controller
     {
+        private readonly IHostingEnvironment _hostingEnvironment;
         private readonly IDiverService _diverService;
         private readonly IRescueStationService _rescueStationService;
         private readonly IDivingTimeRepository _divingTimeRepository;
+        private readonly IReportService _reportService;
+        private readonly IReportDataService _reportDataService;
         private readonly IMapper _mapper;
 
-        public DiversController(IDivingTimeRepository divingTimeRepository, IRescueStationService rescueStationService, IDiverService diverService, IMapper mapper)
+        public DiversController(IDivingTimeRepository divingTimeRepository, IRescueStationService rescueStationService, 
+                                IDiverService diverService, IReportService reportService, IReportDataService reportDataService, 
+                                IMapper mapper, IHostingEnvironment hostingEnvironment)
         {
+            _hostingEnvironment = hostingEnvironment;
             _divingTimeRepository = divingTimeRepository;
             _rescueStationService = rescueStationService;
             _diverService = diverService;
+            _reportService = reportService;
+            _reportDataService = reportDataService;
             _mapper = mapper;
         }
 
@@ -57,6 +67,11 @@ namespace staffinfo.divers.Controllers
             ViewData["Action"] = "Add";
 
             return View("Edit", new EditDiverModel());
+        }
+
+        public async Task<IActionResult> ExportExcel()
+        {
+            return File(await _reportService.GenerateExcelReport(), System.Net.Mime.MediaTypeNames.Application.Octet, "Report.xlsx");
         }
 
         [HttpPost]
