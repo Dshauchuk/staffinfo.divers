@@ -161,14 +161,14 @@
             <div class="modal-body">
                 <form asp-action="UploadPhoto" asp-controller="Divers" method="post" enctype="multipart/form-data">
                     <input type="hidden" value="@Model.DiverId" name="diverId" />
-                    <div class="upload_form">
-                        <label>
-                            <input id="fileinput" name="uploadedFile" type="file" class="main_input_file" accept="image/*" />
+                    <div>
+                        <label class="upload_form">
+                            <input id="fileinput" name="uploadedFile" type="file" class="main_input_file" accept="image/*"  />
                             <div>Обзор...</div>
                             <input class="f_name" type="text" id="f_name" value="Файл не выбран." disabled />
                         </label>
                     </div>
-                    <div class="preview"/>
+                    <div class="preview"><p></p></div>
                     <div class="modal-footer align-content-center">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
                         <input class="btn btn-primary" type="submit" value="Загрузить" />
@@ -223,6 +223,10 @@
 
 
         fileInput.addEventListener("change", function () {
+            if (preview.firstChild) {
+                preview.removeChild(preview.firstChild);
+            }
+                
             var curFile = fileInput.files[0];
             if (validFileType(curFile)) {
                 var image = document.createElement('img');
@@ -238,8 +242,7 @@
             preview.appendChild(image);
         });
 
-        function validFileType(file)
-        {
+        function validFileType(file) {
             for (var i = 0; i < allowedExtension.length; i++) {
                 if (file.name.endsWith(allowedExtension[i])) {
                     return true;
