@@ -163,11 +163,12 @@
                     <input type="hidden" value="@Model.DiverId" name="diverId" />
                     <div class="upload_form">
                         <label>
-                            <input name="uploadedFile" type="file" class="main_input_file" multiple accept="image/*"/>
+                            <input id="fileinput" name="uploadedFile" type="file" class="main_input_file" accept="image/*" />
                             <div>Обзор...</div>
                             <input class="f_name" type="text" id="f_name" value="Файл не выбран." disabled />
                         </label>
                     </div>
+                    <div class="preview"/>
                     <div class="modal-footer align-content-center">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
                         <input class="btn btn-primary" type="submit" value="Загрузить" />
@@ -215,6 +216,37 @@
         var minutesLabel = document.getElementById("minutesLabel");
         var model = @Json.Serialize(Model);
         var workingTime = model.workingTime;
+
+        var fileInput = document.getElementById("fileinput");
+        var preview = document.querySelector('.preview');
+        var allowedExtension = [".jpg", ".png", ".jpeg", ".gif"];
+
+
+        fileInput.addEventListener("change", function () {
+            var curFile = fileInput.files[0];
+            if (validFileType(curFile)) {
+                var image = document.createElement('img');
+                image.src = window.URL.createObjectURL(curFile);
+                image.height = 150;
+                image.width = 150;
+
+            }
+            else {
+                fileInput.value = "";
+                alert("Выбранный файл не поддерживается.");
+            }
+            preview.appendChild(image);
+        });
+
+        function validFileType(file)
+        {
+            for (var i = 0; i < allowedExtension.length; i++) {
+                if (file.name.endsWith(allowedExtension[i])) {
+                    return true;
+                }
+            }
+            return false;
+        }
 
         function checkYear()
         {
