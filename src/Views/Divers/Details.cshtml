@@ -382,6 +382,9 @@
 
         function GetMinutesWord(workingMinutes) {
             var minutesWord = "минут";
+            if (typeof workingMinutes === "undefined" || workingMinutes === null) {
+                return;
+            }
             if (workingMinutes > 10 && workingMinutes < 20) { }
             else {
                 switch (workingMinutes.toString()[workingMinutes.toString().length - 1]) {

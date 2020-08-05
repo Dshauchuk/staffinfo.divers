@@ -15,6 +15,8 @@ namespace Staffinfo.Divers.Services.Contracts
 
         Task<IEnumerable<Diver>> GetAsync(IFilterOptions options);
 
+        Task<List<DivingTime>> GetListWorkingTimeByDiverAsync(int diverId);
+
         Task DeleteAsync(int diverId);
 
         Task AddPhotoAsync(string photoBase64, int diverId);
