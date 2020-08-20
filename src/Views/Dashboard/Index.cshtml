@@ -7,15 +7,48 @@
 
 <div class="row">
     <div class="col-md-5">
-        <canvas id="containerDiversPerStation" height="250"></canvas>
+        <ejs-accumulationchart id="diversPerStationContainer" title="Количество водолазов на станции" enableAnimation="true">
+            <e-accumulationchart-center x="50%" y="50%"></e-accumulationchart-center>
+            <e-accumulationchart-tooltipsettings enable="true"></e-accumulationchart-tooltipsettings>
+            <e-accumulationchart-legendsettings visible="false" />
+            <e-accumulation-series-collection>
+                <e-accumulation-series dataSource="ViewBag.diversPerStationChartSource" xName="Name" yName="DiversCount" name="Водолазов на станции">
+                    <e-accumulationseries-datalabel name="Name" visible="true">
+                        <e-font fontWeight="600" color="white"></e-font>
+                    </e-accumulationseries-datalabel>
+                </e-accumulation-series>
+            </e-accumulation-series-collection>
+        </ejs-accumulationchart>
     </div>
 
     <div class="col-md-7">
-        <canvas id="containerDivingTimePerStation" height="200"></canvas>
+        <ejs-chart id="containerDivingTimePerStation" title="Количество часов погружения на станциях" enableAnimation="true">
+            <e-chart-primaryxaxis valueType="Category"></e-chart-primaryxaxis>
+            <e-series-collection>
+                <e-series dataSource="ViewBag.divingTimePerStationChartSource" xName="Name" yName="TotalDivingTime" type="@Syncfusion.EJ2.Charts.ChartSeriesType.Bar">
+                    <e-series-marker>
+                        <e-series-datalabel visible="true" position="Top">
+                            <e-font fontWeight="600" color="#ffffff"></e-font>
+                        </e-series-datalabel>
+                    </e-series-marker>
+                </e-series>
+            </e-series-collection>
+        </ejs-chart>
     </div>
 </div>
 <div>
-    <canvas id="containerAverageDivingTimePerStation"></canvas>
+    <ejs-chart id="containerAverageDivingTimePerStation" title="Среднее количество часов погружения на станциях" enableAnimation="true">
+        <e-chart-primaryxaxis valueType="Category"></e-chart-primaryxaxis>
+        <e-series-collection>
+            <e-series dataSource="ViewBag.averageDivingTimePerStationChartSource" xName="Name" yName="AverageDivingTime" type="@Syncfusion.EJ2.Charts.ChartSeriesType.Bar">
+                <e-series-marker>
+                    <e-series-datalabel visible="true" position="Top">
+                        <e-font fontWeight="600" color="#ffffff"></e-font>
+                    </e-series-datalabel>
+                </e-series-marker>
+            </e-series>
+        </e-series-collection>
+    </ejs-chart>
 </div>
 
 <div class="modal fade" id="confirmDeleteDiver" tabindex="-1" role="dialog" aria-labelledby="deleteConfirmTitle" aria-hidden="true">
@@ -31,7 +64,7 @@
                 <form asp-action="RedirectToDivers" asp-controller="Dashboard" method="post">
                     <label id="confirmText" class="input-name"></label>
 
-                    <input id="index" type="hidden" name="index" />
+                    <input id="index" type="hidden" name="index"/>
                     <div class="modal-footer align-content-center">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
                         <button id="confirm" type="submit" class="btn btn-primary">Перейти</button>
@@ -43,104 +76,17 @@
 </div>
 
 <script>
-    var stationsName = @Json.Serialize(ViewBag.stationsName); 
-    var topStationsName = @Json.Serialize(ViewBag.topStationsName);
-    var totalDivingTime = @Json.Serialize(ViewBag.totalDivingTime);
-    var diversCount = @Json.Serialize(ViewBag.diversCount);
-    var averageDivingTime = @Json.Serialize(ViewBag.averageDivingTime);
+    var model = @Json.Serialize(ViewBag.diversPerStationChartSource);
 
-    var defaults = {
-        animation: true,
-        animationSteps: 1000,
-        animateRotate: true,
-        animateScale: false,
-        onAnimationComplete: null
-    };
+    function seriesSelection(sender) {
+        var selected = sender.target.id.split('_');
+        var index = parseInt(selected[selected.length - 1], 10);
 
-    var containerDiversPerStation = document.getElementById('containerDiversPerStation').getContext('2d');
-    var diversPerStationChart = new Chart(containerDiversPerStation, {
-        type: 'pie',
-        data: {
-            labels: topStationsName,
-            datasets: [{
-                label: 'Водолазов на станции',
-                data: diversCount
-            }]
-        },
-        options: GetOptions('Количество водолазов на станции')
-    });
+        document.getElementById('index').value = index;
+        document.getElementById('confirmText').innerHTML = 'Вы действительно хотите перейти на станцию: <b><i>' + model[index].name + '</i></b>';
 
-    var containerDivingTimePerStation = document.getElementById('containerDivingTimePerStation').getContext('2d');
-    var divingTimePerStationChart = new Chart(containerDivingTimePerStation, {
-        type: 'horizontalBar',
-        data: {
-            labels: stationsName,
-            datasets: [{
-                label: 'Часов погружения',
-                data: totalDivingTime
-            }]
-        },
-        options: GetOptions('Количество часов погружения на станциях')
-    });
-
-    var containerAverageDivingTimePerStation = document.getElementById('containerAverageDivingTimePerStation').getContext('2d');
-    var averageDivingTimePerStationChart = new Chart(containerAverageDivingTimePerStation, {
-        type: 'horizontalBar',
-        data: {
-            labels: stationsName,
-            datasets: [{
-                label: 'Среднее количество часов погружения',
-                data: averageDivingTime
-            }]
-        },
-        options: GetOptions('Среднее количество часов погружения на станциях')
-    });
-
-    function GetOptions(title, val) {
-        return {
-            plugins: {
-                colorschemes: {
-                    scheme: 'office.BlueII6'
-                },
-                labels: {
-                    render: 'label',
-                    fontColor: '#000',
-                    position: 'outside'
-                },
-                datalabels: {
-                    color: 'white',
-                    formatter: function (value, ctx) {
-                        if (value > 0) {
-                            return value;
-                        }
-                        return '';
-                    }
-                }
-            },
-            title: {
-                display: true,
-                text: title,
-                position: 'top',
-                fontSize: 14,
-                padding: 20
-            },
-            legend: {
-                display: false
-            },
-            defaults: defaults
-        }
+        $("#confirmDeleteDiver").modal('show');
     }
-
-    $("#containerDiversPerStation").click(
-        function (evt) {
-            var index = diversPerStationChart.active[0]._index;
-
-            document.getElementById('index').value = index;
-            document.getElementById('confirmText').innerHTML = 'Вы действительно хотите перейти на станцию: <b><i>' + topStationsName[index] + '</i></b>';
-
-            $("#confirmDeleteDiver").modal('show');
-        }
-    );
 
     $('#diversPerStationContainer').click(function (e) {
         seriesSelection(e);
