@@ -91,6 +91,12 @@ namespace Staffinfo.Divers.Services
             return diver;
         }
 
+        public async Task<List<DivingTime>> GetListWorkingTimeByDiverAsync(int diverId)
+        {
+            var diver = await GetAsync(diverId);
+            return diver.WorkingTime;
+        }
+
         public async Task<IEnumerable<Diver>> GetAsync(IFilterOptions options)
         {
             IEnumerable<DiverPoco> pocos;

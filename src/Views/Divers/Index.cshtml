@@ -157,7 +157,11 @@
                                     if (data && data.length > 0) {
                                         var sum = data.reduce((a, b) => a + b.workingMinutes, 0);
 
-                                        return parseInt(sum / 60) + ' часов ' + (sum % 60) + ' минут';
+                                        var workingHours = parseInt(sum / 60);
+                                        var workingMinutes = parseInt(sum % 60);
+                                        var hoursWord = GetHoursWord(workingHours);
+                                        var minutesWord = GetMinutesWord(workingMinutes);
+                                        return workingHours + ' ' + hoursWord + ' ' + workingMinutes + ' ' + minutesWord;
                                     }
                                     else
                                         return 0;
@@ -182,6 +186,42 @@
                 .fail(function (error) {
                     errorAlert(error);
                 });
+        }
+
+        function GetHoursWord(workingHours) {
+            var hoursWord = "часов";
+            if (workingHours > 10 && workingHours < 20) { }
+            else {
+                switch (workingHours.toString()[workingHours.toString().length - 1]) {
+                    case '2':
+                    case '3':
+                    case '4':
+                        hoursWord = "часа";
+                        break;
+                    case '1':
+                        hoursWord = "час";
+                        break;
+                }
+            }
+            return hoursWord;
+        }
+
+        function GetMinutesWord(workingMinutes) {
+            var minutesWord = "минут";
+            if (workingMinutes > 10 && workingMinutes < 20) { }
+            else {
+                switch (workingMinutes.toString()[workingMinutes.toString().length - 1]) {
+                    case '2':
+                    case '3':
+                    case '4':
+                        minutesWord = "минуты";
+                        break;
+                    case '1':
+                        minutesWord = "минута";
+                        break;
+                }
+            }
+            return minutesWord;
         }
 
         $(function () {

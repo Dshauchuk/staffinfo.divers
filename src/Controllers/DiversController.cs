@@ -121,6 +121,13 @@ namespace staffinfo.divers.Controllers
         }
 
         [HttpGet]
+        public async Task<JsonResult> GetListWorkingTimeJson(int diverId)
+        {
+            var workingTime = (await _diverService.GetListWorkingTimeByDiverAsync(diverId));
+            return Json(workingTime);
+        }
+
+        [HttpGet]
         public async Task<JsonResult> GetListJson([FromQuery]FilterOptions filter = null)
         {
             var divers = await _diverService.GetAsync(filter);
