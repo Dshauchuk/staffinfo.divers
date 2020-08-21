@@ -207,47 +207,65 @@
 
 @section scripts {
     <script type="text/javascript">
-        var secondaryColar = "#CED4DA";
-        var dangerColar = "#DC3545";
-        var year = document.getElementById("year");
-        var minutes = document.getElementById("minutes");
-        var yearLabel = document.getElementById("yearLabel");
-        var minutesLabel = document.getElementById("minutesLabel");
         var model = @Json.Serialize(Model);
         var workingTime = model.workingTime;
 
         function checkYear()
         {
-            year.style.borderColor = secondaryColar;
-            yearLabel.innerHTML = "";
-
+            var year = document.getElementById("year");
             if (year.value < 1980) {
-                setErrorStyle(year, yearLabel, "Минимальный год: 1980.");
                 return false;
             }
             if (workingTime[0] != null) {
                 if (workingTime.some((element) => element.year == year.value) == true) {
-                    setErrorStyle(year, yearLabel, "Данные этого года уже есть");
                     return false;
                 }
             }
             return true;
         }
 
+        function changeYearErrorStyle() {
+            var year = document.getElementById("year");
+            var yearLabel = document.getElementById("yearLabel");
+            year.style.borderColor = ColorsEnum.secondaryColor;
+            yearLabel.innerHTML = "";
+
+            if (year.value < 1980) {
+                setErrorStyle(year, yearLabel, "Минимальный год: 1980.");
+            }
+            if (workingTime[0] != null) {
+                if (workingTime.some((element) => element.year == year.value) == true) {
+                    setErrorStyle(year, yearLabel, "Данные этого года уже есть");
+                }
+            }
+        }
+
         function checkMinutes()
         {
-            minutes.style.borderColor = secondaryColar;
-            minutesLabel.innerHTML = "";
-
+            var minutes = document.getElementById("minutes");
             if (minutes.value < 1) {
-                setErrorStyle(minutes, minutesLabel, "Количество минут должно быть больше нуля.");
                 return false;
             }
             return true;
         }
 
+        function changeMinutesErrorStyle() {
+            var minutes = document.getElementById("minutes");
+            var minutesLabel = document.getElementById("minutesLabel");
+            minutes.style.borderColor = ColorsEnum.secondaryColor;
+            minutesLabel.innerHTML = "";
+
+            if (minutes.value < 1 && minutes.value != "") {
+                setErrorStyle(minutes, minutesLabel, "Количество минут должно быть больше нуля.");
+            }
+        }
+
         function checkEmpty()
         {
+            var year = document.getElementById("year");
+            var yearLabel = document.getElementById("yearLabel");
+            var minutes = document.getElementById("minutes");
+            var minutesLabel = document.getElementById("minutesLabel");
             var flag = true;
 
             if (year.value.length < 1 || year.value.length == "") {
@@ -264,16 +282,18 @@
         }
 
         function setErrorStyle(field, label, textError) {
-            field.style.borderColor = dangerColar;
+            field.style.borderColor = ColorsEnum.dangerColor;
             label.innerHTML = textError;
         }
 
         $(function () {
+            var year = document.getElementById("year");
+            var minutes = document.getElementById("minutes");
             var addDivingTimeBtn = document.getElementById("add-time-btn");
             addDivingTimeBtn.onclick = function () { return checkEmpty() };
 
-            year.oninput = checkYear;
-            minutes.oninput = checkMinutes;
+            year.oninput = function () { checkYear(); changeYearErrorStyle(); };
+            minutes.oninput = function () { checkMinutes(); changeMinutesErrorStyle(); };
 
             console.log(model);
 
@@ -299,7 +319,7 @@
                     }
                 })
                     .done(function () {
-                        UpdateWorkingTime();
+                        updateWorkingTime();
                         successAlert("Запись успешно удалена");
                         tr.remove();
                     })
@@ -312,6 +332,10 @@
                 $('#minutes').val(null);
                 $('#year').val(@DateTime.Now.Year);
                 checkYear();
+                checkMinutes();
+                changeYearErrorStyle();
+                changeMinutesErrorStyle();
+
                 $('#addTimeModal').modal('show');
             })
             .on('click', '#add-time-btn', function () {
@@ -333,11 +357,11 @@
                     }
                 })
                     .done(function () {
-                        UpdateWorkingTime();
+                        updateWorkingTime();
                         var workingHours = parseInt(minutes / 60);
                         var workingMinutes = parseInt(minutes % 60);
-                        var hoursWord = GetHoursWord(workingHours);
-                        var minutesWord = GetMinutesWord(workingMinutes);
+                        var hoursWord = getHoursWord(workingHours);
+                        var minutesWord = getMinutesWord(workingMinutes);
                         $('#whours-table tr:last').after('<tr><td class="dt-center">' + year + '</td><td class="dt-center">' + workingHours + ' ' + hoursWord + ' ' + workingMinutes + ' ' + minutesWord + '</td><td class="dt-center"><button class="btn btn-danger" id="delete-time-btn" data-year="' + year + '">Удалить</button></td></tr>');
                         $('#addTimeModal').modal('hide');
                         successAlert("Запись успешно добавлена");
@@ -348,7 +372,7 @@
                     })
             })
 
-        function UpdateWorkingTime() {
+        function updateWorkingTime() {
             var diverId = model.diverId;
             $.ajax({
                 url: '/Divers/GetListWorkingTimeJson',
@@ -362,7 +386,7 @@
                 });
         }
 
-        function GetHoursWord(workingHours) {
+        function getHoursWord(workingHours) {
             var hoursWord = "часов";
             if (workingHours > 10 && workingHours < 20) { }
             else {
@@ -380,7 +404,7 @@
             return hoursWord;
         }
 
-        function GetMinutesWord(workingMinutes) {
+        function getMinutesWord(workingMinutes) {
             var minutesWord = "минут";
             if (typeof workingMinutes === "undefined" || workingMinutes === null) {
                 return;
