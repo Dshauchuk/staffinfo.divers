@@ -56,31 +56,34 @@ label.bold-label {
     display: none;
 }
 
-.upload_form div {
-    display:  inline-flex;
-    justify-content: center;
-    align-items: center;
-    width: 100px;
-    height: 38px;
-    background: #1B6EC2;
-    border-radius: 4px;
-    color: white;
-    text-align: center;
-    line-height: 32px;
-    font-family: arial;
-    font-size: 14px;
+.upload_form {
+    display: flex;
 }
 
-    .upload_form div:hover {
-        background: #2980b9;
-        cursor: pointer;
+    .upload_form div {
+        display: inline-flex;
+        width: 100px;
+        justify-content: center;
+        align-items: center;
+        height: 38px;
+        background: #1B6EC2;
+        border-radius: 4px;
+        color: white;
+        text-align: center;
+        line-height: 32px;
+        font-family: arial;
+        font-size: 14px;
     }
 
+        .upload_form div:hover {
+            background: #2980b9;
+            cursor: pointer;
+        }
+
 #f_name {
+    flex: 1;
     background: transparent;
     border: 0;
-    display: inline-flex;
-    height: 30px;
+    height: 38px;
     padding: 0 8px;
-    width: 150px;
 }

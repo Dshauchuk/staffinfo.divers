@@ -692,5 +692,80 @@ namespace staffinfo.divers.tests.Controllers
             Assert.Equal(model1.CreatedAt, result[0].CreatedAt);
             Assert.Equal(model1.UpdatedAt, result[0].UpdatedAt);
         }
+
+        [Fact]
+        public async Task GetListWorkingTimeJson_GivenValidInput_ShouldReturnListDivingTime()
+        {
+            // Arrange
+            var divingTime = new DivingTime()
+            {
+                DiverId = 1,
+                WorkingMinutes = 12,
+                Year = 2000
+            };
+
+            var listDivingTime = new List<DivingTime>()
+            {
+                divingTime
+            };
+
+            var model = new Diver()
+            {
+                Address = "г.Ветка, ул.Батракова 32",
+                BirthDate = DateTime.Now,
+                DiverId = 1,
+                FirstName = "Иван",
+                LastName = "Иванов",
+                MedicalExaminationDate = DateTime.Now,
+                MiddleName = "Иванов",
+                PersonalBookIssueDate = DateTime.Now,
+                PersonalBookNumber = "132412",
+                PersonalBookProtocolNumber = "13233434",
+                PhotoUrl = "",
+                Qualification = 1,
+                CreatedAt = DateTime.Now,
+                UpdatedAt = DateTime.Now,
+                WorkingTime = listDivingTime
+            };
+
+            var expectedCountOfItems = 1;
+            var existingId = 1;
+ 
+            var diverServiceMock = new Mock<IDiverService>();
+            var rescueStationServiceMock = new Mock<IRescueStationService>();
+            var divingTimeServiceMock = new Mock<IDivingTimeRepository>();
+            diverServiceMock.Setup(repo => repo.GetAsync(It.IsAny<int>()))
+                .Returns(Task.FromResult(model));
+            var diversController = new DiversController(divingTimeServiceMock.Object, rescueStationServiceMock.Object, diverServiceMock.Object, _mapper);
+
+            // Act
+            var jsonResult = (await diversController.GetListWorkingTimeJson(existingId)) as JsonResult;
+
+            // Assert
+            Assert.NotNull(jsonResult);
+            var result = jsonResult.Value as List<DivingTime>;
+            Assert.NotNull(result);
+            Assert.Equal(expectedCountOfItems, result.Count);
+            Assert.Equal(divingTime.DiverId, result[0].DiverId);
+            Assert.Equal(divingTime.WorkingMinutes, result[0].WorkingMinutes);
+            Assert.Equal(divingTime.Year, result[0].Year);
+        }
+
+        [Fact]
+        public async Task GetListWorkingTimeJson_GivenInvalidInput_ShouldThrowNotFoundException()
+        {
+            // Arrange
+            var notExistingId = 1111;
+
+            var diverServiceMock = new Mock<IDiverService>();
+            var rescueStationServiceMock = new Mock<IRescueStationService>();
+            var divingTimeServiceMock = new Mock<IDivingTimeRepository>();
+            diverServiceMock.Setup(repo => repo.GetAsync(It.IsAny<int>()))
+                .Throws(new NotFoundException());
+            var diversController = new DiversController(divingTimeServiceMock.Object, rescueStationServiceMock.Object, diverServiceMock.Object, _mapper);
+
+            // Act & Assert
+            await Assert.ThrowsAsync<NotFoundException>(() => diversController.GetListWorkingTimeJson(notExistingId));
+        }
     }
 }
