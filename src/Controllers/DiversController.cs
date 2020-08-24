@@ -123,7 +123,7 @@ namespace staffinfo.divers.Controllers
         [HttpGet]
         public async Task<JsonResult> GetListWorkingTimeJson(int diverId)
         {
-            var workingTime = (await _diverService.GetAsync(diverId)).WorkingTime;
+            var workingTime = (await _diverService.GetListWorkingTimeByDiverAsync(diverId));
             return Json(workingTime);
         }
 
