@@ -14,6 +14,11 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
+using System.Data;
+using Staffinfo.Divers.Data.Repositories;
+using Dapper;
+using Syncfusion.EJ2.DropDowns;
 
 namespace Staffinfo.Divers.Services
 {
@@ -48,7 +53,8 @@ namespace Staffinfo.Divers.Services
             if (model == null)
                 throw new ArgumentNullException(nameof(model));
 
-            var userPoco = (await _userRepository.GetListAsync()).FirstOrDefault(u => u.Login.Equals(model.Login));
+            var userPoco = (await _userRepository.GetListAsync()).FirstOrDefault(u => u.Login.Equals(model.Login) && u.PwdHash.Equals(GenerateHashPass(model.Password)));
+           
 
             if (userPoco == null)
                 return null;

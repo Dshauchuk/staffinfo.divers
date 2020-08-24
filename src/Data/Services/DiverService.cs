@@ -219,7 +219,7 @@ namespace Staffinfo.Divers.Services
 
             foreach (AverageStationDivingTimeModel model in averageDivingTimePerStation)
             {
-                model.AverageDivingTime = model.AverageDivingTime == 0 ? 0 : Math.Round(model.AverageDivingTime / model.DiveNumber, 1);
+                model.AverageDivingTime = Math.Round(model.AverageDivingTime / model.DiveNumber, 1);
             }
 
             return averageDivingTimePerStation;
