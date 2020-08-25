@@ -5,22 +5,30 @@
 }
 <h1>@Model.LastName @Model.FirstName @Model.MiddleName</h1>
 <div style="display:inline;">
-    <a href="/Divers" class="btn btn-primary" style="float: right; margin-top: -50px;">Вернуться к спику водолазов</a>
+    <a href="/Divers" class="btn btn-primary" style="float: right; margin-top: -50px;"><i class="fa fa-long-arrow-left fa-lg"></i> Вернуться к спику водолазов</a>
 </div>
 
 
 <div class="row">
-    <div class="col-md-2">
-        <img class="avatar" src=@(Model.PhotoUrl != null ? Model.PhotoUrl : "/images/avatar-default.png") height="150" width="150" />
-        <button class="btn btn-primary" style="margin-left: 5px; margin-top: 5px;" data-toggle="modal" data-target="#addPhotoModal">Загрузить фото</button>
+    <div class="col-md-3" style="text-align: center;">
+        <img class="avatar" style="margin: 5px;" src=@(Model.PhotoUrl != null ? Model.PhotoUrl : "/images/avatar-default.png") height="200" width="200" />
+        <button class="btn btn-primary" style="margin-top: 5px;" data-toggle="modal" data-target="#addPhotoModal"><i class="fa fa-upload fa-lg"></i> Загрузить фото</button>
     </div>
-    <div class="col-md-7">
-        <h6>Родился: <i>@Model.BirthDate.ToString("D", CultureInfo.CreateSpecificCulture("ru-RU"))</i></h6>
-        <h6>Адрес: <i>@Model.Address</i></h6>
+    <div class="col-md-5">
+        <table cellspacing="0">
+            <tr>
+                <td><h6>Родился: </h6></td>
+                <td><h6><i>@Model.BirthDate.ToString("D", CultureInfo.CreateSpecificCulture("ru-RU"))</i></h6></td>
+            </tr>
+            <tr>
+                <td><h6>Адрес: </h6></td>
+                <td><h6><i>@Model.Address</i></h6></td>
+            </tr>
+        </table>
     </div>
-    <div class="col-md-3" style="text-align: right">
-        <a href="/Divers/Edit?diverId=@Model.DiverId" class="btn btn-warning" style="margin:5px;">Редактировать</a>
-        <button class="btn btn-danger" style="margin:5px;" data-toggle="modal" data-target="#confirmDeleteDiver">Удалить</button>
+    <div class="col-md-4" style="text-align: right">
+        <a href="/Divers/Edit?diverId=@Model.DiverId" class="btn btn-warning"><i class="fa fa-pencil fa-lg"></i> Редактировать</a>
+        <button class="btn btn-danger" data-toggle="modal" data-target="#confirmDeleteDiver"><i class="fa fa-trash-o fa-lg"></i> Удалить</button>
     </div>
 </div>
 
@@ -34,33 +42,39 @@
 </nav>
 <div class="tab-content" id="nav-tabContent">
     <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
-        <div class="col-md-6">
-            <label class="bold-label">№ Протокола: </label> @Model.PersonalBookProtocolNumber
-        </div>
-
-        <div class="col-md-6">
-            <label class="bold-label">Личный Номер: </label> @Model.PersonalBookNumber
-        </div>
-
-        <div class="col-md-6">
-            <label class="bold-label">Дата Выдачи: </label> @Model.PersonalBookIssueDate.ToString("D", CultureInfo.CreateSpecificCulture("ru-RU"))
-        </div>
+        <table cellspacing="0">
+            <tr>
+                <td><label class="bold-label">№ Протокола: </label></td>
+                <td><label>@Model.PersonalBookProtocolNumber</label></td>
+            </tr>
+            <tr>
+                <td><label class="bold-label">Личный Номер: </label></td>
+                <td><label>@Model.PersonalBookNumber</label></td>
+            </tr>
+            <tr>
+                <td><label class="bold-label">Дата Выдачи: </label></td>
+                <td><label>@Model.PersonalBookIssueDate.ToString("D", CultureInfo.CreateSpecificCulture("ru-RU"))</label></td>
+            </tr>
+        </table>
     </div>
     <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
-        <div class="col-md-6">
-            <label class="bold-label">Спасательная Станция: </label> @(Model.RescueStation != null ? Model.RescueStation.StationName : "Станция не указана")
-        </div>
-
-        <div class="col-md-6">
-            <label class="bold-label">Квалификация: </label> @Model.Qualification
-        </div>
-
-        <div class="col-md-6">
-            <label class="bold-label">Дата Мед. Обследования: </label> @(Model.MedicalExaminationDate != null ? Model.MedicalExaminationDate.Value.ToString("D", CultureInfo.CreateSpecificCulture("ru-RU")) : "Дата не указана")
-        </div>
+        <table cellspacing="0">
+            <tr>
+                <td><label class="bold-label">Спасательная Станция: </label></td>
+                <td><label>@(Model.RescueStation != null ? Model.RescueStation.StationName : "Станция не указана")</label></td>
+            </tr>
+            <tr>
+                <td><label class="bold-label">Квалификация: </label></td>
+                <td><label>@Model.Qualification</label></td>
+            </tr>
+            <tr>
+                <td><label class="bold-label">Дата Мед. Обследования: </label></td>
+                <td><label>@(Model.MedicalExaminationDate != null ? Model.MedicalExaminationDate.Value.ToString("D", CultureInfo.CreateSpecificCulture("ru-RU")) : "Дата не указана")</label></td>
+            </tr>
+        </table>
     </div>
     <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">
-        <button id="add-time-modal-btn" type="button" class="btn btn-primary">Добавить</button>
+        <button id="add-time-modal-btn" type="button" class="btn btn-primary"><i class="fa fa-plus fa-lg"></i> Добавить</button>
         <table class="table table-striped display nowrap" id="whours-table" style="width:100%">
             <thead class="thead-dark">
                 <tr>
@@ -109,7 +123,7 @@
                                     break;
                             }
                         }
-                        @:<tr><td class="dt-center">@i.Year</td><td class="dt-center">@($"{workingHours} {hoursWord} {workingMinutes % 60} {minutesWord}")</td><td class="dt-center"><button class="btn btn-danger" id="delete-time-btn" data-year="@i.Year">Удалить</button></td></tr>
+                        @:<tr><td class="dt-center">@i.Year</td><td class="dt-center">@($"{workingHours} {hoursWord} {workingMinutes % 60} {minutesWord}")</td><td class="dt-center"><button class="btn btn-danger" id="delete-time-btn" data-year="@i.Year"><i class="fa fa-trash-o fa-lg"></i> Удалить</button></td></tr>
                     }
                 }
             </tbody>
@@ -141,7 +155,7 @@
                     <input type="hidden" value="@Model.DiverId" name="diverId" />
                     <div class="modal-footer align-content-center">
                         <button type="submit" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
-                        <button type="button" class="btn btn-primary" id="add-time-btn">Сохранить</button>
+                        <button type="button" class="btn btn-primary" id="add-time-btn"><i class="fa fa-floppy-o"></i> Сохранить</button>
                     </div>
                 </form>
             </div>
@@ -397,7 +411,7 @@
                         var workingMinutes = parseInt(minutes % 60);
                         var hoursWord = getHoursWord(workingHours);
                         var minutesWord = getMinutesWord(workingMinutes);
-                        $('#whours-table tr:last').after('<tr><td class="dt-center">' + year + '</td><td class="dt-center">' + workingHours + ' ' + hoursWord + ' ' + workingMinutes + ' ' + minutesWord + '</td><td class="dt-center"><button class="btn btn-danger" id="delete-time-btn" data-year="' + year + '">Удалить</button></td></tr>');
+                        $('#whours-table tr:last').after('<tr><td class="dt-center">' + year + '</td><td class="dt-center">' + workingHours + ' ' + hoursWord + ' ' + workingMinutes + ' ' + minutesWord + '</td><td class="dt-center"><button class="btn btn-danger" id="delete-time-btn" data-year="' + year + '"><i class="fa fa-trash-o fa-lg"></i> Удалить</button></td></tr>');
                         $('#addTimeModal').modal('hide');
                         successAlert("Запись успешно добавлена");
                     })

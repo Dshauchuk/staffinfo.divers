@@ -9,7 +9,7 @@
 <br />
 
 <div>
-    <a href="/Stations/New" class="btn btn-primary">Добавить</a>
+    <a href="/Stations/New" class="btn btn-primary"><i class="fa fa-plus fa-lg"></i> Добавить</a>
 </div>
 <br />
 
@@ -53,7 +53,7 @@
                             { data: "name" },
                             {
                                 data: "id", render: function (data, type, row, meta) {
-                                    return '<a class="btn btn-primary" href="/Divers/Index?stationId=' + data + '">Водолазы</a><a class="btn btn-warning" href="/Stations/Edit?stationId=' + data + '">Изменить</a><button id="station-remove-btn" class="btn btn-danger" data-id="' + data + '">Удалить</button>'
+                                    return '<a class="btn btn-primary" href="/Divers/Index?stationId=' + data + '">Водолазы</a><a class="btn btn-warning" href="/Stations/Edit?stationId=' + data + '"><i class="fa fa-pencil fa-lg"></i> Изменить</a><button id="station-remove-btn" class="btn btn-danger" data-id="' + data + '"><i class="fa fa-trash-o fa-lg"></i> Удалить</button>'
                                 }
                             },
                         ],
