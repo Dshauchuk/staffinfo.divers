@@ -96,6 +96,15 @@ namespace staffinfo.divers.Controllers
             return View("Details", await _diverService.GetAsync(diverId));
         }
 
+        [HttpPost]
+        public async Task<ActionResult> DeleteDiverPhoto(int diverId)
+        {
+            await _diverService.DeletePhotoAsync(diverId);
+
+            return View("Details", await _diverService.GetAsync(diverId));
+        }
+
+
         [HttpDelete]
         public async Task<IActionResult> DeleteDivingTime(int diverId, int year, int minutes)
         {
