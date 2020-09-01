@@ -12,8 +12,10 @@
 <div class="row">
     <div class="col-md-3" style="text-align: center;">
         <img class="avatar" style="margin: 5px;" src=@(Model.PhotoUrl != null ? Model.PhotoUrl : "/images/avatar-default.png") height="200" width="200" />
-        <button id="uploadPhoto" class="btn btn-primary" style="margin-top: 5px;" data-toggle="modal" data-target="#addPhotoModal"><i class="fa fa-upload fa-lg"></i> Загрузить фото</button>
-        <button class="btn btn-danger" style="margin-top: 5px; visibility: @(Model.PhotoUrl != null ? "visible" : "collapse")" data-toggle="modal" data-target="#confirmDeleteDiverPhoto"><i class="fa fa-trash-o fa-lg"></i> Удалить фото</button>
+        <div style="text-align: center;">
+            <button id="uploadPhoto" class="btn btn-primary" style="margin-top: 5px;" data-toggle="modal" data-target="#addPhotoModal"><i class="fa fa-upload fa-lg"></i> Загрузить</button>
+            <button class="btn btn-danger" style="margin-top: 5px; margin-left: 5px; display: @(Model.PhotoUrl != null ? "inline" : "none")" data-toggle="modal" data-target="#confirmDeleteDiverPhoto"><i class="fa fa-trash-o fa-lg"></i> Удалить</button>
+        </div>
     </div>
     <div class="col-md-5">
         <table cellspacing="0">
@@ -168,7 +170,7 @@
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="uploadPhotoTitle">Добавить фото водолаза</h5>
+                <h5 class="modal-title" id="uploadPhotoTitle">@(Model.PhotoUrl != null ? "Изменить" : "Добавить") фото водолаза</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -184,7 +186,7 @@
                         </label>
                     </div>
                     <div>
-                        <img class="preview" height="150" width="150" />
+                        <img class="preview" height="150" width="150"/>
                     </div>
                     <div class="modal-footer align-content-center">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
@@ -260,8 +262,8 @@
             var preview = document.querySelector('.preview');
 
             fName.value = "Файл не выбран";
+            preview.style.display = "none";
             fileInput.value = "";
-            preview.src = model.photoUrl != null ? model.photoUrl : "/images/avatar-default.png";
         };
 
         fileInput.addEventListener("change", function () {
@@ -269,6 +271,7 @@
 
             var curFile = fileInput.files[0];
             if (validFileType(curFile)) {
+                preview.style.display = "inline";
                 preview.src = window.URL.createObjectURL(curFile);
             }
             else {
