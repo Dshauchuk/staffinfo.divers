@@ -123,7 +123,7 @@
                                     break;
                             }
                         }
-                        @:<tr><td class="dt-center">@i.Year</td><td class="dt-center">@($"{workingHours} {hoursWord} {workingMinutes % 60} {minutesWord}")</td><td class="dt-center"><button class="btn btn-danger" id="delete-time-btn" data-year="@i.Year"><i class="fa fa-trash-o fa-lg"></i> Удалить</button></td></tr>
+                        @:<tr><td class="dt-center">@i.Year</td><td class="dt-center">@($"{workingHours} {hoursWord} {workingMinutes % 60} {minutesWord}")</td><td class="dt-center" style="text-align: right"><button id="change-time-modal-btn" class="btn btn-warning" style="margin-right: 5px;" data-year="@i.Year" data-minute="@i.WorkingMinutes"><i class="fa fa-pencil fa-lg"></i> Редактировать</button><button class="btn btn-danger" id="delete-time-btn" data-year="@i.Year"><i class="fa fa-trash-o fa-lg"></i> Удалить</button></td></tr>
                     }
                 }
             </tbody>
@@ -135,7 +135,7 @@
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLongTitle">Добавить Рабочие Часы</h5>
+                <h5 class="modal-title">Добавить Рабочие Часы</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -144,18 +144,50 @@
                 <form id="mainForm" asp-action="AddDivingTime" asp-controller="Divers" method="post">
                     <div class="form-group">
                         <label class="input-name">Год</label>
-                        <input id="year" name="Year" type="number" class="form-control"  />
+                        <input id="year" name="Year" type="number" class="form-control" />
                         <label class="labels" id="yearLabel" for="year" style="color: #DC3545"></label>
                     </div>
                     <div class="form-group">
                         <label class="input-name">Общее рабочее время за этот год(минуты)</label>
-                        <input id="minutes" name="WorkingMinutes" class="form-control" type="number"/>
+                        <input id="minutes" name="WorkingMinutes" class="form-control" type="number" />
                         <label class="labels" id="minutesLabel" for="minutes" style="color: #DC3545"></label>
                     </div>
                     <input type="hidden" value="@Model.DiverId" name="diverId" />
                     <div class="modal-footer align-content-center">
                         <button type="submit" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
                         <button type="button" class="btn btn-primary" id="add-time-btn"><i class="fa fa-floppy-o"></i> Сохранить</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="changeTimeModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Изменить Рабочие Часы</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form asp-action="ChangeDivingTime" asp-controller="Divers" method="post">
+                    <div class="form-group">
+                        <label class="input-name">Год</label>
+                        <input id="yearUpdate" name="Year" type="number" class="form-control" readonly/>
+                        <label class="labels" id="yearUpdateLabel" for="year" style="color: #DC3545"></label>
+                    </div>
+                    <div class="form-group">
+                        <label class="input-name">Общее рабочее время за этот год(минуты)</label>
+                        <input id="minutesUpdate" name="WorkingMinutes" class="form-control" type="number" />
+                        <label class="labels" id="minutesUpdateLabel" for="minutes" style="color: #DC3545"></label>
+                    </div>
+                    <input type="hidden" value="@Model.DiverId" name="diverId" />
+                    <div class="modal-footer align-content-center">
+                        <button type="submit" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+                        <button type="button" class="btn btn-primary" id="change-time-btn"><i class="fa fa-floppy-o"></i> Сохранить</button>
                     </div>
                 </form>
             </div>
@@ -177,7 +209,7 @@
                     <input type="hidden" value="@Model.DiverId" name="diverId" />
                     <div>
                         <label class="upload_form">
-                            <input id="fileinput" name="uploadedFile" type="file" class="main_input_file" accept="image/*"  />
+                            <input id="fileinput" name="uploadedFile" type="file" class="main_input_file" accept="image/*" />
                             <div>Обзор...</div>
                             <input class="f_name" type="text" id="f_name" value="Файл не выбран." disabled />
                         </label>
@@ -225,16 +257,16 @@
         var model = @Json.Serialize(Model);
         var workingTime = model.workingTime;
 
+        var tr;
         var fileInput = document.getElementById("fileinput");
         var preview = document.querySelector('.preview');
         var allowedExtension = [".jpg", ".png", ".jpeg", ".gif"];
-
 
         fileInput.addEventListener("change", function () {
             if (preview.firstChild) {
                 preview.removeChild(preview.firstChild);
             }
-                
+
             var curFile = fileInput.files[0];
             if (validFileType(curFile)) {
                 var image = document.createElement('img');
@@ -259,9 +291,12 @@
             return false;
         }
 
-        function checkYear()
+        function checkYear(year, yearLabel)
         {
-            var year = document.getElementById("year");
+            if (year.value.length < 1 || year.value.length == "") {
+                setErrorStyle(year, yearLabel, "Это поле обязательно.");
+                return false;
+            }
             if (year.value < 1980) {
                 return false;
             }
@@ -273,9 +308,7 @@
             return true;
         }
 
-        function changeYearErrorStyle() {
-            var year = document.getElementById("year");
-            var yearLabel = document.getElementById("yearLabel");
+        function changeYearErrorStyle(year, yearLabel) {
             year.style.borderColor = ColorsEnum.secondaryColor;
             yearLabel.innerHTML = "";
 
@@ -289,18 +322,20 @@
             }
         }
 
-        function checkMinutes()
+        function checkMinutes(minutes, minutesLabel)
         {
-            var minutes = document.getElementById("minutes");
+            if (minutes.value.length < 1 || minutes.value.length == "") {
+                setErrorStyle(minutes, minutesLabel, "Это поле обязательно.");
+                flag = false;
+            }
+
             if (minutes.value < 1) {
                 return false;
             }
             return true;
         }
 
-        function changeMinutesErrorStyle() {
-            var minutes = document.getElementById("minutes");
-            var minutesLabel = document.getElementById("minutesLabel");
+        function changeMinutesErrorStyle(minutes, minutesLabel) {
             minutes.style.borderColor = ColorsEnum.secondaryColor;
             minutesLabel.innerHTML = "";
 
@@ -309,25 +344,9 @@
             }
         }
 
-        function checkEmpty()
+        function checkEmpty(year, yearLabel, minutes, minutesLabel)
         {
-            var year = document.getElementById("year");
-            var yearLabel = document.getElementById("yearLabel");
-            var minutes = document.getElementById("minutes");
-            var minutesLabel = document.getElementById("minutesLabel");
-            var flag = true;
-
-            if (year.value.length < 1 || year.value.length == "") {
-                setErrorStyle(year, yearLabel, "Это поле обязательно.");
-                flag = false;
-            }
-            if (minutes.value.length < 1 || minutes.value.length == "") {
-                setErrorStyle(minutes, minutesLabel, "Это поле обязательно.");
-                flag = false;
-            }
-
-            var finalFlag = flag && checkYear() && checkMinutes();
-            return finalFlag;
+            return checkYear(year, yearLabel) && checkMinutes(minutes, minutesLabel);
         }
 
         function setErrorStyle(field, label, textError) {
@@ -337,12 +356,23 @@
 
         $(function () {
             var year = document.getElementById("year");
+            var yearLabel = document.getElementById("yearLabel");
             var minutes = document.getElementById("minutes");
-            var addDivingTimeBtn = document.getElementById("add-time-btn");
-            addDivingTimeBtn.onclick = function () { return checkEmpty() };
+            var minutesLabel = document.getElementById("minutesLabel");
 
-            year.oninput = function () { checkYear(); changeYearErrorStyle(); };
-            minutes.oninput = function () { checkMinutes(); changeMinutesErrorStyle(); };
+            var yearUpdate = document.getElementById("yearUpdate");
+            var yearUpdateLabel = document.getElementById("yearUpdateLabel");
+            var minutesUpdate = document.getElementById("minutesUpdate");
+            var minutesUpdateLabel = document.getElementById("minutesUpdateLabel");
+            var addDivingTimeBtn = document.getElementById("add-time-btn");
+            var changeDivingTimeBtn = document.getElementById("change-time-btn");
+
+            addDivingTimeBtn.onclick = function () { return checkEmpty(year, yearLabel, minutes, minutesLabel) };
+            changeDivingTimeBtn.onclick = function () { return checkEmpty(yearUpdate, yearUpdateLabel, minutesUpdate, minutesUpdateLabel) };
+
+            year.oninput = function () { changeYearErrorStyle(year, yearLabel); };
+            minutes.oninput = function () { changeMinutesErrorStyle(minutes, minutesLabel); };
+            minutesUpdate.oninput = function () { changeMinutesErrorStyle(minutesUpdate, minutesUpdateLabel); };
 
             console.log(model);
 
@@ -378,17 +408,36 @@
                     })
             })
             .on('click', '#add-time-modal-btn', function () {
-                $('#minutes').val(null);
+                var year = document.getElementById("year");
+                var yearLabel = document.getElementById("yearLabel");
+                var minutes = document.getElementById("minutes");
+                var minutesLabel = document.getElementById("minutesLabel");
                 $('#year').val(@DateTime.Now.Year);
-                checkYear();
-                checkMinutes();
-                changeYearErrorStyle();
-                changeMinutesErrorStyle();
+                $('#minutes').val(null);
+
+                changeYearErrorStyle(year, yearLabel);
+                changeMinutesErrorStyle(minutes, minutesLabel);
 
                 $('#addTimeModal').modal('show');
             })
+            .on('click', '#change-time-modal-btn', function () {
+                var minutesUpdate = document.getElementById("minutesUpdate");
+                var minutesUpdateLabel = document.getElementById("minutesUpdateLabel");
+                var year = $(this).data('year');
+                tr = $(this).closest("tr");
+                $('#yearUpdate').val(year);
+                $('#minutesUpdate').val($(this).data('minute'));
+
+                changeMinutesErrorStyle(minutesUpdate, minutesUpdateLabel);
+
+                $('#changeTimeModal').modal('show');
+            })
             .on('click', '#add-time-btn', function () {
-                if (checkEmpty() == false) {
+                var year = document.getElementById("year");
+                var yearLabel = document.getElementById("yearLabel");
+                var minutes = document.getElementById("minutes");
+                var minutesLabel = document.getElementById("minutesLabel");
+                if (checkEmpty(year, yearLabel, minutes, minutesLabel) == false) {
                     return;
                 }
 
@@ -411,13 +460,49 @@
                         var workingMinutes = parseInt(minutes % 60);
                         var hoursWord = getHoursWord(workingHours);
                         var minutesWord = getMinutesWord(workingMinutes);
-                        $('#whours-table tr:last').after('<tr><td class="dt-center">' + year + '</td><td class="dt-center">' + workingHours + ' ' + hoursWord + ' ' + workingMinutes + ' ' + minutesWord + '</td><td class="dt-center"><button class="btn btn-danger" id="delete-time-btn" data-year="' + year + '"><i class="fa fa-trash-o fa-lg"></i> Удалить</button></td></tr>');
+                        $('#whours-table tr:last').after('<tr><td class="dt-center">' + year + '</td><td class="dt-center">' + workingHours + ' ' + hoursWord + ' ' + workingMinutes + ' ' + minutesWord + '</td><td class="dt-center" style="text-align: right"><button id="change-time-modal-btn" class="btn btn-warning" style="margin-right: 5px;" data-year="' + year + '" data-minute="' + workingMinutes + '"><i class="fa fa-pencil fa-lg"></i> Редактировать</button><button class="btn btn-danger" id="delete-time-btn" data-year="' + year + '" style="float: right;"><i class="fa fa-trash-o fa-lg"></i> Удалить</button></td></tr>');
                         $('#addTimeModal').modal('hide');
                         successAlert("Запись успешно добавлена");
                     })
                     .fail(function (err) {
                         console.error(err);
                         errorAlert("Не удалось добавить запись");
+                    })
+            })
+            .on('click', '#change-time-btn', function () {
+                var minutes = document.getElementById("minutesUpdate");
+                var minutesLabel = document.getElementById("minutesUpdateLabel");
+                if (checkMinutes(minutes, minutesLabel) == false) {
+                    return;
+                }
+
+                var diverId = model.diverId;
+                var year = $('#yearUpdate').val();
+                var minutes = $('#minutesUpdate').val();
+
+                $.ajax({
+                    url: '/Divers/ChangeDivingTime',
+                    method: 'POST',
+                    data: {
+                        diverId: diverId,
+                        year: year,
+                        WorkingMinutes: minutes
+                    }
+                })
+                    .done(function () {
+                        updateWorkingTime();
+                        var workingHours = parseInt(minutes / 60);
+                        var workingMinutes = parseInt(minutes % 60);
+                        var hoursWord = getHoursWord(workingHours);
+                        var minutesWord = getMinutesWord(workingMinutes);
+                        tr.remove();
+                        $('#whours-table tr:last').after('<tr><td class="dt-center">' + year + '</td><td class="dt-center">' + workingHours + ' ' + hoursWord + ' ' + workingMinutes + ' ' + minutesWord + '</td><td class="dt-center" style="text-align: right"><button id="change-time-modal-btn" class="btn btn-warning" style="margin-right: 5px;" data-year="' + year + '" data-minute="' + minutes + '"><i class="fa fa-pencil fa-lg"></i> Редактировать</button><button class="btn btn-danger" id="delete-time-btn" data-year="' + year + '" style="float: right;"><i class="fa fa-trash-o fa-lg"></i> Удалить</button></td></tr>');
+                        $('#changeTimeModal').modal('hide');
+                        successAlert("Запись успешно изменена");
+                    })
+                    .fail(function (err) {
+                        console.error(err);
+                        errorAlert("Не удалось изменить запись");
                     })
             })
 

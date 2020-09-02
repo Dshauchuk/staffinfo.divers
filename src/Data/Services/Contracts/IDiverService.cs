@@ -23,6 +23,8 @@ namespace Staffinfo.Divers.Services.Contracts
 
         Task AddDivingTimeAsync(DivingTime time);
 
+        Task ChangeDivingTimeAsync(DivingTime time);
+
         Task DeleteDivingTimeAsync(int diverId, int year);
 
         Task<List<MinStationModel>> GetDiversPerStationAsync();
