@@ -281,8 +281,8 @@
         });
 
         function validFileType(file) {
-            for (var i = 0; i < AllowedExtension.length; i++) {
-                if (file.name.endsWith(AllowedExtension[i])) {
+            for (var i = 0; i < AllowedAvatarFileExtensions.length; i++) {
+                if (file.name.endsWith(AllowedAvatarFileExtensions[i])) {
                     return true;
                 }
             }
