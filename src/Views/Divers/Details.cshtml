@@ -258,8 +258,8 @@
         var workingTime = model.workingTime;
 
         var tr;
-        var fileInput = document.getElementById("fileinput");
-        var preview = document.querySelector('.preview');
+        var fileInput = $('#fileinput')[0];
+        var preview = $('.preview')[0];
         var allowedExtension = [".jpg", ".png", ".jpeg", ".gif"];
 
         fileInput.addEventListener("change", function () {
@@ -355,17 +355,17 @@
         }
 
         $(function () {
-            var year = document.getElementById("year");
-            var yearLabel = document.getElementById("yearLabel");
-            var minutes = document.getElementById("minutes");
-            var minutesLabel = document.getElementById("minutesLabel");
+            var year = $('#year')[0];
+            var yearLabel = $('#yearLabel')[0];
+            var minutes = $('#minutes')[0];
+            var minutesLabel = $('#minutesLabel')[0];
 
-            var yearUpdate = document.getElementById("yearUpdate");
-            var yearUpdateLabel = document.getElementById("yearUpdateLabel");
-            var minutesUpdate = document.getElementById("minutesUpdate");
-            var minutesUpdateLabel = document.getElementById("minutesUpdateLabel");
-            var addDivingTimeBtn = document.getElementById("add-time-btn");
-            var changeDivingTimeBtn = document.getElementById("change-time-btn");
+            var yearUpdate = $('#yearUpdate')[0];
+            var yearUpdateLabel = $('#yearUpdateLabel')[0];
+            var minutesUpdate = $('#minutesUpdate')[0];
+            var minutesUpdateLabel = $('#minutesUpdateLabel')[0];
+            var addDivingTimeBtn = $('#add-time-btn')[0];
+            var changeDivingTimeBtn = $('#change-time-btn')[0];
 
             addDivingTimeBtn.onclick = function () { return checkEmpty(year, yearLabel, minutes, minutesLabel) };
             changeDivingTimeBtn.onclick = function () { return checkEmpty(yearUpdate, yearUpdateLabel, minutesUpdate, minutesUpdateLabel) };
@@ -408,10 +408,10 @@
                     })
             })
             .on('click', '#add-time-modal-btn', function () {
-                var year = document.getElementById("year");
-                var yearLabel = document.getElementById("yearLabel");
-                var minutes = document.getElementById("minutes");
-                var minutesLabel = document.getElementById("minutesLabel");
+                var year = $('#year')[0];
+                var yearLabel = $('#yearLabel')[0];
+                var minutes = $('#minutes')[0];
+                var minutesLabel = $('#minutesLabel')[0];
                 $('#year').val(@DateTime.Now.Year);
                 $('#minutes').val(null);
 
@@ -421,8 +421,8 @@
                 $('#addTimeModal').modal('show');
             })
             .on('click', '#change-time-modal-btn', function () {
-                var minutesUpdate = document.getElementById("minutesUpdate");
-                var minutesUpdateLabel = document.getElementById("minutesUpdateLabel");
+                var minutesUpdate = $('#minutesUpdate')[0];
+                var minutesUpdateLabel = $('#minutesUpdateLabel')[0];
                 var year = $(this).data('year');
                 tr = $(this).closest("tr");
                 $('#yearUpdate').val(year);
@@ -433,10 +433,10 @@
                 $('#changeTimeModal').modal('show');
             })
             .on('click', '#add-time-btn', function () {
-                var year = document.getElementById("year");
-                var yearLabel = document.getElementById("yearLabel");
-                var minutes = document.getElementById("minutes");
-                var minutesLabel = document.getElementById("minutesLabel");
+                var year = $('#year')[0];
+                var yearLabel = $('#yearLabel')[0];
+                var minutes = $('#minutes')[0];
+                var minutesLabel = $('#minutesLabel')[0];
                 if (checkEmpty(year, yearLabel, minutes, minutesLabel) == false) {
                     return;
                 }
@@ -470,8 +470,8 @@
                     })
             })
             .on('click', '#change-time-btn', function () {
-                var minutes = document.getElementById("minutesUpdate");
-                var minutesLabel = document.getElementById("minutesUpdateLabel");
+                var minutes = $('#minutesUpdate')[0];
+                var minutesLabel = $('#minutesUpdateLabel')[0];
                 if (checkMinutes(minutes, minutesLabel) == false) {
                     return;
                 }
