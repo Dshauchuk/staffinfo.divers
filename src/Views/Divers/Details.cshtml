@@ -12,7 +12,10 @@
 <div class="row">
     <div class="col-md-3" style="text-align: center;">
         <img class="avatar" style="margin: 5px;" src=@(Model.PhotoUrl != null ? Model.PhotoUrl : "/images/avatar-default.png") height="200" width="200" />
-        <button class="btn btn-primary" style="margin-top: 5px;" data-toggle="modal" data-target="#addPhotoModal"><i class="fa fa-upload fa-lg"></i> Загрузить фото</button>
+        <div style="text-align: center;">
+            <button id="uploadPhoto" class="btn btn-primary" style="margin-top: 5px;" data-toggle="modal" data-target="#addPhotoModal"><i class="fa fa-upload fa-lg"></i> Загрузить</button>
+            <button class="btn btn-danger" style="margin-top: 5px; margin-left: 5px; display: @(Model.PhotoUrl != null ? "inline" : "none")" data-toggle="modal" data-target="#confirmDeleteDiverPhoto"><i class="fa fa-trash-o fa-lg"></i> Удалить</button>
+        </div>
     </div>
     <div class="col-md-5">
         <table cellspacing="0">
@@ -144,7 +147,7 @@
                 <form id="mainForm" asp-action="AddDivingTime" asp-controller="Divers" method="post">
                     <div class="form-group">
                         <label class="input-name">Год</label>
-                        <input id="year" name="Year" type="number" class="form-control"  />
+                        <input id="year" name="Year" type="number" class="form-control"/>
                         <label class="labels" id="yearLabel" for="year" style="color: #DC3545"></label>
                     </div>
                     <div class="form-group">
@@ -152,7 +155,7 @@
                         <input id="minutes" name="WorkingMinutes" class="form-control" type="number"/>
                         <label class="labels" id="minutesLabel" for="minutes" style="color: #DC3545"></label>
                     </div>
-                    <input type="hidden" value="@Model.DiverId" name="diverId" />
+                    <input type="hidden" value="@Model.DiverId" name="diverId"/>
                     <div class="modal-footer align-content-center">
                         <button type="submit" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
                         <button type="button" class="btn btn-primary" id="add-time-btn"><i class="fa fa-floppy-o"></i> Сохранить</button>
@@ -167,7 +170,7 @@
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="uploadPhotoTitle">Добавить фото водолаза</h5>
+                <h5 class="modal-title" id="uploadPhotoTitle">@(Model.PhotoUrl != null ? "Изменить" : "Добавить") фото водолаза</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -177,12 +180,14 @@
                     <input type="hidden" value="@Model.DiverId" name="diverId" />
                     <div>
                         <label class="upload_form">
-                            <input id="fileinput" name="uploadedFile" type="file" class="main_input_file" accept="image/*"  />
+                            <input id="fileinput" name="uploadedFile" type="file" class="main_input_file" accept="image/*" />
                             <div>Обзор...</div>
-                            <input class="f_name" type="text" id="f_name" value="Файл не выбран." disabled />
+                            <input class="f_name" type="text" id="f_name" disabled />
                         </label>
                     </div>
-                    <div class="preview"><p></p></div>
+                    <div>
+                        <img class="preview" height="150" width="150"/>
+                    </div>
                     <div class="modal-footer align-content-center">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
                         <input class="btn btn-primary" type="submit" value="Загрузить" />
@@ -220,39 +225,64 @@
     </div>
 </div>
 
+<div class="modal fade" id="confirmDeleteDiverPhoto" tabindex="-1" role="dialog" aria-labelledby="deletePhotoConfirmTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deletePhotoConfirmTitle">Подтверждение удаления фото</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form asp-action="DeleteDiverPhoto" asp-controller="Divers" method="post">
+                    <label asp-for="FirstName" class="input-name">Вы действительно хотите удалить фото ?</label>
+
+                    <input type="hidden" value="@Model.DiverId" name="diverId" />
+
+                    <div class="modal-footer align-content-center">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+                        <button id="confirm" type="submit" class="btn btn-danger">Удалить</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section scripts {
     <script type="text/javascript">
         var model = @Json.Serialize(Model);
         var workingTime = model.workingTime;
 
         var fileInput = document.getElementById("fileinput");
-        var preview = document.querySelector('.preview');
-        var allowedExtension = [".jpg", ".png", ".jpeg", ".gif"];
 
+        uploadPhoto.onclick = function () {
+            var fName = document.getElementById("f_name");
+            var preview = document.querySelector('.preview');
+
+            fName.value = "Файл не выбран";
+            preview.style.display = "none";
+            fileInput.value = "";
+        };
 
         fileInput.addEventListener("change", function () {
-            if (preview.firstChild) {
-                preview.removeChild(preview.firstChild);
-            }
-                
+            var preview = document.querySelector('.preview');
+
             var curFile = fileInput.files[0];
             if (validFileType(curFile)) {
-                var image = document.createElement('img');
-                image.src = window.URL.createObjectURL(curFile);
-                image.height = 150;
-                image.width = 150;
-
+                preview.style.display = "inline";
+                preview.src = window.URL.createObjectURL(curFile);
             }
             else {
                 fileInput.value = "";
                 alert("Выбранный файл не поддерживается.");
             }
-            preview.appendChild(image);
         });
 
         function validFileType(file) {
-            for (var i = 0; i < allowedExtension.length; i++) {
-                if (file.name.endsWith(allowedExtension[i])) {
+            for (var i = 0; i < AllowedAvatarFileExtensions.length; i++) {
+                if (file.name.endsWith(AllowedAvatarFileExtensions[i])) {
                     return true;
                 }
             }

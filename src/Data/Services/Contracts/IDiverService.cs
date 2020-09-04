@@ -21,6 +21,8 @@ namespace Staffinfo.Divers.Services.Contracts
 
         Task AddPhotoAsync(string photoBase64, int diverId);
 
+        Task DeletePhotoAsync(int diverId);
+
         Task AddDivingTimeAsync(DivingTime time);
 
         Task DeleteDivingTimeAsync(int diverId, int year);

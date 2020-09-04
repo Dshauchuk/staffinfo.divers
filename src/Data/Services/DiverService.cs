@@ -134,6 +134,16 @@ namespace Staffinfo.Divers.Services
             await _diverRepository.UpdateAsync(diver);
         }
 
+        public async Task DeletePhotoAsync(int diverId)
+        {
+            DiverPoco diver = await _diverRepository.GetAsync(diverId);
+            if (diver == null)
+                throw new NotFoundException("Водолаз не найден.");
+            diver.PhotoUrl = null;
+
+            await _diverRepository.UpdateAsync(diver);
+        }
+
         public async Task DeleteDivingTimeAsync(int diverId, int year)
         {
             var allDiverHours = (await _divingTimeRepository.GetListAsync(diverId)).ToList();
