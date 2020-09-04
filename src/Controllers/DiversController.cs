@@ -82,6 +82,14 @@ namespace staffinfo.divers.Controllers
         }
 
         [HttpPost]
+        public async Task<IActionResult> ChangeDivingTime(DivingTime time)
+        {
+            await _diverService.ChangeDivingTimeAsync(time);
+
+            return CreatedAtAction("Divers", time);
+        }
+
+        [HttpPost]
         public async Task<ActionResult> UploadPhoto(IFormFile uploadedFile, int diverId)
         {
             if (uploadedFile != null)

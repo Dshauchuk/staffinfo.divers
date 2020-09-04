@@ -124,6 +124,18 @@ namespace Staffinfo.Divers.Services
             await SetWorkingHoursAsync(time.DiverId, times);
         }
 
+        public async Task ChangeDivingTimeAsync(DivingTime time)
+        {
+            await _divingTimeRepository.UpdateAsync(_mapper.Map<DivingTimePoco>(time));
+            var allDiverHours = await _divingTimeRepository.GetListAsync(time.DiverId);
+            var times = new List<DivingTime>();
+
+            if (allDiverHours != null && allDiverHours.Any())
+                times.AddRange(allDiverHours.Select(t => _mapper.Map<DivingTime>(t)));
+
+            await SetWorkingHoursAsync(time.DiverId, times);
+        }
+
         public async Task AddPhotoAsync(string photoBase64, int diverId)
         {
             DiverPoco diver = await _diverRepository.GetAsync(diverId);
