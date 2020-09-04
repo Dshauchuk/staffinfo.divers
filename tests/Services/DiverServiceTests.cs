@@ -540,6 +540,59 @@ namespace staffinfo.divers.tests.Service
         }
 
         [Fact]
+        public async Task DeletePhotoAsync_GivenInvalidInput_ShouldThrowNotFoundException()
+        {
+            // Arrange
+            var notExistingId = 1111;
+
+            var diverRepositoryMock = new Mock<IDiverRepository>();
+            diverRepositoryMock.Setup(repo => repo.GetAsync(It.IsAny<int>()))
+                .Returns(Task.FromResult(null as DiverPoco));
+            var divingTimeRepositoryMock = new Mock<IDivingTimeRepository>();
+            var rescueStationRepositoryMock = new Mock<IRescueStationRepository>();
+            var diverService = new DiverService(diverRepositoryMock.Object, divingTimeRepositoryMock.Object, rescueStationRepositoryMock.Object, _mapper);
+
+            // Act & Assert
+            await Assert.ThrowsAsync<NotFoundException>(() => diverService.DeletePhotoAsync(notExistingId));
+        }
+
+        [Fact]
+        public async Task DeletePhotoAsync_GivenValidInput_ShouldSuccessfullyDeletePhotoAsync()
+        {
+            var modelPoco = new DiverPoco()
+            {
+                Address = "г.Ветка, ул.Батракова 32",
+                BirthDate = DateTime.Now,
+                DiverId = 1,
+                FirstName = "Иван",
+                LastName = "Иванов",
+                MedicalExaminationDate = DateTime.Now,
+                MiddleName = "Иванов",
+                PersonalBookIssueDate = DateTime.Now,
+                PersonalBookNumber = "132412",
+                PersonalBookProtocolNumber = "13233434",
+                PhotoUrl = "",
+                Qualification = 1,
+                RescueStationId = 127,
+                CreatedAt = DateTime.Now,
+                UpdatedAt = DateTime.Now
+            };
+
+            var diverRepositoryMock = new Mock<IDiverRepository>();
+            var divingTimeRepositoryMock = new Mock<IDivingTimeRepository>();
+            diverRepositoryMock.Setup(repo => repo.GetAsync(It.IsAny<int>()))
+                .Returns(Task.FromResult(modelPoco as DiverPoco));
+            var rescueStationRepositoryMock = new Mock<IRescueStationRepository>();
+            var diverService = new DiverService(diverRepositoryMock.Object, divingTimeRepositoryMock.Object, rescueStationRepositoryMock.Object, _mapper);
+
+            // Act
+            await diverService.DeletePhotoAsync(modelPoco.DiverId);
+
+            // Assert
+            diverRepositoryMock.Verify(repo => repo.UpdateAsync(It.IsAny<DiverPoco>()), Times.Once);
+        }
+
+        [Fact]
         public async Task DeleteDivingTimeAsync_GivenValidInput_ShouldSuccessfullyDeleteDivingTime()
         {
             // Arrange

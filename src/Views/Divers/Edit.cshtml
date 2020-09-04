@@ -34,7 +34,7 @@
 
         <div class="form-group col-md-4 col-sm-12">
             <label asp-for="BirthDate" class="input-name">Дата Рождения</label>
-            <input asp-for="BirthDate" class="form-control" type="text" id="birthDate" data-val-required="Это поле обязательно." />
+            <input asp-for="BirthDate" class="form-control" type="text" id="birthDate" data-val-required="Это поле обязательно." autocomplete="off"/>
             <span asp-validation-for="BirthDate"></span>
         </div>
 
@@ -63,7 +63,7 @@
 
         <div class="form-group col-md-4 col-sm-12">
             <label asp-for="PersonalBookIssueDate" class="input-name">Дата Выдачи</label>
-            <input asp-for="PersonalBookIssueDate" class="form-control" type="text" id="bookIssueDate" data-val-required="Это поле обязательно." />
+            <input asp-for="PersonalBookIssueDate" class="form-control" type="text" id="bookIssueDate" data-val-required="Это поле обязательно." autocomplete="off"/>
             <span asp-validation-for="PersonalBookIssueDate"></span>
         </div>
 
@@ -92,7 +92,7 @@
 
         <div class="form-group col-md-4 col-sm-12">
             <label asp-for="MedicalExaminationDate" class="input-name">Дата Мед. Обследования</label>
-            <input asp-for="MedicalExaminationDate" class="form-control" type="text" id="medicalExamDate" placeholder="Укажите дату" />
+            <input asp-for="MedicalExaminationDate" class="form-control" type="text" id="medicalExamDate" placeholder="Укажите дату" autocomplete="off"/>
             <span asp-validation-for="MedicalExaminationDate"></span>
         </div>
         <input asp-for="DiverId" type="hidden" />
@@ -109,6 +109,8 @@
             format: 'dd/mm/yyyy',
             uiLibrary: 'bootstrap4'
         }
+
+        var model = @Json.Serialize(Model);
 
         $(function () {
             // load stations for the dropdown
@@ -131,7 +133,7 @@
                     errorAlert(error);
                 });
 
-            
+
             // initialize datepickers
             $('#birthDate').datepicker(datePickerConfigs);
             $('#bookIssueDate').datepicker(datePickerConfigs);
@@ -141,6 +143,19 @@
             $("#birthDate, #bookIssueDate, #medicalExamDate").keydown(function (e) {
                 e.preventDefault();
             });
+
+            if (model.birthDate != null) {
+                var birthDate = new Date(model.birthDate);
+                $('#birthDate').val(birthDate.toLocaleDateString('en-GB'));
+            }
+            if (model.personalBookIssueDate != null) {
+                var personalBookIssueDate = new Date(model.personalBookIssueDate);
+                $('#bookIssueDate').val(personalBookIssueDate.toLocaleDateString('en-GB'));
+            }
+            if (model.medicalExaminationDate != null) {
+                var medicalExaminationDate = new Date(model.medicalExaminationDate);
+                $('#medicalExamDate').val(medicalExaminationDate.toLocaleDateString('en-GB'));
+            }
         })
     </script>
 }

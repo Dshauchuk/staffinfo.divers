@@ -459,6 +459,43 @@ namespace staffinfo.divers.tests.Controllers
         }
 
         [Fact]
+        public async Task DeleteDiverPhoto_GivenValidInput_ShouldSuccessfullyDeleteDiverPhoto()
+        {
+            // Arrange
+            var existingId = 1;
+
+            var diverServiceMock = new Mock<IDiverService>();
+            var rescueStationServiceMock = new Mock<IRescueStationService>();
+            var divingTimeServiceMock = new Mock<IDivingTimeRepository>();
+            diverServiceMock.Setup(repo => repo.DeletePhotoAsync(It.IsAny<int>()))
+                .Returns(Task.CompletedTask);
+            var diversController = new DiversController(divingTimeServiceMock.Object, rescueStationServiceMock.Object, diverServiceMock.Object, _mapper);
+
+            // Act
+            await diversController.DeleteDiverPhoto(existingId);
+
+            // Assert
+            diverServiceMock.Verify(repo => repo.DeletePhotoAsync(It.IsAny<int>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task DeleteDiverPhoto_GivenInvalidInput_ShouldThrowNotFoundException()
+        {
+            // Arrange
+            var notExistingId = 1111;
+            
+            var diverServiceMock = new Mock<IDiverService>();
+            var rescueStationServiceMock = new Mock<IRescueStationService>();
+            var divingTimeServiceMock = new Mock<IDivingTimeRepository>();
+            diverServiceMock.Setup(repo => repo.DeletePhotoAsync(It.IsAny<int>()))
+                .Throws(new NotFoundException());
+            var diversController = new DiversController(divingTimeServiceMock.Object, rescueStationServiceMock.Object, diverServiceMock.Object, _mapper);
+
+            // Act & Assert
+            await Assert.ThrowsAsync<NotFoundException>(() => diversController.DeleteDiverPhoto(notExistingId));
+        }
+
+        [Fact]
         public async Task DeleteDivingTime_GivenValidInput_ShouldSuccessfullyDeleteDivingTime()
         {
             var model = new DivingTime()

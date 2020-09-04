@@ -146,6 +146,16 @@ namespace Staffinfo.Divers.Services
             await _diverRepository.UpdateAsync(diver);
         }
 
+        public async Task DeletePhotoAsync(int diverId)
+        {
+            DiverPoco diver = await _diverRepository.GetAsync(diverId);
+            if (diver == null)
+                throw new NotFoundException("Водолаз не найден.");
+            diver.PhotoUrl = null;
+
+            await _diverRepository.UpdateAsync(diver);
+        }
+
         public async Task DeleteDivingTimeAsync(int diverId, int year)
         {
             var allDiverHours = (await _divingTimeRepository.GetListAsync(diverId)).ToList();
@@ -231,7 +241,7 @@ namespace Staffinfo.Divers.Services
 
             foreach (AverageStationDivingTimeModel model in averageDivingTimePerStation)
             {
-                model.AverageDivingTime = Math.Round(model.AverageDivingTime / model.DiveNumber, 1);
+                model.AverageDivingTime = model.AverageDivingTime == 0 ? 0 : Math.Round(model.AverageDivingTime / model.DiveNumber, 1);
             }
 
             return averageDivingTimePerStation;
