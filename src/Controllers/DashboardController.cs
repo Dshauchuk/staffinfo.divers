@@ -27,11 +27,11 @@ namespace staffinfo.divers.Controllers
             var loadDivingTime = _diverService.GetDivingTimePerStationAsync();
             var loadAverageDivingTime = _diverService.GetAverageDivingTimePerStationAsync();
 
-            ViewBag.diversCount = (await loadDivers).Select(t => t.DiversCount).ToList();
-            ViewBag.topStationsName = (await loadDivers).Select(t => t.Name).ToList();
-            ViewBag.stationsName = (await loadDivingTime).Select(t => t.Name).ToList();
-            ViewBag.totalDivingTime = (await loadDivingTime).Select(t => t.TotalDivingTime).ToList();
-            ViewBag.averageDivingTime = (await loadAverageDivingTime).Select(t => t.AverageDivingTime).ToList();
+            ViewBag.diversCount = (await loadDivers).Select(t => t.DiversCount);
+            ViewBag.topStationsName = (await loadDivers).Select(t => t.Name);
+            ViewBag.stationsName = (await loadDivingTime).Select(t => t.Name);
+            ViewBag.totalDivingTime = (await loadDivingTime).Select(t => t.TotalDivingTime);
+            ViewBag.averageDivingTime = (await loadAverageDivingTime).Select(t => t.AverageDivingTime);
 
             return View();
         }
