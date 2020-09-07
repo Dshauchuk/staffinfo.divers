@@ -90,16 +90,11 @@ namespace staffinfo.divers.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> UploadPhoto(IFormFile uploadedFile, int diverId)
+        public async Task<ActionResult> UploadPhoto(string uploadedFile, int diverId)
         {
-            if (uploadedFile != null)
+            if (!string.IsNullOrEmpty(uploadedFile))
             {
-                using var fileStream = uploadedFile.OpenReadStream();
-                byte[] bytes = new byte[uploadedFile.Length];
-                fileStream.Read(bytes, 0, (int)uploadedFile.Length);
-                string base64ImageRepresentation = "data:" + uploadedFile.ContentType + ";base64," + Convert.ToBase64String(bytes);
-
-                await _diverService.AddPhotoAsync(base64ImageRepresentation, diverId);
+                await _diverService.AddPhotoAsync(uploadedFile, diverId);
             }
             return View("Details", await _diverService.GetAsync(diverId));
         }

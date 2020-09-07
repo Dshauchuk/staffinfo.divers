@@ -87,3 +87,11 @@ label.bold-label {
     height: 38px;
     padding: 0 8px;
 }
+
+.cropper {
+    max-width: 100%;
+}
+.cropper-view-box,
+.cropper-face {
+    border-radius: 50%;
+}
