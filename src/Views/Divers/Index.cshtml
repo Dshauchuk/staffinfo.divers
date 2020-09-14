@@ -83,6 +83,7 @@
                     <th scope="col"></th>
                     <th scope="col">Фамилия</th>
                     <th scope="col">Имя</th>
+                    <th scope="col">Отчество</th>
                     <th scope="col">Станция</th>
                     <th scope="col">Квалификация</th>
                     <th scope="col">Всего часов под водой</th>
@@ -93,6 +94,12 @@
             </tbody>
         </table>
     </div>
+</div>
+
+<div id="preview" class="preview">
+    <img class="avatar" style="margin: 5px;" height="200" width="200" />
+    <p id="previewStationName"></p>
+    <p id="previewName"></p>
 </div>
 
 @section scripts{
@@ -137,11 +144,12 @@
                                     else
                                         url = '/images/avatar-default.png'
 
-                                    return '<img src="' + url + '" class="avatar" width="50" height="50" style="border-radius: 100px;" />'
+                                    return '<img src="' + url + '" class="o2t-element" width="50" height="50" style="border-radius: 100px;" />'
                                 }
                             },
                             { data: "lastName" },
                             { data: "firstName" },
+                            { data: "middleName" },
                             {
                                 data: "rescueStation", render: function (data, type, row, meta) {
                                     if (data)
@@ -180,7 +188,10 @@
                         ],
                         language: {
                             url: "/localisation/dataTables.russian.lang.json"
-                        }
+                        },
+                        'fnCreatedRow': function (nRow, aData, iDataIndex) {
+                            $(nRow).attr('class', 'rowTable'); // or whatever you choose to set as the id
+                        },
                     });
                 })
                 .fail(function (error) {
@@ -222,6 +233,35 @@
                 }
             }
             return minutesWord;
+        }
+
+        function SetPreviewStyle(row) {
+            var preview = $('#preview')[0];
+            var h = preview.offsetHeight + 60;
+
+            if (row.view.innerHeight - row.clientY < h) {
+                preview.style.top = row.pageY - (h - (row.view.innerHeight - row.clientY)) - 5 + 'px';
+            }
+            else {
+                preview.style.top = row.pageY + 'px';
+            }
+            preview.style.opacity = "1";
+            preview.style.visibility = 'visible';
+        }
+
+        function SetPreviewNames(row) {
+            var lastName = row.currentTarget.children[1].innerHTML;
+            var firstName = row.currentTarget.children[2].innerHTML;
+            var middleName = row.currentTarget.children[3].innerHTML;
+            var stationName = row.currentTarget.children[4].innerHTML;
+
+            var previewName = $('#previewName')[0];
+            var previewStationName = $('#previewStationName')[0];
+            var avatarPreview = $('.avatar')[0];
+
+            previewName.innerHTML = 'станция "' + stationName + '"';
+            previewStationName.innerHTML = lastName + ' ' + firstName + ' ' + middleName;
+            avatarPreview.src = row.currentTarget.children[0].firstChild.currentSrc;
         }
 
         $(function () {
@@ -273,5 +313,19 @@
                 loadDivers();
             })
         })
+            .on('mouseover', '.rowTable', function (e) {
+                if (e.target == e.currentTarget.children[0].firstChild) {
+                    SetPreviewNames(e);
+                    SetPreviewStyle(e);
+                }                
+            })
+            .on('mouseout', '.rowTable', function (e) {
+                if (e.target == e.currentTarget.children[0].firstChild) {
+                    var preview = $('#preview')[0];
+                    preview.style.opacity = "0";
+                    preview.style.visibility = 'hidden';
+                }
+            })
+        
     </script>
 }

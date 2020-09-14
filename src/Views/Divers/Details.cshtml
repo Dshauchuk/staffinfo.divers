@@ -233,7 +233,7 @@
                     </div>
                     <div class="modal-footer align-content-center">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
-                        <input class="btn btn-primary" type="submit" value="Загрузить" />
+                        <input id="uploadPhotoBtn" class="btn btn-primary" type="submit" value="Загрузить"/>
                     </div>
                 </form>
             </div>
@@ -302,6 +302,7 @@
             var tr;
             var fileInput = $('#fileinput')[0];
             var uploadPhotoModal = $('#uploadPhotoModal')[0];
+            var uploadPhotoBtn = $('#uploadPhotoBtn')[0];
             var cropper;
 
 
@@ -338,13 +339,7 @@
                     cropper = new Cropper(image, {
                         aspectRatio: 1,
                         viewMode: 3,
-                        preview: '#preview',
-                        crop: function () {
-                            var croppedCanvas = cropper.getCroppedCanvas();
-                            var uploadedFile = $('#uploadedFile')[0];
-                            var roundedCanvas = getRoundedCanvas(croppedCanvas);
-                            uploadedFile.value = roundedCanvas.toDataURL().toString();
-                        }
+                        preview: '#preview'
                     });
                     image.style.display = "inline";
                     preview.style.display = "block";
@@ -356,6 +351,13 @@
                     fileInput.value = "";
                     alert("Выбранный файл не поддерживается.");
                 }
+            });
+
+            uploadPhotoBtn.addEventListener("mousedown", function () {
+                var croppedCanvas = cropper.getCroppedCanvas();
+                var uploadedFile = $('#uploadedFile')[0];
+                var roundedCanvas = getRoundedCanvas(croppedCanvas);
+                uploadedFile.value = roundedCanvas.toDataURL().toString();
             });
 
             function getRoundedCanvas(sourceCanvas) {

@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Staffinfo.Divers.Data.Repositories.Contracts;
 using Staffinfo.Divers.Infrastructure.Attributes;
