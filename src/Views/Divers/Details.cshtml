@@ -469,8 +469,6 @@
                 minutes.oninput = function () { changeMinutesErrorStyle(minutes, minutesLabel); };
                 minutesUpdate.oninput = function () { changeMinutesErrorStyle(minutesUpdate, minutesUpdateLabel); };
 
-                console.log(model);
-
                 $('#confirmName').keyup(function() {
                     if ($(this).val() == (model.lastName + ' ' + model.firstName)) {
                         $('#confirm').prop('disabled', false);
@@ -498,7 +496,6 @@
                             tr.remove();
                         })
                         .fail(function (err) {
-                            console.error(err);
                             errorAlert("Не удалось удалить запись");
                         })
                 })
@@ -560,7 +557,6 @@
                             successAlert("Запись успешно добавлена");
                         })
                         .fail(function (err) {
-                            console.error(err);
                             errorAlert("Не удалось добавить запись");
                         })
                 })
@@ -596,7 +592,6 @@
                             successAlert("Запись успешно изменена");
                         })
                         .fail(function (err) {
-                            console.error(err);
                             errorAlert("Не удалось изменить запись");
                         })
                 })

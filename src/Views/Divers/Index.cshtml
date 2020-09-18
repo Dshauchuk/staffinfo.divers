@@ -127,8 +127,6 @@
                 data: options
             })
                 .done(function (dataSet) {
-                    console.log(dataSet);
-
                     $('#divers-table').DataTable({
                         destroy: true,
                         scrollX: true,
@@ -144,7 +142,7 @@
                                     else
                                         url = '/images/avatar-default.png'
 
-                                    return '<img src="' + url + '" class="o2t-element" width="50" height="50" style="border-radius: 100px;" />'
+                                    return '<img src="' + url + '" width="50" height="50" style="border-radius: 100px;" />'
                                 }
                             },
                             { data: "lastName" },
@@ -167,8 +165,8 @@
 
                                         var workingHours = parseInt(sum / 60);
                                         var workingMinutes = parseInt(sum % 60);
-                                        var hoursWord = GetHoursWord(workingHours);
-                                        var minutesWord = GetMinutesWord(workingMinutes);
+                                        var hoursWord = getHoursWord(workingHours);
+                                        var minutesWord = getMinutesWord(workingMinutes);
                                         return workingHours + ' ' + hoursWord + ' ' + workingMinutes + ' ' + minutesWord;
                                     }
                                     else
@@ -190,7 +188,7 @@
                             url: "/localisation/dataTables.russian.lang.json"
                         },
                         'fnCreatedRow': function (nRow, aData, iDataIndex) {
-                            $(nRow).attr('class', 'rowTable'); // or whatever you choose to set as the id
+                            $(nRow).attr('class', 'rowTable');
                         },
                     });
                 })
@@ -199,7 +197,7 @@
                 });
         }
 
-        function GetHoursWord(workingHours) {
+        function getHoursWord(workingHours) {
             var hoursWord = "часов";
             if (workingHours > 10 && workingHours < 20) { }
             else {
@@ -217,7 +215,7 @@
             return hoursWord;
         }
 
-        function GetMinutesWord(workingMinutes) {
+        function getMinutesWord(workingMinutes) {
             var minutesWord = "минут";
             if (workingMinutes > 10 && workingMinutes < 20) { }
             else {
@@ -235,7 +233,7 @@
             return minutesWord;
         }
 
-        function SetPreviewStyle(row) {
+        function setPreviewStyle(row) {
             var preview = $('#preview')[0];
             var h = preview.offsetHeight + 60;
 
@@ -249,7 +247,7 @@
             preview.style.visibility = 'visible';
         }
 
-        function SetPreviewNames(row) {
+        function setPreviewNames(row) {
             var lastName = row.currentTarget.children[1].innerHTML;
             var firstName = row.currentTarget.children[2].innerHTML;
             var middleName = row.currentTarget.children[3].innerHTML;
@@ -315,8 +313,8 @@
         })
             .on('mouseover', '.rowTable', function (e) {
                 if (e.target == e.currentTarget.children[0].firstChild) {
-                    SetPreviewNames(e);
-                    SetPreviewStyle(e);
+                    setPreviewNames(e);
+                    setPreviewStyle(e);
                 }                
             })
             .on('mouseout', '.rowTable', function (e) {
@@ -326,6 +324,5 @@
                     preview.style.visibility = 'hidden';
                 }
             })
-        
     </script>
 }
