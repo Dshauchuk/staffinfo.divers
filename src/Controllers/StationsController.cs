@@ -11,11 +11,13 @@ namespace staffinfo.divers.Controllers
     public class StationsController : Controller
     {
         private readonly IRescueStationService _rescueStationService;
+        private readonly IDiverService _diverService;
         private readonly IMapper _mapper;
 
-        public StationsController(IRescueStationService rescueStationService, IMapper mapper)
+        public StationsController(IRescueStationService rescueStationService, IDiverService diverService, IMapper mapper)
         {
             _rescueStationService = rescueStationService;
+            _diverService = diverService;
             _mapper = mapper;
         }
 
@@ -70,7 +72,7 @@ namespace staffinfo.divers.Controllers
         [HttpGet]
         public async Task<JsonResult> GetListJson()
         {
-            var stations = await _rescueStationService.GetAsync();
+            var stations = await _diverService.GetDiversPerStationAsync();
 
             return Json(stations);
         }

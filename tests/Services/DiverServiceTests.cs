@@ -676,8 +676,8 @@ namespace staffinfo.divers.tests.Service
 
             var diversPerStationModel = new MinStationModel()
             {
-                Id = modelStationPoco.StationId,
-                Name = modelStationPoco.StationName,
+                StationId = modelStationPoco.StationId,
+                StationName = modelStationPoco.StationName,
                 DiversCount = modelDiverPocos.Where(c => c.RescueStation.StationId == modelStationPoco.StationId).Count()
             };
 
@@ -696,8 +696,8 @@ namespace staffinfo.divers.tests.Service
             // Act & Assert
             Assert.NotNull(result);
             Assert.IsType<List<MinStationModel>>(result);
-            Assert.Equal(result[0].Id, diversPerStationModel.Id);
-            Assert.Equal(result[0].Name, diversPerStationModel.Name);
+            Assert.Equal(result[0].StationId, diversPerStationModel.StationId);
+            Assert.Equal(result[0].StationName, diversPerStationModel.StationName);
             Assert.Equal(result[0].DiversCount, diversPerStationModel.DiversCount);
         }
 

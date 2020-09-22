@@ -1,5 +1,4 @@
 ﻿using Staffinfo.Divers.Models.Abstract;
-using System;
 
 namespace Staffinfo.Divers.Models
 {

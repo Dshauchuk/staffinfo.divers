@@ -3,9 +3,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Staffinfo.Divers.Data.Poco;
 using Staffinfo.Divers.Data.Repositories.Contracts;
+using Staffinfo.Divers.Models;
 using Staffinfo.Divers.Services.Contracts;
 using Staffinfo.Divers.Shared.Exceptions;
-using Staffinfo.Divers.Models;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -14,11 +14,6 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
-using System.Data;
-using Staffinfo.Divers.Data.Repositories;
-using Dapper;
-using Syncfusion.EJ2.DropDowns;
 
 namespace Staffinfo.Divers.Services
 {

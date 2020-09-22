@@ -8,14 +8,14 @@
 
         public MinStationModel(int id, string name, int diversCount)
         {
-            Id = id;
-            Name = name;
+            StationId = id;
+            StationName = name;
             DiversCount = diversCount;
         }
 
-        public int Id { get; set; }
+        public int StationId { get; set; }
 
-        public string Name { get; set; }
+        public string StationName { get; set; }
 
         public int DiversCount { get; set; }
     }
