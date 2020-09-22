@@ -11,9 +11,9 @@
 
 <div class="row">
     <div class="col-md-3" style="text-align: center;">
-        <img class="avatar" style="margin: 5px;" src=@(Model.PhotoUrl != null ? Model.PhotoUrl : "/images/avatar-default.png") height="200" width="200" />
+        <img class="avatar" style="margin: 5px; border-radius: 100px;" src=@(Model.PhotoUrl != null ? Model.PhotoUrl : "/images/avatar-default.png") height="200" width="200" />
         <div style="text-align: center;">
-            <button id="uploadPhoto" class="btn btn-primary" style="margin-top: 5px;" data-toggle="modal" data-target="#addPhotoModal"><i class="fa fa-upload fa-lg"></i> Загрузить</button>
+            <button id="uploadPhotoModal" class="btn btn-primary" style="margin-top: 5px;" data-toggle="modal" data-target="#addPhotoModal"><i class="fa fa-upload fa-lg"></i> Загрузить</button>
             <button class="btn btn-danger" style="margin-top: 5px; margin-left: 5px; display: @(Model.PhotoUrl != null ? "inline" : "none")" data-toggle="modal" data-target="#confirmDeleteDiverPhoto"><i class="fa fa-trash-o fa-lg"></i> Удалить</button>
         </div>
     </div>
@@ -212,17 +212,28 @@
                     <input type="hidden" value="@Model.DiverId" name="diverId" />
                     <div>
                         <label class="upload_form">
-                            <input id="fileinput" name="uploadedFile" type="file" class="main_input_file" accept="image/*" />
+                            <input id="fileinput" type="file" class="main_input_file" accept="image/*" />
                             <div>Обзор...</div>
                             <input class="f_name" type="text" id="f_name" disabled />
                         </label>
                     </div>
-                    <div>
-                        <img class="preview" height="150" width="150"/>
+                    <input  id="uploadedFile" type="hidden" name="uploadedFile" />
+                    <input type="hidden" value="@Model.DiverId" name="diverId" />
+                    <div class="container" style="padding: 0px;">
+                        <div class="row" style="overflow: hidden;">
+                            <div class="col col-6">
+                                <div>
+                                    <img id="image" style="max-width: 100%;" alt="Picture">
+                                </div>
+                            </div>
+                            <div class="col col-3">
+                                <div id="preview" style="overflow: hidden; height: 150px; border-radius: 100px;"></div>
+                            </div>
+                        </div>
                     </div>
                     <div class="modal-footer align-content-center">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
-                        <input class="btn btn-primary" type="submit" value="Загрузить" />
+                        <input id="uploadPhotoBtn" class="btn btn-primary" type="submit" value="Загрузить"/>
                     </div>
                 </form>
             </div>
@@ -284,322 +295,371 @@
 
 @section scripts {
     <script type="text/javascript">
-        var model = @Json.Serialize(Model);
-        var workingTime = model.workingTime;
+        window.addEventListener('DOMContentLoaded', function () {
+            var model = @Json.Serialize(Model);
+            var workingTime = model.workingTime;
 
-        var tr;
-        var fileInput = document.getElementById("fileinput");
+            var tr;
+            var fileInput = $('#fileinput')[0];
+            var uploadPhotoModal = $('#uploadPhotoModal')[0];
+            var uploadPhotoBtn = $('#uploadPhotoBtn')[0];
+            var cropper;
 
-        uploadPhoto.onclick = function () {
-            var fName = $('#f_name')[0];
-            var preview = $('.preview')[0];
 
-            fName.value = "Файл не выбран";
-            preview.style.display = "none";
-            fileInput.value = "";
-        };
+            uploadPhotoModal.onclick = function () {
+                var fName = $('#f_name')[0];
+                var image = $('#image')[0];
+                var preview = $('#preview')[0];
 
-        fileInput.addEventListener("change", function () {
-            var preview = $('.preview')[0];
-
-            var curFile = fileInput.files[0];
-            if (validFileType(curFile)) {
-                preview.style.display = "inline";
-                preview.src = window.URL.createObjectURL(curFile);
-            }
-            else {
+                fName.value = "Файл не выбран";
+                image.style.display = "none";
+                preview.style.display = "none";
                 fileInput.value = "";
-                alert("Выбранный файл не поддерживается.");
-            }
-        });
 
-        function validFileType(file) {
-            for (var i = 0; i < AllowedAvatarFileExtensions.length; i++) {
-                if (file.name.endsWith(AllowedAvatarFileExtensions[i])) {
-                    return true;
+                if (cropper != null) {
+                    cropper.destroy();
+                    cropper = null;
                 }
-            }
-            return false;
-        }
+            };
 
-        function checkYear(year, yearLabel)
-        {
-            if (year.value.length < 1 || year.value.length == "") {
-                setErrorStyle(year, yearLabel, "Это поле обязательно.");
-                return false;
-            }
-            if (year.value < 1980) {
-                return false;
-            }
-            if (workingTime[0] != null) {
-                if (workingTime.some((element) => element.year == year.value) == true) {
-                    return false;
+            fileInput.addEventListener("change", function () {
+                var fName = $('#f_name')[0];
+                var image = $('#image')[0];
+                var preview = $('#preview')[0];
+
+                if (cropper != null) {
+                    cropper.destroy();
+                    cropper = null;
                 }
-            }
-            return true;
-        }
 
-        function changeYearErrorStyle(year, yearLabel) {
-            year.style.borderColor = ColorsEnum.secondaryColor;
-            yearLabel.innerHTML = "";
+                var curFile = fileInput.files[0];
+                if (validFileType(curFile)) {
+                    image.src = window.URL.createObjectURL(curFile);
 
-            if (year.value < 1980) {
-                setErrorStyle(year, yearLabel, "Минимальный год: 1980.");
-            }
-            if (workingTime[0] != null) {
-                if (workingTime.some((element) => element.year == year.value) == true) {
-                    setErrorStyle(year, yearLabel, "Данные этого года уже есть");
+                    cropper = new Cropper(image, {
+                        aspectRatio: 1,
+                        viewMode: 3,
+                        preview: '#preview'
+                    });
+                    image.style.display = "inline";
+                    preview.style.display = "block";
                 }
-            }
-        }
-
-        function checkMinutes(minutes, minutesLabel)
-        {
-            if (minutes.value.length < 1 || minutes.value.length == "") {
-                setErrorStyle(minutes, minutesLabel, "Это поле обязательно.");
-                flag = false;
-            }
-
-            if (minutes.value < 1) {
-                return false;
-            }
-            return true;
-        }
-
-        function changeMinutesErrorStyle(minutes, minutesLabel) {
-            minutes.style.borderColor = ColorsEnum.secondaryColor;
-            minutesLabel.innerHTML = "";
-
-            if (minutes.value < 1 && minutes.value != "") {
-                setErrorStyle(minutes, minutesLabel, "Количество минут должно быть больше нуля.");
-            }
-        }
-
-        function checkEmpty(year, yearLabel, minutes, minutesLabel)
-        {
-            return checkYear(year, yearLabel) && checkMinutes(minutes, minutesLabel);
-        }
-
-        function setErrorStyle(field, label, textError) {
-            field.style.borderColor = ColorsEnum.dangerColor;
-            label.innerHTML = textError;
-        }
-
-        $(function () {
-            var year = $('#year')[0];
-            var yearLabel = $('#yearLabel')[0];
-            var minutes = $('#minutes')[0];
-            var minutesLabel = $('#minutesLabel')[0];
-
-            var yearUpdate = $('#yearUpdate')[0];
-            var yearUpdateLabel = $('#yearUpdateLabel')[0];
-            var minutesUpdate = $('#minutesUpdate')[0];
-            var minutesUpdateLabel = $('#minutesUpdateLabel')[0];
-            var addDivingTimeBtn = $('#add-time-btn')[0];
-            var changeDivingTimeBtn = $('#change-time-btn')[0];
-
-            addDivingTimeBtn.onclick = function () { return checkEmpty(year, yearLabel, minutes, minutesLabel) };
-            changeDivingTimeBtn.onclick = function () { return checkEmpty(yearUpdate, yearUpdateLabel, minutesUpdate, minutesUpdateLabel) };
-
-            year.oninput = function () { changeYearErrorStyle(year, yearLabel); };
-            minutes.oninput = function () { changeMinutesErrorStyle(minutes, minutesLabel); };
-            minutesUpdate.oninput = function () { changeMinutesErrorStyle(minutesUpdate, minutesUpdateLabel); };
-
-            console.log(model);
-
-            $('#confirmName').keyup(function() {
-                if ($(this).val() == (model.lastName + ' ' + model.firstName)) {
-                    $('#confirm').prop('disabled', false);
-                } else {
-                    $('#confirm').prop('disabled', true);
+                else {
+                    fName.value = "Файл не выбран";
+                    image.style.display = "none";
+                    preview.style.display = "none";
+                    fileInput.value = "";
+                    alert("Выбранный файл не поддерживается.");
                 }
             });
-        })
-            .on('click', '#delete-time-btn', function () {
-                var diverId = model.diverId;
-                var year = $(this).data('year');
-                var tr = $(this).closest("tr");
 
-                $.ajax({
-                    url: '/Divers/DeleteDivingTime',
-                    method: 'DELETE',
-                    data: {
-                        diverId: diverId,
-                        year: year
+            uploadPhotoBtn.addEventListener("mousedown", function () {
+                var croppedCanvas = cropper.getCroppedCanvas();
+                var uploadedFile = $('#uploadedFile')[0];
+                var roundedCanvas = getRoundedCanvas(croppedCanvas);
+                uploadedFile.value = roundedCanvas.toDataURL().toString();
+            });
+
+            function getRoundedCanvas(sourceCanvas) {
+                var canvas = document.createElement('canvas');
+                var context = canvas.getContext('2d');
+                var width = sourceCanvas.width;
+                var height = sourceCanvas.height;
+
+                canvas.width = width;
+                canvas.height = height;
+                context.imageSmoothingEnabled = true;
+                context.drawImage(sourceCanvas, 0, 0, width, height);
+                context.globalCompositeOperation = 'destination-in';
+                context.beginPath();
+                context.arc(width / 2, height / 2, Math.min(width, height) / 2, 0, 2 * Math.PI, true);
+                context.fill();
+                return canvas;
+            }
+
+            function validFileType(file) {
+                for (var i = 0; i < AllowedAvatarFileExtensions.length; i++) {
+                    if (file.name.endsWith(AllowedAvatarFileExtensions[i])) {
+                        return true;
                     }
-                })
-                    .done(function () {
-                        updateWorkingTime();
-                        successAlert("Запись успешно удалена");
-                        tr.remove();
-                    })
-                    .fail(function (err) {
-                        console.error(err);
-                        errorAlert("Не удалось удалить запись");
-                    })
-            })
-            .on('click', '#add-time-modal-btn', function () {
+                }
+                return false;
+            }
+
+            function checkYear(year, yearLabel)
+            {
+                if (year.value.length < 1 || year.value.length == "") {
+                    setErrorStyle(year, yearLabel, "Это поле обязательно.");
+                    return false;
+                }
+                if (year.value < 1980) {
+                    return false;
+                }
+                if (workingTime[0] != null) {
+                    if (workingTime.some((element) => element.year == year.value) == true) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+
+            function changeYearErrorStyle(year, yearLabel) {
+                year.style.borderColor = ColorsEnum.secondaryColor;
+                yearLabel.innerHTML = "";
+
+                if (year.value < 1980) {
+                    setErrorStyle(year, yearLabel, "Минимальный год: 1980.");
+                }
+                if (workingTime[0] != null) {
+                    if (workingTime.some((element) => element.year == year.value) == true) {
+                        setErrorStyle(year, yearLabel, "Данные этого года уже есть");
+                    }
+                }
+            }
+
+            function checkMinutes(minutes, minutesLabel)
+            {
+                if (minutes.value.length < 1 || minutes.value.length == "") {
+                    setErrorStyle(minutes, minutesLabel, "Это поле обязательно.");
+                    flag = false;
+                }
+
+                if (minutes.value < 1) {
+                    return false;
+                }
+                return true;
+            }
+
+            function changeMinutesErrorStyle(minutes, minutesLabel) {
+                minutes.style.borderColor = ColorsEnum.secondaryColor;
+                minutesLabel.innerHTML = "";
+
+                if (minutes.value < 1 && minutes.value != "") {
+                    setErrorStyle(minutes, minutesLabel, "Количество минут должно быть больше нуля.");
+                }
+            }
+
+            function checkEmpty(year, yearLabel, minutes, minutesLabel)
+            {
+                return checkYear(year, yearLabel) && checkMinutes(minutes, minutesLabel);
+            }
+
+            function setErrorStyle(field, label, textError) {
+                field.style.borderColor = ColorsEnum.dangerColor;
+                label.innerHTML = textError;
+            }
+
+            $(function () {
                 var year = $('#year')[0];
                 var yearLabel = $('#yearLabel')[0];
                 var minutes = $('#minutes')[0];
                 var minutesLabel = $('#minutesLabel')[0];
-                $('#year').val(@DateTime.Now.Year);
-                $('#minutes').val(null);
 
-                changeYearErrorStyle(year, yearLabel);
-                changeMinutesErrorStyle(minutes, minutesLabel);
-
-                $('#addTimeModal').modal('show');
-            })
-            .on('click', '#change-time-modal-btn', function () {
+                var yearUpdate = $('#yearUpdate')[0];
+                var yearUpdateLabel = $('#yearUpdateLabel')[0];
                 var minutesUpdate = $('#minutesUpdate')[0];
                 var minutesUpdateLabel = $('#minutesUpdateLabel')[0];
-                var year = $(this).data('year');
-                tr = $(this).closest("tr");
-                $('#yearUpdate').val(year);
-                $('#minutesUpdate').val($(this).data('minute'));
+                var addDivingTimeBtn = $('#add-time-btn')[0];
+                var changeDivingTimeBtn = $('#change-time-btn')[0];
 
-                changeMinutesErrorStyle(minutesUpdate, minutesUpdateLabel);
+                addDivingTimeBtn.onclick = function () { return checkEmpty(year, yearLabel, minutes, minutesLabel) };
+                changeDivingTimeBtn.onclick = function () { return checkEmpty(yearUpdate, yearUpdateLabel, minutesUpdate, minutesUpdateLabel) };
 
-                $('#changeTimeModal').modal('show');
-            })
-            .on('click', '#add-time-btn', function () {
-                var year = $('#year')[0];
-                var yearLabel = $('#yearLabel')[0];
-                var minutes = $('#minutes')[0];
-                var minutesLabel = $('#minutesLabel')[0];
-                if (checkEmpty(year, yearLabel, minutes, minutesLabel) == false) {
-                    return;
-                }
+                year.oninput = function () { changeYearErrorStyle(year, yearLabel); };
+                minutes.oninput = function () { changeMinutesErrorStyle(minutes, minutesLabel); };
+                minutesUpdate.oninput = function () { changeMinutesErrorStyle(minutesUpdate, minutesUpdateLabel); };
 
-                var diverId = model.diverId;
-                var year = $('#year').val();
-                var minutes = $('#minutes').val();
-
-                $.ajax({
-                    url: '/Divers/AddDivingTime',
-                    method: 'POST',
-                    data: {
-                        diverId: diverId,
-                        year: year,
-                        WorkingMinutes: minutes
+                $('#confirmName').keyup(function() {
+                    if ($(this).val() == (model.lastName + ' ' + model.firstName)) {
+                        $('#confirm').prop('disabled', false);
+                    } else {
+                        $('#confirm').prop('disabled', true);
                     }
-                })
-                    .done(function () {
-                        updateWorkingTime();
-                        var workingHours = parseInt(minutes / 60);
-                        var workingMinutes = parseInt(minutes % 60);
-                        var hoursWord = getHoursWord(workingHours);
-                        var minutesWord = getMinutesWord(workingMinutes);
-                        $('#whours-table tr:last').after('<tr><td class="dt-center">' + year + '</td><td class="dt-center">' + workingHours + ' ' + hoursWord + ' ' + workingMinutes + ' ' + minutesWord + '</td><td class="dt-center" style="text-align: right"><button id="change-time-modal-btn" class="btn btn-warning" style="margin-right: 5px;" data-year="' + year + '" data-minute="' + workingMinutes + '"><i class="fa fa-pencil fa-lg"></i> Редактировать</button><button class="btn btn-danger" id="delete-time-btn" data-year="' + year + '" style="float: right;"><i class="fa fa-trash-o fa-lg"></i> Удалить</button></td></tr>');
-                        $('#addTimeModal').modal('hide');
-                        successAlert("Запись успешно добавлена");
-                    })
-                    .fail(function (err) {
-                        console.error(err);
-                        errorAlert("Не удалось добавить запись");
-                    })
-            })
-            .on('click', '#change-time-btn', function () {
-                var minutes = $('#minutesUpdate')[0];
-                var minutesLabel = $('#minutesUpdateLabel')[0];
-                if (checkMinutes(minutes, minutesLabel) == false) {
-                    return;
-                }
-
-                var diverId = model.diverId;
-                var year = $('#yearUpdate').val();
-                var minutes = $('#minutesUpdate').val();
-
-                $.ajax({
-                    url: '/Divers/ChangeDivingTime',
-                    method: 'POST',
-                    data: {
-                        diverId: diverId,
-                        year: year,
-                        WorkingMinutes: minutes
-                    }
-                })
-                    .done(function () {
-                        updateWorkingTime();
-                        var workingHours = parseInt(minutes / 60);
-                        var workingMinutes = parseInt(minutes % 60);
-                        var hoursWord = getHoursWord(workingHours);
-                        var minutesWord = getMinutesWord(workingMinutes);
-                        tr.remove();
-                        $('#whours-table tr:last').after('<tr><td class="dt-center">' + year + '</td><td class="dt-center">' + workingHours + ' ' + hoursWord + ' ' + workingMinutes + ' ' + minutesWord + '</td><td class="dt-center" style="text-align: right"><button id="change-time-modal-btn" class="btn btn-warning" style="margin-right: 5px;" data-year="' + year + '" data-minute="' + minutes + '"><i class="fa fa-pencil fa-lg"></i> Редактировать</button><button class="btn btn-danger" id="delete-time-btn" data-year="' + year + '" style="float: right;"><i class="fa fa-trash-o fa-lg"></i> Удалить</button></td></tr>');
-                        $('#changeTimeModal').modal('hide');
-                        successAlert("Запись успешно изменена");
-                    })
-                    .fail(function (err) {
-                        console.error(err);
-                        errorAlert("Не удалось изменить запись");
-                    })
-            })
-
-        function updateWorkingTime() {
-            var diverId = model.diverId;
-            $.ajax({
-                url: '/Divers/GetListWorkingTimeJson',
-                method: 'GET',
-                data: {
-                    diverId: diverId
-                }
-            })
-                .done(function (data) {
-                    workingTime = data;
                 });
-        }
+            })
+                .on('click', '#delete-time-btn', function () {
+                    var diverId = model.diverId;
+                    var year = $(this).data('year');
+                    var tr = $(this).closest("tr");
 
-        function getHoursWord(workingHours) {
-            var hoursWord = "часов";
-            if (workingHours > 10 && workingHours < 20) { }
-            else {
-                switch (workingHours.toString()[workingHours.toString().length - 1]) {
-                    case '2':
-                    case '3':
-                    case '4':
-                        hoursWord = "часа";
-                        break;
-                    case '1':
-                        hoursWord = "час";
-                        break;
+                    $.ajax({
+                        url: '/Divers/DeleteDivingTime',
+                        method: 'DELETE',
+                        data: {
+                            diverId: diverId,
+                            year: year
+                        }
+                    })
+                        .done(function () {
+                            updateWorkingTime();
+                            successAlert("Запись успешно удалена");
+                            tr.remove();
+                        })
+                        .fail(function (err) {
+                            errorAlert("Не удалось удалить запись");
+                        })
+                })
+                .on('click', '#add-time-modal-btn', function () {
+                    var year = $('#year')[0];
+                    var yearLabel = $('#yearLabel')[0];
+                    var minutes = $('#minutes')[0];
+                    var minutesLabel = $('#minutesLabel')[0];
+                    $('#year').val(@DateTime.Now.Year);
+                    $('#minutes').val(null);
+
+                    changeYearErrorStyle(year, yearLabel);
+                    changeMinutesErrorStyle(minutes, minutesLabel);
+
+                    $('#addTimeModal').modal('show');
+                })
+                .on('click', '#change-time-modal-btn', function () {
+                    var minutesUpdate = $('#minutesUpdate')[0];
+                    var minutesUpdateLabel = $('#minutesUpdateLabel')[0];
+                    var year = $(this).data('year');
+                    tr = $(this).closest("tr");
+                    $('#yearUpdate').val(year);
+                    $('#minutesUpdate').val($(this).data('minute'));
+
+                    changeMinutesErrorStyle(minutesUpdate, minutesUpdateLabel);
+
+                    $('#changeTimeModal').modal('show');
+                })
+                .on('click', '#add-time-btn', function () {
+                    var year = $('#year')[0];
+                    var yearLabel = $('#yearLabel')[0];
+                    var minutes = $('#minutes')[0];
+                    var minutesLabel = $('#minutesLabel')[0];
+                    if (checkEmpty(year, yearLabel, minutes, minutesLabel) == false) {
+                        return;
+                    }
+
+                    var diverId = model.diverId;
+                    var year = $('#year').val();
+                    var minutes = $('#minutes').val();
+
+                    $.ajax({
+                        url: '/Divers/AddDivingTime',
+                        method: 'POST',
+                        data: {
+                            diverId: diverId,
+                            year: year,
+                            WorkingMinutes: minutes
+                        }
+                    })
+                        .done(function () {
+                            updateWorkingTime();
+                            var workingHours = parseInt(minutes / 60);
+                            var workingMinutes = parseInt(minutes % 60);
+                            var hoursWord = getHoursWord(workingHours);
+                            var minutesWord = getMinutesWord(workingMinutes);
+                            $('#whours-table tr:last').after('<tr><td class="dt-center">' + year + '</td><td class="dt-center">' + workingHours + ' ' + hoursWord + ' ' + workingMinutes + ' ' + minutesWord + '</td><td class="dt-center" style="text-align: right"><button id="change-time-modal-btn" class="btn btn-warning" style="margin-right: 5px;" data-year="' + year + '" data-minute="' + workingMinutes + '"><i class="fa fa-pencil fa-lg"></i> Редактировать</button><button class="btn btn-danger" id="delete-time-btn" data-year="' + year + '" style="float: right;"><i class="fa fa-trash-o fa-lg"></i> Удалить</button></td></tr>');
+                            $('#addTimeModal').modal('hide');
+                            successAlert("Запись успешно добавлена");
+                        })
+                        .fail(function (err) {
+                            errorAlert("Не удалось добавить запись");
+                        })
+                })
+                .on('click', '#change-time-btn', function () {
+                    var minutes = $('#minutesUpdate')[0];
+                    var minutesLabel = $('#minutesUpdateLabel')[0];
+                    if (checkMinutes(minutes, minutesLabel) == false) {
+                        return;
+                    }
+
+                    var diverId = model.diverId;
+                    var year = $('#yearUpdate').val();
+                    var minutes = $('#minutesUpdate').val();
+
+                    $.ajax({
+                        url: '/Divers/ChangeDivingTime',
+                        method: 'POST',
+                        data: {
+                            diverId: diverId,
+                            year: year,
+                            WorkingMinutes: minutes
+                        }
+                    })
+                        .done(function () {
+                            updateWorkingTime();
+                            var workingHours = parseInt(minutes / 60);
+                            var workingMinutes = parseInt(minutes % 60);
+                            var hoursWord = getHoursWord(workingHours);
+                            var minutesWord = getMinutesWord(workingMinutes);
+                            tr.remove();
+                            $('#whours-table tr:last').after('<tr><td class="dt-center">' + year + '</td><td class="dt-center">' + workingHours + ' ' + hoursWord + ' ' + workingMinutes + ' ' + minutesWord + '</td><td class="dt-center" style="text-align: right"><button id="change-time-modal-btn" class="btn btn-warning" style="margin-right: 5px;" data-year="' + year + '" data-minute="' + minutes + '"><i class="fa fa-pencil fa-lg"></i> Редактировать</button><button class="btn btn-danger" id="delete-time-btn" data-year="' + year + '" style="float: right;"><i class="fa fa-trash-o fa-lg"></i> Удалить</button></td></tr>');
+                            $('#changeTimeModal').modal('hide');
+                            successAlert("Запись успешно изменена");
+                        })
+                        .fail(function (err) {
+                            errorAlert("Не удалось изменить запись");
+                        })
+                })
+
+            function updateWorkingTime() {
+                var diverId = model.diverId;
+                $.ajax({
+                    url: '/Divers/GetListWorkingTimeJson',
+                    method: 'GET',
+                    data: {
+                        diverId: diverId
+                    }
+                })
+                    .done(function (data) {
+                        workingTime = data;
+                    });
+            }
+
+            function getHoursWord(workingHours) {
+                var hoursWord = "часов";
+                if (workingHours > 10 && workingHours < 20) { }
+                else {
+                    switch (workingHours.toString()[workingHours.toString().length - 1]) {
+                        case '2':
+                        case '3':
+                        case '4':
+                            hoursWord = "часа";
+                            break;
+                        case '1':
+                            hoursWord = "час";
+                            break;
+                    }
                 }
+                return hoursWord;
             }
-            return hoursWord;
-        }
 
-        function getMinutesWord(workingMinutes) {
-            var minutesWord = "минут";
-            if (typeof workingMinutes === "undefined" || workingMinutes === null) {
-                return;
-            }
-            if (workingMinutes > 10 && workingMinutes < 20) { }
-            else {
-                switch (workingMinutes.toString()[workingMinutes.toString().length - 1]) {
-                    case '2':
-                    case '3':
-                    case '4':
-                        minutesWord = "минуты";
-                        break;
-                    case '1':
-                        minutesWord = "минута";
-                        break;
+            function getMinutesWord(workingMinutes) {
+                var minutesWord = "минут";
+                if (typeof workingMinutes === "undefined" || workingMinutes === null) {
+                    return;
                 }
+                if (workingMinutes > 10 && workingMinutes < 20) { }
+                else {
+                    switch (workingMinutes.toString()[workingMinutes.toString().length - 1]) {
+                        case '2':
+                        case '3':
+                        case '4':
+                            minutesWord = "минуты";
+                            break;
+                        case '1':
+                            minutesWord = "минута";
+                            break;
+                    }
+                }
+                return minutesWord;
             }
-            return minutesWord;
-        }
 
-        $(document).ready(function() {
+            $(document).ready(function() {
 
-		$(".main_input_file").change(function() {
-			var f_name = [];
+		    $(".main_input_file").change(function() {
+			    var f_name = [];
 
-			for (var i = 0; i < $(this).get(0).files.length; ++i) {
-				f_name.push(" " + $(this).get(0).files[i].name);
-			}
-			$("#f_name").val(f_name.join(", "));
-		});
-	});
+			    for (var i = 0; i < $(this).get(0).files.length; ++i) {
+				    f_name.push(" " + $(this).get(0).files[i].name);
+			    }
+			    $("#f_name").val(f_name.join(", "));
+		    });
+	    });
+    });
     </script>
 }

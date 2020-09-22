@@ -180,7 +180,7 @@ namespace Staffinfo.Divers.Services
                 {
                     Id = rescueStation.StationId,
                     Name = rescueStation.StationName,
-                    DiversCount = divers.Where(c => c.RescueStation.StationId == rescueStation.StationId).Count()
+                    DiversCount = divers.Where(c => c.RescueStationId == rescueStation.StationId).Count()
                 });
             }
 
