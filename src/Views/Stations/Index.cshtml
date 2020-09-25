@@ -47,15 +47,15 @@
                         dom: "<'row'<'col-sm-6'l><'col-6 text-right'f>>" +
                             "<'row'<'col-sm-12'tr>>" +
                             "<'row'<'col-sm-5'i><'col-7 text-right'p>>",
-                        data: dataSet.map(function (d) { return { index: ++ind, name: d.stationName, id: d.stationId }; }),
+                        data: dataSet.map(function (d) { return { index: ++ind, name: d.stationName, id: d.stationId, diversCount: d.diversCount }; }),
                         columns: [
                             { data: "index" },
                             { data: "name" },
                             {
-                                data: "id", render: function (data, type, row, meta) {
-                                    return '<a class="btn btn-primary" href="/Divers/Index?stationId=' + data + '">Водолазы</a><a class="btn btn-warning" href="/Stations/Edit?stationId=' + data + '"><i class="fa fa-pencil fa-lg"></i> Изменить</a><button id="station-remove-btn" class="btn btn-danger" data-id="' + data + '"><i class="fa fa-trash-o fa-lg"></i> Удалить</button>'
+                                data: function (data, type, dataToSet) {
+                                    return '<a class="btn btn-primary" href="/Divers/Index?stationId=' + data.id + '"><span class="fa-stack has-badge" data-count="' + data.diversCount + '"><i class="fa fa-users fa-stack-1x"></i></span> Водолазы</a><a class="btn btn-warning" href="/Stations/Edit?stationId=' + data.id + '"><i class="fa fa-pencil fa-lg"></i> Изменить</a><button id="station-remove-btn" class="btn btn-danger" data-id="' + data.id + '"><i class="fa fa-trash-o fa-lg"></i> Удалить</button>';
                                 }
-                            },
+                            }
                         ],
                         aoColumnDefs: [
                             { "sClass": "btn-col", "aTargets": [2] }

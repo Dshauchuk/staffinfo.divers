@@ -178,13 +178,13 @@ namespace Staffinfo.Divers.Services
             {
                 diversPerStation.Add(new MinStationModel()
                 {
-                    Id = rescueStation.StationId,
-                    Name = rescueStation.StationName,
+                    StationId = rescueStation.StationId,
+                    StationName = rescueStation.StationName,
                     DiversCount = divers.Where(c => c.RescueStationId == rescueStation.StationId).Count()
                 });
             }
 
-            diversPerStation = diversPerStation.OrderByDescending(c => c.DiversCount).Take(10).ToList();
+            diversPerStation = diversPerStation.ToList();
 
             return diversPerStation;
         }

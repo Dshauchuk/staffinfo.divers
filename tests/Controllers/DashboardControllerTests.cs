@@ -2,10 +2,7 @@
 using Moq;
 using staffinfo.divers.Controllers;
 using Staffinfo.Divers.Models;
-using Staffinfo.Divers.Models.Abstract;
 using Staffinfo.Divers.Services.Contracts;
-using Staffinfo.Divers.Shared.Exceptions;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
@@ -20,6 +17,50 @@ namespace staffinfo.divers.tests.Controllers
             // Arrange
             var diverServiceMock = new Mock<IDiverService>();
             var rescueStationServiceMock = new Mock<IRescueStationService>();
+
+            var stationModel = new MinStationModel()
+            {
+                DiversCount = 2,
+                StationId = 1,
+                StationName = "Ветковская"
+            };
+
+            var stationsModel = new List<MinStationModel>()
+            {
+                stationModel
+            };
+
+            var stationDivingTimeModel = new StationDivingTimeModel()
+            {
+                Id = 1,
+                Name = "Ветковская",
+                TotalDivingTime = 32
+            };
+
+            var stationsDivingTimeModel = new List<StationDivingTimeModel>()
+            {
+                stationDivingTimeModel
+            };
+
+            var averageStationDivingTimeModel = new AverageStationDivingTimeModel()
+            {
+                Id = 1,
+                Name = "Ветковская",
+                AverageDivingTime = 8,
+                DiveNumber = 4
+            };
+
+            var averageStationsDivingTimeModel = new List<AverageStationDivingTimeModel>()
+            {
+                averageStationDivingTimeModel
+            };
+
+            diverServiceMock.Setup(repo => repo.GetDiversPerStationAsync())
+                .Returns(Task.FromResult(stationsModel as List<MinStationModel>));
+            diverServiceMock.Setup(repo => repo.GetDivingTimePerStationAsync())
+                .Returns(Task.FromResult(stationsDivingTimeModel as List<StationDivingTimeModel>));
+            diverServiceMock.Setup(repo => repo.GetAverageDivingTimePerStationAsync())
+                .Returns(Task.FromResult(averageStationsDivingTimeModel as List<AverageStationDivingTimeModel>));
 
             var dashboardController = new DashboardController(diverServiceMock.Object, rescueStationServiceMock.Object);
 
@@ -36,51 +77,22 @@ namespace staffinfo.divers.tests.Controllers
             // Arrange
             var existingIndex = 0;
 
-            var rescueStationModel = new RescueStation()
+            var diverModel = new MinStationModel()
             {
+                DiversCount = 2,
                 StationId = 1,
-                StationName = "Ветковская",
-                CreatedAt = DateTime.Now,
-                UpdatedAt = DateTime.Now
+                StationName = "Ветковская"
             };
 
-            var diverModel = new Diver()
-            {
-                Address = "г.Ветка, ул.Батракова 32",
-                BirthDate = DateTime.Now,
-                DiverId = 1,
-                FirstName = "Иван",
-                LastName = "Иванов",
-                MedicalExaminationDate = DateTime.Now,
-                MiddleName = "Иванов",
-                PersonalBookIssueDate = DateTime.Now,
-                PersonalBookNumber = "132412",
-                PersonalBookProtocolNumber = "13233434",
-                PhotoUrl = "",
-                Qualification = 1,
-                CreatedAt = DateTime.Now,
-                UpdatedAt = DateTime.Now,
-                RescueStation = rescueStationModel
-            };
-
-            var divers = new List<Diver>()
+            var divers = new List<MinStationModel>()
             {
                 diverModel
             };
 
-            var rescueStations = new List<RescueStation>()
-            {
-                rescueStationModel
-            };
-
             var diverServiceMock = new Mock<IDiverService>();
             var rescueStationServiceMock = new Mock<IRescueStationService>();
-            rescueStationServiceMock.Setup(repo => repo.GetAsync())
-                .Returns(Task.FromResult(rescueStations as IEnumerable<RescueStation>));
-            diverServiceMock.Setup(repo => repo.GetAsync(null as IFilterOptions))
-                .Returns(Task.FromResult(divers as IEnumerable<Diver>));
-            rescueStationServiceMock.Setup(repo => repo.GetAsync(It.IsAny<int>()))
-                .Returns(Task.FromResult(rescueStationModel));
+            diverServiceMock.Setup(repo => repo.GetDiversPerStationAsync())
+                .Returns(Task.FromResult(divers as List<MinStationModel>));
             var dashboardController = new DashboardController(diverServiceMock.Object, rescueStationServiceMock.Object);
 
             // Act
@@ -88,63 +100,6 @@ namespace staffinfo.divers.tests.Controllers
 
             // Assert
             Assert.NotNull(redirectToActionResult);
-        }
-
-        [Fact]
-        public async Task RedirectToDivers_GivenInvalidInput_ShouldThrowNotFoundException()
-        {
-            // Arrange
-            var existingIndex = 0;
-
-            var rescueStationModel = new RescueStation()
-            {
-                StationId = 1,
-                StationName = "Ветковская",
-                CreatedAt = DateTime.Now,
-                UpdatedAt = DateTime.Now
-            };
-
-            var diverModel = new Diver()
-            {
-                Address = "г.Ветка, ул.Батракова 32",
-                BirthDate = DateTime.Now,
-                DiverId = 1,
-                FirstName = "Иван",
-                LastName = "Иванов",
-                MedicalExaminationDate = DateTime.Now,
-                MiddleName = "Иванов",
-                PersonalBookIssueDate = DateTime.Now,
-                PersonalBookNumber = "132412",
-                PersonalBookProtocolNumber = "13233434",
-                PhotoUrl = "",
-                Qualification = 1,
-                CreatedAt = DateTime.Now,
-                UpdatedAt = DateTime.Now,
-                RescueStation = rescueStationModel
-            };
-
-            var divers = new List<Diver>()
-            {
-                diverModel
-            };
-
-            var rescueStations = new List<RescueStation>()
-            {
-                rescueStationModel
-            };
-
-            var diverServiceMock = new Mock<IDiverService>();
-            var rescueStationServiceMock = new Mock<IRescueStationService>();
-            rescueStationServiceMock.Setup(repo => repo.GetAsync())
-                .Returns(Task.FromResult(rescueStations as IEnumerable<RescueStation>));
-            diverServiceMock.Setup(repo => repo.GetAsync(null as IFilterOptions))
-                .Returns(Task.FromResult(divers as IEnumerable<Diver>));
-            rescueStationServiceMock.Setup(repo => repo.GetAsync(It.IsAny<int>()))
-                .Throws(new NotFoundException());
-            var dashboardController = new DashboardController(diverServiceMock.Object, rescueStationServiceMock.Object);
-
-            // Act & Assert
-            await Assert.ThrowsAsync<NotFoundException>(() => dashboardController.RedirectToDivers(existingIndex));
         }
     }
 }

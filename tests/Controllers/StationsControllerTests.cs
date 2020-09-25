@@ -27,7 +27,8 @@ namespace staffinfo.divers.tests.Controllers
         {
             // Arrange
             var rescueStationServiceMock = new Mock<IRescueStationService>();
-            var stationsController = new StationsController(rescueStationServiceMock.Object, _mapper);
+            var diverServiceMock = new Mock<IDiverService>();
+            var stationsController = new StationsController(rescueStationServiceMock.Object, diverServiceMock.Object, _mapper);
 
             // Act
             var result = stationsController.Index() as ViewResult;
@@ -43,7 +44,8 @@ namespace staffinfo.divers.tests.Controllers
             var existingViewName = "Edit";
 
             var rescueStationServiceMock = new Mock<IRescueStationService>();
-            var stationsController = new StationsController(rescueStationServiceMock.Object, _mapper);
+            var diverServiceMock = new Mock<IDiverService>();
+            var stationsController = new StationsController(rescueStationServiceMock.Object, diverServiceMock.Object, _mapper);
 
             // Act
             var result = stationsController.New() as ViewResult;
@@ -60,9 +62,10 @@ namespace staffinfo.divers.tests.Controllers
             var notExistingId = 1111;
 
             var rescueStationServiceMock = new Mock<IRescueStationService>();
+            var diverServiceMock = new Mock<IDiverService>();
             rescueStationServiceMock.Setup(repo => repo.GetAsync(It.IsAny<int>()))
                 .Throws(new NotFoundException());
-            var stationsController = new StationsController(rescueStationServiceMock.Object, _mapper);
+            var stationsController = new StationsController(rescueStationServiceMock.Object, diverServiceMock.Object, _mapper);
 
             // Act & Assert
             await Assert.ThrowsAsync<NotFoundException>(() => stationsController.Edit(notExistingId));
@@ -83,9 +86,10 @@ namespace staffinfo.divers.tests.Controllers
             var existingViewName = "Edit";
 
             var rescueStationServiceMock = new Mock<IRescueStationService>();
+            var diverServiceMock = new Mock<IDiverService>();
             rescueStationServiceMock.Setup(repo => repo.GetAsync(It.IsAny<int>()))
                 .Returns(Task.FromResult(model));
-            var stationsController = new StationsController(rescueStationServiceMock.Object, _mapper);
+            var stationsController = new StationsController(rescueStationServiceMock.Object, diverServiceMock.Object, _mapper);
 
             // Act
             var viewResult = (await stationsController.Edit(model.StationId)) as ViewResult;
@@ -104,9 +108,10 @@ namespace staffinfo.divers.tests.Controllers
         {
             // Arrange
             var rescueStationServiceMock = new Mock<IRescueStationService>();
+            var diverServiceMock = new Mock<IDiverService>();
             rescueStationServiceMock.Setup(repo => repo.AddStationAsync(It.IsAny<EditRescueStationModel>()))
                 .Throws(new ArgumentNullException());
-            var stationsController = new StationsController(rescueStationServiceMock.Object, _mapper);
+            var stationsController = new StationsController(rescueStationServiceMock.Object, diverServiceMock.Object, _mapper);
 
             // Act & Assert
             await Assert.ThrowsAsync<ArgumentNullException>(() => stationsController.Add(null));
@@ -134,9 +139,10 @@ namespace staffinfo.divers.tests.Controllers
             var existingControllerName = "Stations";
 
             var rescueStationServiceMock = new Mock<IRescueStationService>();
+            var diverServiceMock = new Mock<IDiverService>();
             rescueStationServiceMock.Setup(repo => repo.AddStationAsync(It.IsAny<EditRescueStationModel>()))
                 .Returns(Task.FromResult(model));
-            var stationsController = new StationsController(rescueStationServiceMock.Object, _mapper);
+            var stationsController = new StationsController(rescueStationServiceMock.Object, diverServiceMock.Object, _mapper);
 
             // Act
             var result = (await stationsController.Add(modelEdit)) as RedirectToActionResult;
@@ -153,9 +159,10 @@ namespace staffinfo.divers.tests.Controllers
         {
             // Arrange
             var rescueStationServiceMock = new Mock<IRescueStationService>();
+            var diverServiceMock = new Mock<IDiverService>();
             rescueStationServiceMock.Setup(repo => repo.EditStationAsync(It.IsAny<EditRescueStationModel>()))
                 .Throws(new ArgumentNullException());
-            var stationsController = new StationsController(rescueStationServiceMock.Object, _mapper);
+            var stationsController = new StationsController(rescueStationServiceMock.Object, diverServiceMock.Object, _mapper);
 
             // Act & Assert
             await Assert.ThrowsAsync<ArgumentNullException>(() => stationsController.Update(null));
@@ -172,9 +179,10 @@ namespace staffinfo.divers.tests.Controllers
             };
 
             var rescueStationServiceMock = new Mock<IRescueStationService>();
+            var diverServiceMock = new Mock<IDiverService>();
             rescueStationServiceMock.Setup(repo => repo.EditStationAsync(It.IsAny<EditRescueStationModel>()))
                 .Throws(new NotFoundException());
-            var stationsController = new StationsController(rescueStationServiceMock.Object, _mapper);
+            var stationsController = new StationsController(rescueStationServiceMock.Object, diverServiceMock.Object, _mapper);
 
             // Act & Assert
             await Assert.ThrowsAsync<NotFoundException>(() => stationsController.Update(modelEdit));
@@ -202,9 +210,10 @@ namespace staffinfo.divers.tests.Controllers
             var existingControllerName = "Stations";
 
             var rescueStationServiceMock = new Mock<IRescueStationService>();
+            var diverServiceMock = new Mock<IDiverService>();
             rescueStationServiceMock.Setup(repo => repo.EditStationAsync(It.IsAny<EditRescueStationModel>()))
                 .Returns(Task.FromResult(model));
-            var stationsController = new StationsController(rescueStationServiceMock.Object, _mapper);
+            var stationsController = new StationsController(rescueStationServiceMock.Object, diverServiceMock.Object, _mapper);
 
             // Act
             var result = (await stationsController.Update(modelEdit)) as RedirectToActionResult;
@@ -223,9 +232,10 @@ namespace staffinfo.divers.tests.Controllers
             var notExistingId = 1111;
 
             var rescueStationServiceMock = new Mock<IRescueStationService>();
+            var diverServiceMock = new Mock<IDiverService>();
             rescueStationServiceMock.Setup(repo => repo.DeleteAsync(It.IsAny<int>()))
                 .Throws(new NotFoundException());
-            var stationsController = new StationsController(rescueStationServiceMock.Object, _mapper);
+            var stationsController = new StationsController(rescueStationServiceMock.Object, diverServiceMock.Object, _mapper);
 
             // Act & Assert
             await Assert.ThrowsAsync<NotFoundException>(() => stationsController.Delete(notExistingId));
@@ -238,8 +248,9 @@ namespace staffinfo.divers.tests.Controllers
             var existingId = 1;
 
             var rescueStationServiceMock = new Mock<IRescueStationService>();
+            var diverServiceMock = new Mock<IDiverService>();
             rescueStationServiceMock.Setup(repo => repo.DeleteAsync(It.IsAny<int>())).Returns(Task.CompletedTask);
-            var stationsController = new StationsController(rescueStationServiceMock.Object, _mapper);
+            var stationsController = new StationsController(rescueStationServiceMock.Object, diverServiceMock.Object, _mapper);
 
             // Act
             await stationsController.Delete(existingId);
@@ -249,39 +260,24 @@ namespace staffinfo.divers.tests.Controllers
         }
 
         [Fact]
-        public async Task GetListJson_NoFoundElements_ShouldThrowArgumentNullException()
-        {
-            // Arrange
-            var rescueStationServiceMock = new Mock<IRescueStationService>();
-            rescueStationServiceMock.Setup(repo => repo.GetAsync())
-                .Throws(new ArgumentNullException());
-            var stationsController = new StationsController(rescueStationServiceMock.Object, _mapper);
-
-            // Act & Assert
-            await Assert.ThrowsAsync<ArgumentNullException>(() => stationsController.GetListJson());
-        }
-
-        [Fact]
         public async Task GetListJson_GivenValidInput_ShouldReturnListJsonRescueStations()
         {
             // Arrange
-            var model1 = new RescueStation()
+            var model1 = new MinStationModel()
             {
                 StationId = 1,
                 StationName = "Ветковская",
-                CreatedAt = DateTime.Now,
-                UpdatedAt = DateTime.Now
+                DiversCount = 2
             };
 
-            var model2 = new RescueStation()
+            var model2 = new MinStationModel()
             {
                 StationId = 2,
                 StationName = "Гомельская",
-                CreatedAt = DateTime.Now,
-                UpdatedAt = DateTime.Now
+                DiversCount = 3
             };
 
-            var models = new List<RescueStation>()
+            var models = new List<MinStationModel>()
             {
                 model1,
                 model2
@@ -290,26 +286,25 @@ namespace staffinfo.divers.tests.Controllers
             var expectedCountOfItems = 2;
 
             var rescueStationServiceMock = new Mock<IRescueStationService>();
-            rescueStationServiceMock.Setup(repo => repo.GetAsync())
-                .Returns(Task.FromResult(models as IEnumerable<RescueStation>));
-            var stationsController = new StationsController(rescueStationServiceMock.Object, _mapper);
+            var diverServiceMock = new Mock<IDiverService>();
+            diverServiceMock.Setup(repo => repo.GetDiversPerStationAsync())
+                .Returns(Task.FromResult(models as List<MinStationModel>));
+            var stationsController = new StationsController(rescueStationServiceMock.Object, diverServiceMock.Object, _mapper);
 
             // Act
             var jsonResult = await stationsController.GetListJson() as JsonResult;
 
             // Assert
             Assert.NotNull(jsonResult);
-            var result = jsonResult.Value as List<RescueStation>;
+            var result = jsonResult.Value as List<MinStationModel>;
             Assert.NotNull(result);
             Assert.Equal(expectedCountOfItems, result.Count);
             Assert.Equal(model1.StationId, result[0].StationId);
             Assert.Equal(model1.StationName, result[0].StationName);
-            Assert.Equal(model1.CreatedAt, result[0].CreatedAt);
-            Assert.Equal(model1.UpdatedAt, result[0].UpdatedAt);
+            Assert.Equal(model1.DiversCount, result[0].DiversCount);
             Assert.Equal(model2.StationId, result[1].StationId);
             Assert.Equal(model2.StationName, result[1].StationName);
-            Assert.Equal(model2.CreatedAt, result[1].CreatedAt);
-            Assert.Equal(model2.UpdatedAt, result[1].UpdatedAt);
+            Assert.Equal(model2.DiversCount, result[1].DiversCount);
         }
     }
 }

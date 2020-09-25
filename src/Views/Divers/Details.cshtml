@@ -77,7 +77,10 @@
         </table>
     </div>
     <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">
-        <button id="add-time-modal-btn" type="button" class="btn btn-primary"><i class="fa fa-plus fa-lg"></i> Добавить</button>
+        <div>
+            <button id="add-time-modal-btn" type="button" class="btn btn-primary"><i class="fa fa-plus fa-lg"></i> Добавить</button>
+            <label class="label-tatal-diving-time" id="totalDivingTime"/>
+        </div>
         <table class="table table-striped display nowrap" id="whours-table" style="width:100%">
             <thead class="thead-dark">
                 <tr>
@@ -217,7 +220,7 @@
                             <input class="f_name" type="text" id="f_name" disabled />
                         </label>
                     </div>
-                    <input  id="uploadedFile" type="hidden" name="uploadedFile" />
+                    <input  id="uploadedFileBase64" type="hidden" name="uploadedFileBase64" />
                     <input type="hidden" value="@Model.DiverId" name="diverId" />
                     <div class="container" style="padding: 0px;">
                         <div class="row" style="overflow: hidden;">
@@ -355,9 +358,9 @@
 
             uploadPhotoBtn.addEventListener("mousedown", function () {
                 var croppedCanvas = cropper.getCroppedCanvas();
-                var uploadedFile = $('#uploadedFile')[0];
+                var uploadedFileBase64 = $('#uploadedFileBase64')[0];
                 var roundedCanvas = getRoundedCanvas(croppedCanvas);
-                uploadedFile.value = roundedCanvas.toDataURL().toString();
+                uploadedFileBase64.value = roundedCanvas.toDataURL().toString();
             });
 
             function getRoundedCanvas(sourceCanvas) {
@@ -462,6 +465,8 @@
                 var addDivingTimeBtn = $('#add-time-btn')[0];
                 var changeDivingTimeBtn = $('#change-time-btn')[0];
 
+                loadTotalDivingTime();
+
                 addDivingTimeBtn.onclick = function () { return checkEmpty(year, yearLabel, minutes, minutesLabel) };
                 changeDivingTimeBtn.onclick = function () { return checkEmpty(yearUpdate, yearUpdateLabel, minutesUpdate, minutesUpdateLabel) };
 
@@ -481,23 +486,24 @@
                     var diverId = model.diverId;
                     var year = $(this).data('year');
                     var tr = $(this).closest("tr");
-
-                    $.ajax({
-                        url: '/Divers/DeleteDivingTime',
-                        method: 'DELETE',
-                        data: {
-                            diverId: diverId,
-                            year: year
-                        }
-                    })
-                        .done(function () {
-                            updateWorkingTime();
-                            successAlert("Запись успешно удалена");
-                            tr.remove();
+                    confirmDelete("Время погружения будет удалено. Продолжить?", function () {
+                        $.ajax({
+                            url: '/Divers/DeleteDivingTime',
+                            method: 'DELETE',
+                            data: {
+                                diverId: diverId,
+                                year: year
+                            }
                         })
-                        .fail(function (err) {
-                            errorAlert("Не удалось удалить запись");
-                        })
+                            .done(function () {
+                                updateWorkingTime();
+                                successAlert("Запись успешно удалена");
+                                tr.remove();
+                            })
+                            .fail(function (err) {
+                                errorAlert("Не удалось удалить запись");
+                            })
+                    });
                 })
                 .on('click', '#add-time-modal-btn', function () {
                     var year = $('#year')[0];
@@ -607,7 +613,24 @@
                 })
                     .done(function (data) {
                         workingTime = data;
+                        loadTotalDivingTime();
                     });
+            }
+
+            function loadTotalDivingTime() {
+                var totalDivingTime = $('#totalDivingTime')[0];
+
+                if (workingTime[0] != null) {
+                    var sum = workingTime.reduce((a, b) => a + b.workingMinutes, 0);
+
+                    var workingHours = parseInt(sum / 60);
+                    var workingMinutes = parseInt(sum % 60);
+
+                    totalDivingTime.innerHTML = 'Всего под водой: <b>' + workingHours + '</b> ' + getHoursWord(workingHours) + ' <b>' + workingMinutes + '</b> ' + getMinutesWord(workingMinutes);
+                }
+                else {
+                    totalDivingTime.innerHTML = 'Всего под водой: <b>0</b> часов <b>0</b> минут';
+                }
             }
 
             function getHoursWord(workingHours) {

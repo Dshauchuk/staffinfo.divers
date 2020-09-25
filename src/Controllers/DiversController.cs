@@ -14,14 +14,10 @@ namespace staffinfo.divers.Controllers
     public class DiversController : Controller
     {
         private readonly IDiverService _diverService;
-        private readonly IRescueStationService _rescueStationService;
-        private readonly IDivingTimeRepository _divingTimeRepository;
         private readonly IMapper _mapper;
 
-        public DiversController(IDivingTimeRepository divingTimeRepository, IRescueStationService rescueStationService, IDiverService diverService, IMapper mapper)
+        public DiversController(IDiverService diverService, IMapper mapper)
         {
-            _divingTimeRepository = divingTimeRepository;
-            _rescueStationService = rescueStationService;
             _diverService = diverService;
             _mapper = mapper;
         }
@@ -65,8 +61,9 @@ namespace staffinfo.divers.Controllers
             {
                 throw new ArgumentNullException(nameof(model));
             }
-            var divingTimes = await _divingTimeRepository.GetListAsync(diverId);
-            model.WorkingTime = _mapper.Map<List<DivingTime>>(divingTimes);
+            var prevDiver = await _diverService.GetAsync(diverId);
+            model.WorkingTime = prevDiver.WorkingTime;
+            model.PhotoUrl = prevDiver.PhotoUrl;
             var diver = await _diverService.EditDiverAsync(diverId, model);
             
             return View("Details", diver);
@@ -89,11 +86,11 @@ namespace staffinfo.divers.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> UploadPhoto(string uploadedFile, int diverId)
+        public async Task<ActionResult> UploadPhoto(string uploadedFileBase64, int diverId)
         {
-            if (!string.IsNullOrEmpty(uploadedFile))
+            if (!string.IsNullOrEmpty(uploadedFileBase64))
             {
-                await _diverService.AddPhotoAsync(uploadedFile, diverId);
+                await _diverService.AddPhotoAsync(uploadedFileBase64, diverId);
             }
             return View("Details", await _diverService.GetAsync(diverId));
         }

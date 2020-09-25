@@ -45,7 +45,7 @@ namespace staffinfo.divers.tests.Service
                 MiddleName = "Иванов",
                 Login = "admin",
                 NeedToChangePwd = false,
-                PwdHash = "sfsdfsa",
+                PwdHash = "68AEB8C02944E4F501A967B26125EE9DACF07EDC",
                 RefreshToken = "sdfdsfds",
                 RegistrationTimestamp = DateTime.Now,
                 Role = "admin",
@@ -61,7 +61,7 @@ namespace staffinfo.divers.tests.Service
             var model = new LoginModel()
             {
                 Login = "admin",
-                Password = "qwerty123"
+                Password = "admin11"
             };
 
             var userIdentity = new UserIdentity()

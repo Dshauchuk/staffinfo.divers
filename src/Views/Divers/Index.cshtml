@@ -170,7 +170,7 @@
                                         return workingHours + ' ' + hoursWord + ' ' + workingMinutes + ' ' + minutesWord;
                                     }
                                     else
-                                        return 0;
+                                        return '0 часов 0 минут';
                                 }
                             },
                             {
@@ -182,7 +182,7 @@
                             }
                         ],
                         columnDefs: [
-                            { "className": "dt-center", "targets": "_all" }
+                            { "className": "dt-text-center", "targets": [5, 7] }
                         ],
                         language: {
                             url: "/localisation/dataTables.russian.lang.json"

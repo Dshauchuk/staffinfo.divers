@@ -27,9 +27,9 @@ table.dataTable tbody td {
     display: inline-flex;
 }
 
-.dataTables_filter > label > input {
-    margin-left: 10px;
-}
+    .dataTables_filter > label > input {
+        margin-left: 10px;
+    }
 
 ul.pagination {
     float: right;
@@ -105,7 +105,40 @@ label.bold-label {
     background-color: white;
     position: absolute;
     text-align: center;
-    border: 1px solid #777; 
-    border-radius: 30px; 
-    box-shadow: 0 0 5px 2px #B7B8BC; 
+    border: 1px solid #777;
+    border-radius: 30px;
+    box-shadow: 0 0 5px 2px #B7B8BC;
+}
+
+.dt-text-center {
+    text-align: center;
+}
+
+.label-tatal-diving-time {
+    margin-bottom: 0;
+    margin-left: 20px;
+    vertical-align: middle;
+}
+
+.fa-stack[data-count]:after {
+    position: absolute;
+    right: 0%;
+    top: 50%;
+    content: attr(data-count);
+    font-size: 50%;
+    padding: .6em;
+    border-radius: 999px;
+    line-height: .75em;
+    color: #1B6EC2;
+    background: white;
+    text-align: center;
+    min-width: 2em;
+    font-weight: bold;
+}
+
+.fa-stack {
+    height: 1em;
+    line-height: 1em;
+    text-align: center;
+    vertical-align: baseline;
 }
